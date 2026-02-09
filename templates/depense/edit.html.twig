@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Dépense - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Modifier la Dépense</h1>
+            <p class="text-muted-foreground">Mettez à jour votre transaction</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+                
+                <div>
+                    {{ form_label(form.titre, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    {{ form_errors(form.titre, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                </div>
+
+                 <div>
+                    {{ form_label(form.montant, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.montant, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    {{ form_errors(form.montant, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        {{ form_label(form.categorie, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.categorie, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                        {{ form_errors(form.categorie, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                    </div>
+                 <div>
+                    {{ form_label(form.typePaiement, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.typePaiement, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    {{ form_errors(form.typePaiement, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.date, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.date, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    {{ form_errors(form.date, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.budget, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.budget, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    {{ form_errors(form.budget, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                </div>
+
+
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <a href="{{ path('app_finance_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        Mettre à jour
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
