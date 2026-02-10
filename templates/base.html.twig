@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}LifeOps{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🧠</text></svg>">
+
+        {% block stylesheets %}
+            {{ importmap('app') }}
+            {# Falling back to CDN due to local build issues #}
+            <script src="https://cdn.tailwindcss.com"></script>
+            <script>
+                tailwind.config = {
+                    darkMode: 'class',
+                    theme: {
+                        extend: {
+                            colors: {
+                                background: 'hsl(var(--background))',
+                                foreground: 'hsl(var(--foreground))',
+                                card: {
+                                    DEFAULT: 'hsl(var(--card))',
+                                    foreground: 'hsl(var(--card-foreground))',
+                                },
+                                popover: {
+                                    DEFAULT: 'hsl(var(--popover))',
+                                    foreground: 'hsl(var(--popover-foreground))',
+                                },
+                                primary: {
+                                    DEFAULT: 'hsl(var(--primary))',
+                                    foreground: 'hsl(var(--primary-foreground))',
+                                },
+                                secondary: {
+                                    DEFAULT: 'hsl(var(--secondary))',
+                                    foreground: 'hsl(var(--secondary-foreground))',
+                                },
+                                muted: {
+                                    DEFAULT: 'hsl(var(--muted))',
+                                    foreground: 'hsl(var(--muted-foreground))',
+                                },
+                                accent: {
+                                    DEFAULT: 'hsl(var(--accent))',
+                                    foreground: 'hsl(var(--accent-foreground))',
+                                },
+                                destructive: {
+                                    DEFAULT: 'hsl(var(--destructive))',
+                                    foreground: 'hsl(var(--destructive-foreground))',
+                                },
+                                border: 'hsl(var(--border))',
+                                input: 'hsl(var(--input))',
+                                ring: 'hsl(var(--ring))',
+                                chart: {
+                                    '1': 'hsl(var(--chart-1))',
+                                    '2': 'hsl(var(--chart-2))',
+                                    '3': 'hsl(var(--chart-3))',
+                                    '4': 'hsl(var(--chart-4))',
+                                    '5': 'hsl(var(--chart-5))',
+                                },
+                                sidebar: {
+                                    DEFAULT: 'hsl(var(--sidebar-background))',
+                                    foreground: 'hsl(var(--sidebar-foreground))',
+                                    primary: 'hsl(var(--sidebar-primary))',
+                                    'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+                                    accent: 'hsl(var(--sidebar-accent))',
+                                    'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+                                    border: 'hsl(var(--sidebar-border))',
+                                    ring: 'hsl(var(--sidebar-ring))',
+                                },
+                            },
+                            borderRadius: {
+                                lg: 'var(--radius)',
+                                md: 'calc(var(--radius) - 2px)',
+                                sm: 'calc(var(--radius) - 4px)',
+                            },
+                        }
+                    }
+                }
+            </script>
+            <style>
+                :root {
+                    --background: 266 20% 4%;
+                    --foreground: 266 10% 98%;
+                    --card: 266 20% 7%;
+                    --card-foreground: 266 10% 98%;
+                    --popover: 266 20% 7%;
+                    --popover-foreground: 266 10% 98%;
+                    --primary: 266 56% 45%;
+                    --primary-foreground: 0 0% 100%;
+                    --secondary: 266 15% 12%;
+                    --secondary-foreground: 266 10% 85%;
+                    --muted: 266 15% 12%;
+                    --muted-foreground: 266 10% 60%;
+                    --accent: 266 56% 35%;
+                    --accent-foreground: 0 0% 100%;
+                    --destructive: 0 84% 60%;
+                    --destructive-foreground: 0 0% 100%;
+                    --border: 266 15% 16%;
+                    --input: 266 15% 16%;
+                    --ring: 266 56% 45%;
+                    --chart-1: 266 56% 45%;
+                    --chart-2: 280 65% 60%;
+                    --chart-3: 199 89% 48%;
+                    --chart-4: 38 92% 50%;
+                    --chart-5: 340 75% 55%;
+                    --radius: 0.75rem;
+                    --sidebar-background: 266 20% 6%;
+                    --sidebar-foreground: 266 10% 75%;
+                    --sidebar-primary: 266 56% 45%;
+                    --sidebar-primary-foreground: 0 0% 100%;
+                    --sidebar-accent: 266 15% 10%;
+                    --sidebar-accent-foreground: 266 10% 98%;
+                    --sidebar-border: 266 15% 14%;
+                    --sidebar-ring: 266 56% 45%;
+                    --success: 200 100% 45%;
+                    --warning: 38 92% 50%;
+                    --info: 199 89% 48%;
+                }
+                * {
+                    border-color: hsl(var(--border));
+                }
+                body {
+                    background-color: hsl(var(--background));
+                    color: hsl(var(--foreground));
+                    visibility: visible;
+                }
+                
+                /* Custom scrollbar */
+                ::-webkit-scrollbar {
+                    width: 6px;
+                }
+                ::-webkit-scrollbar-track {
+                    background: hsl(228 14% 5%);
+                }
+                ::-webkit-scrollbar-thumb {
+                    background: hsl(228 10% 20%);
+                    border-radius: 3px;
+                }
+                ::-webkit-scrollbar-thumb:hover {
+                    background: hsl(228 10% 30%);
+                }
+                
+                .text-balance {
+                    text-wrap: balance;
+                }
+            </style>
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {{ importmap('app') }}
+        {% endblock %}
+    </head>
+    <body class="font-sans antialiased bg-background text-foreground min-h-screen flex flex-col md:flex-row">
+
+        {# Sidebar / Mobile Nav #}
+        <aside class="w-full md:w-64 bg-card border-r border-border flex-shrink-0 flex flex-col">
+            <div class="p-6 border-b border-border">
+                <a href="{{ path('app_dashboard') }}" class="flex items-center gap-3">
+                    <span class="text-2xl font-bold bg-primary/20 text-primary w-10 h-10 rounded-lg flex items-center justify-center">L</span>
+                    <span class="text-2xl font-bold tracking-tight text-foreground">LifeOps</span>
+                </a>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+                {% set route = app.request.attributes.get('_route') %}
+
+                <a href="{{ path('app_dashboard') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route == 'app_dashboard' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>📊</span> Tableau de bord
+                </a>
+
+                <a href="{{ path('app_tasks_index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route starts with 'app_tasks' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>✅</span> Tâches
+                </a>
+
+                <a href="{{ path('app_finance_index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route starts with 'app_finance' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>💰</span> Finances
+                </a>
+
+                <a href="{{ path('app_goal_index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route starts with 'app_goal' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>🎯</span> Objectifs
+                </a>
+
+                <a href="{{ path('app_health_index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route starts with 'app_health' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>❤️</span> Santé
+                </a>
+
+                <a href="{{ path('app_time_index') }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {{ route starts with 'app_time' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-secondary hover:text-foreground' }}">
+                   <span>⏰</span> Temps
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-border">
+                <div class="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground">
+                    <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                        👤
+                    </div>
+                    <div>
+                        <p class="font-medium text-foreground">Utilisateur</p>
+                        <p class="text-xs">Perso</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        {# Main Content #}
+        <main class="flex-1 overflow-y-auto bg-background p-4 md:p-8">
+            <div class="max-w-7xl mx-auto">
+                {% block body %}{% endblock %}
+            </div>
+        </main>
+
+    </body>
+</html>

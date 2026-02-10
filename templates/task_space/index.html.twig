@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Task Space - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Task Space</h1>
+            <p class="text-muted-foreground">Collaborez en mode Leader ou Group</p>
+        </div>
+        <a href="{{ path('app_projects_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau Task Space
+        </a>
+    </div>
+
+    {# Search and Sort Controls #}
+    <div class="flex flex-col md:flex-row gap-4 mb-8 items-end">
+        <div class="flex-1 w-full">
+            <form method="GET" action="{{ path('app_projects_index') }}" class="relative">
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ search }}"
+                        placeholder="Rechercher par nom de projet..." 
+                        class="flex h-10 w-full rounded-md border border-input bg-background pl-10 pr-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                    />
+                    {% if search %}
+                        <a href="{{ path('app_projects_index') }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ path('app_projects_index', {'search': search, 'sort': 'statut', 'direction': (currentSort == 'statut' and currentDirection == 'ASC' ? 'DESC' : 'ASC')}) }}" 
+               class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="m21 15-9-6-9 6"/></svg>
+                Trier par Statut {{ currentSort == 'statut' ? (currentDirection == 'ASC' ? '↑' : '↓') : '' }}
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for project in projects %}
+            <div class="rounded-xl border border-border bg-card text-card-foreground shadow transition-all hover:shadow-md">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-lg font-semibold tracking-tight">{{ project.nom }}</h3>
+                        <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
+                            {% if project.status == 'Active' %}border-transparent bg-green-500/10 text-green-500
+                            {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                        ">
+                            {{ project.status }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-muted-foreground mb-4 line-clamp-2">{{ project.description ?: 'Pas de description.' }}</p>
+                    
+                    <div class="flex items-center gap-4 text-xs text-muted-foreground mb-4">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-3 w-3"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            {{ project.members|length + 1 }} membres
+                        </div>
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-3 w-3"><path d="M12 2v10l4.5 4.5"/><circle cx="12" cy="12" r="10"/></svg>
+                            Sprint: {{ project.sprintDuration }}j
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-auto">
+                        <span class="text-xs text-muted-foreground italic">
+                            Par {{ project.utilisateur.email }}
+                        </span>
+                        <div class="flex gap-2">
+                            <a href="{{ path('app_projects_show', {'id': project.id}) }}" class="text-primary hover:underline text-sm font-medium">Ouvrir</a>
+                            {% if project.utilisateur == app.user %}
+                                <a href="{{ path('app_projects_edit', {'id': project.id}) }}" class="text-muted-foreground hover:text-foreground">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                </a>
+                                <form method="post" action="{{ path('app_projects_delete', {'id': project.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce projet ? Cela supprimera également toutes les tâches associées.');" class="inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project.id) }}">
+                                    <button class="text-muted-foreground hover:text-red-500 transition-colors p-0 border-none bg-transparent cursor-pointer flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-span-full py-12 text-center rounded-xl border border-dashed border-border text-muted-foreground">
+                <p>Aucun Task Space trouvé. Commencez par créer une tâche et convertissez-la !</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+<div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-card-foreground text-balance">Dashboard Admin</h1>
+        <p class="text-sm text-muted-foreground">
+            Vue globale de toutes les données LifeOps
+        </p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Utilisateurs -->
+        <a href="{{ path('app_admin_users') }}">
+            <div class="border-border bg-card transition-colors hover:bg-secondary/50 rounded-lg border shadow-sm">
+                <div class="p-5">
+                    <div class="flex items-start justify-between">
+                        <div class="flex flex-col gap-1">
+                            <p class="text-sm text-muted-foreground">Utilisateurs</p>
+                            <p class="text-3xl font-bold text-card-foreground">{{ total_users }}</p>
+                            <p class="text-xs text-muted-foreground">{{ admin_users }} admin</p>
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(199,89%,48%)]/15 text-[hsl(199,89%,48%)]">
+                            <i data-lucide="users" class="h-5 w-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- Feedbacks -->
+        <a href="{{ path('app_admin_feedback') }}">
+            <div class="border-border bg-card transition-colors hover:bg-secondary/50 rounded-lg border shadow-sm">
+                <div class="p-5">
+                    <div class="flex items-start justify-between">
+                        <div class="flex flex-col gap-1">
+                            <p class="text-sm text-muted-foreground">Feedbacks</p>
+                            <p class="text-3xl font-bold text-card-foreground">{{ total_feedbacks }}</p>
+                            <p class="text-xs text-muted-foreground">{{ new_feedbacks }} nouveau(x)</p>
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(45,93%,47%)]/15 text-[hsl(45,93%,47%)]">
+                            <i data-lucide="message-square" class="h-5 w-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- Bilans Santé -->
+        <a href="{{ path('app_admin_sante') }}">
+            <div class="border-border bg-card transition-colors hover:bg-secondary/50 rounded-lg border shadow-sm">
+                <div class="p-5">
+                    <div class="flex items-start justify-between">
+                        <div class="flex flex-col gap-1">
+                            <p class="text-sm text-muted-foreground">Bilans Santé</p>
+                            <p class="text-3xl font-bold text-card-foreground">{{ total_health_records }}</p>
+                            <p class="text-xs text-muted-foreground">Données réelles</p>
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(0,72%,51%)]/15 text-[hsl(0,72%,51%)]">
+                            <i data-lucide="heart" class="h-5 w-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <!-- Objectifs -->
+        <a href="{{ path('app_admin_objectifs') }}">
+            <div class="border-border bg-card transition-colors hover:bg-secondary/50 rounded-lg border shadow-sm">
+                <div class="p-5">
+                    <div class="flex items-start justify-between">
+                        <div class="flex flex-col gap-1">
+                            <p class="text-sm text-muted-foreground">Objectifs</p>
+                            <p class="text-3xl font-bold text-card-foreground">{{ total_goals }}</p>
+                            <p class="text-xs text-muted-foreground">Suivi global</p>
+                        </div>
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(160,84%,39%)]/15 text-[hsl(160,84%,39%)]">
+                            <i data-lucide="target" class="h-5 w-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Main content grid -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <!-- Santé overview -->
+        <div class="border-border bg-card lg:col-span-1 rounded-lg border shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                <h3 class="font-semibold leading-none tracking-tight flex items-center gap-2 text-base text-card-foreground">
+                    <i data-lucide="activity" class="h-4 w-4 text-[hsl(0,72%,51%)]"></i>
+                    Indicateurs Santé
+                </h3>
+            </div>
+            <div class="p-6 pt-0 flex flex-col gap-4">
+                <div class="flex items-center justify-between rounded-lg bg-secondary/50 p-3">
+                    <span class="text-sm text-muted-foreground">Stress moyen</span>
+                    <span class="text-lg font-semibold text-card-foreground">4.2/10</span>
+                </div>
+                <div class="flex items-center justify-between rounded-lg bg-secondary/50 p-3">
+                    <span class="text-sm text-muted-foreground">Score forme moyen</span>
+                    <span class="text-lg font-semibold text-card-foreground">75%</span>
+                </div>
+                <div class="flex items-center justify-between rounded-lg bg-secondary/50 p-3">
+                    <span class="text-sm text-muted-foreground">Risques burnout</span>
+                    <span class="flex items-center gap-1.5">
+                        <i data-lucide="alert-triangle" class="h-4 w-4 text-[hsl(45,93%,47%)]"></i>
+                        <span class="text-lg font-semibold text-card-foreground">1</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tâches breakdown -->
+        <div class="border-border bg-card lg:col-span-1 rounded-lg border shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                <h3 class="font-semibold leading-none tracking-tight flex items-center gap-2 text-base text-card-foreground">
+                    <i data-lucide="list-todo" class="h-4 w-4 text-[hsl(45,93%,47%)]"></i>
+                    Répartition Tâches
+                </h3>
+            </div>
+            <div class="p-6 pt-0 flex flex-col gap-3">
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="capitalize text-muted-foreground">à faire</span>
+                        <span class="font-medium text-card-foreground">5</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                        <div class="h-full rounded-full transition-all bg-[hsl(215,14%,45%)]" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="capitalize text-muted-foreground">en cours</span>
+                        <span class="font-medium text-card-foreground">12</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                        <div class="h-full rounded-full transition-all bg-[hsl(199,89%,48%)]" style="width: 48%"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="capitalize text-muted-foreground">terminé</span>
+                        <span class="font-medium text-card-foreground">8</span>
+                    </div>
+                    <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                        <div class="h-full rounded-full transition-all bg-[hsl(160,84%,39%)]" style="width: 32%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dépenses by category -->
+        <div class="border-border bg-card lg:col-span-1 rounded-lg border shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                <h3 class="font-semibold leading-none tracking-tight flex items-center gap-2 text-base text-card-foreground">
+                    <i data-lucide="dollar-sign" class="h-4 w-4 text-[hsl(280,65%,60%)]"></i>
+                    Dépenses par Catégorie
+                </h3>
+            </div>
+            <div class="p-6 pt-0 flex flex-col gap-3">
+                {% set max_expense = 1 %}
+                {% for entry in expenses_by_category %}
+                    {% if entry.total > max_expense %}{% set max_expense = entry.total %}{% endif %}
+                {% endfor %}
+
+                {% for entry in expenses_by_category %}
+                    {% set percentage = (entry.total / max_expense) * 100 %}
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center justify-between text-sm">
+                             <span class="text-muted-foreground">{{ entry.categorie }}</span>
+                            <span class="font-medium text-card-foreground">{{ entry.total|number_format(0, '.', ' ') }} DT</span>
+                        </div>
+                        <div class="h-2 overflow-hidden rounded-full bg-secondary">
+                             <div class="h-full rounded-full bg-[hsl(280,65%,60%)] transition-all" style="width: {{ percentage }}%"></div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-sm text-muted-foreground text-center py-4">Aucune dépense enregistrée.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

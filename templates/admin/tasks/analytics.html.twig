@@ -1,0 +1,197 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Analytique des Tâches - Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Analytique du Système de Tâches</h1>
+            <p class="text-muted-foreground">Suivi agrégé et anonymisé (Conforme RGPD)</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{{ path('app_admin_tasks_export', {format: 'csv'}) }}" class="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-opacity-80 transition flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Exporter CSV
+            </a>
+            <a href="{{ path('app_admin_tasks_export', {format: 'pdf'}) }}" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-80 transition flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                Exporter PDF
+            </a>
+        </div>
+    </div>
+
+    <!-- Alertes Système -->
+    {% if alerts is not empty %}
+    <div class="space-y-4">
+        {% for alert in alerts %}
+        <div class="p-4 rounded-lg flex items-center {% if alert.type == 'danger' %}bg-red-900/20 border border-red-900/50 text-red-400{% else %}bg-yellow-900/20 border border-yellow-900/50 text-yellow-400{% endif %}">
+            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            <span class="font-medium">{{ alert.message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Indicateurs Clés -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <p class="text-sm font-medium text-muted-foreground uppercase">Total des Tâches</p>
+            <h3 class="text-3xl font-bold mt-2 text-white">{{ stats.total }}</h3>
+        </div>
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <p class="text-sm font-medium text-muted-foreground uppercase">Taux de Complétion</p>
+            <h3 class="text-3xl font-bold mt-2 text-primary">{{ completed_percent|number_format(1) }}%</h3>
+        </div>
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <p class="text-sm font-medium text-muted-foreground uppercase">Tâches en Retard</p>
+            <h3 class="text-3xl font-bold mt-2 text-accent">{{ overdue_percent|number_format(1) }}%</h3>
+        </div>
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <p class="text-sm font-medium text-muted-foreground uppercase">Durée Moyenne</p>
+            <h3 class="text-3xl font-bold mt-2 text-white">{{ avg_duration|number_format(1) }}h</h3>
+        </div>
+    </div>
+
+    <!-- Section Graphiques -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Répartition par Statut -->
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <h4 class="text-lg font-bold mb-6 text-white">Répartition par Statut</h4>
+            <div class="h-64">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Répartition par Priorité -->
+        <div class="bg-card p-6 rounded-xl border border-border">
+            <h4 class="text-lg font-bold mb-6 text-white">Répartition par Priorité</h4>
+            <div class="h-64">
+                <canvas id="priorityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+         <!-- Statistiques TaskSpaces -->
+         <div class="bg-card p-6 rounded-xl border border-border lg:col-span-1">
+            <h4 class="text-lg font-bold mb-6 text-white">Suivi des TaskSpaces</h4>
+             <div class="space-y-6">
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground">Espaces Solo</span>
+                    <span class="font-bold text-white">{{ space_stats.solo }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground">Espaces de Groupe</span>
+                    <span class="font-bold text-white">{{ space_stats.group }}</span>
+                </div>
+                <div class="pt-4 border-t border-border">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-muted-foreground">Inactifs (30j)</span>
+                        <span class="font-bold text-accent">{{ space_stats.inactive_percentage|number_format(1) }}%</span>
+                    </div>
+                    <div class="w-full bg-secondary rounded-full h-2">
+                        <div class="bg-accent h-2 rounded-full" style="width: {{ space_stats.inactive_percentage }}%"></div>
+                    </div>
+                </div>
+             </div>
+        </div>
+
+        <!-- Tendances d'Activité -->
+        <div class="bg-card p-6 rounded-xl border border-border lg:col-span-2">
+            <h4 class="text-lg font-bold mb-6 text-white">Activité Quotidienne (30 jours)</h4>
+            <div class="h-64">
+                <canvas id="trendsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Traduction des statuts
+    const statusLabels = {
+        'ToDo': 'À Faire',
+        'InProgress': 'En Cours',
+        'Review': 'En Révision',
+        'Done': 'Terminé'
+    };
+
+    // Graphique Statut
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for item in stats.statusDistribution %}(statusLabels['{{ item.statut }}'] || '{{ item.statut }}'),{% endfor %}],
+            datasets: [{
+                data: [{% for item in stats.statusDistribution %}{{ item.count }},{% endfor %}],
+                backgroundColor: ['#3d1d66', 'hsl(215 10% 50%)', 'hsl(38 92% 50%)', 'hsl(0 84% 60%)'],
+                borderColor: 'hsl(228 12% 8%)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: 'white' } }
+            }
+        }
+    });
+
+    // Graphique Priorité
+    const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+    new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for item in stats.priorityDistribution %}'P{{ item.priorite }}',{% endfor %}],
+            datasets: [{
+                label: 'Tâches',
+                data: [{% for item in stats.priorityDistribution %}{{ item.count }},{% endfor %}],
+                backgroundColor: '#3d1d66'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'hsl(228 10% 16%)' }, ticks: { color: 'white' } },
+                x: { grid: { display: false }, ticks: { color: 'white' } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Graphique Tendances
+    const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+    new Chart(trendsCtx, {
+        type: 'line',
+        data: {
+            labels: [{% for trend in activity_trends %}'{{ trend.date }}',{% endfor %}],
+            datasets: [{
+                label: 'Nouvelles Tâches',
+                data: [{% for trend in activity_trends %}{{ trend.count }},{% endfor %}],
+                borderColor: '#3d1d66',
+                backgroundColor: 'rgba(61, 29, 102, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'hsl(228 10% 16%)' }, ticks: { color: 'white' } },
+                x: { grid: { display: false }, ticks: { color: 'white' } }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ objectif.titre }} - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="mb-6">
+        <a href="{{ path('app_goal_index') }}" class="text-sm text-muted-foreground hover:text-foreground flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-4 w-4"><path d="m15 18-6-6 6-6"/></svg>
+            Retour aux objectifs
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {# Goal Details #}
+        <div class="lg:col-span-2 space-y-6">
+            <div class="flex items-start justify-between">
+                <div>
+                     <h1 class="text-3xl font-bold tracking-tight text-foreground mb-2">{{ objectif.titre }}</h1>
+                     <div class="flex gap-2 mb-4">
+                        <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
+                            {{ objectif.categorie|capitalize }}
+                        </span>
+                        <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
+                            {% if objectif.statut == 'achieved' %}border-transparent bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]
+                            {% elseif objectif.statut == 'in-progress' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                            {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                        ">
+                            {{ objectif.statut|capitalize }}
+                        </span>
+                     </div>
+                     <p class="text-muted-foreground">{{ objectif.description }}</p>
+                </div>
+                <a href="{{ path('app_goal_edit', {'id': objectif.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    Modifier
+                </a>
+            </div>
+
+            <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+                 <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">Plan d'action</h2>
+                    <a href="{{ path('app_goal_action_new', {'id': objectif.id}) }}" class="text-sm font-medium text-primary hover:underline flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Ajouter Étape
+                    </a>
+                </div>
+                
+                {% if objectif.planActions|length > 0 %}
+                    <ul class="space-y-3">
+                        {% for action in objectif.planActions %}
+                            <li class="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/50">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-2 w-2 rounded-full 
+                                        {% if action.statut == 'done' %}bg-[hsl(var(--success))]
+                                        {% elseif action.statut == 'in-progress' %}bg-[hsl(var(--warning))]
+                                        {% else %}bg-muted-foreground{% endif %}
+                                    "></div>
+                                    <span class="{% if action.statut == 'done' %}line-through text-muted-foreground{% endif %}">{{ action.titre }}</span>
+                                </div>
+                                    <span class="text-xs text-muted-foreground">
+                                    {% if action.dateFin %}
+                                        {{ action.dateFin|date('d/m/Y') }}
+                                    {% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-center text-muted-foreground py-4 text-sm">Aucune étape définie pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Sidebar Stats #}
+        <div class="space-y-6">
+            <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+                <h3 class="text-sm font-medium text-muted-foreground mb-4">Progression Globale</h3>
+                <div class="flex items-end gap-2 mb-2">
+                    <span class="text-4xl font-bold">{{ objectif.progression }}%</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-secondary">
+                    <div class="h-full rounded-full bg-primary transition-all duration-500" style="width: {{ objectif.progression }}%"></div>
+                </div>
+            </div>
+
+            <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+                <h3 class="text-sm font-medium text-muted-foreground mb-2">Date Limite</h3>
+                {% if objectif.dateFin %}
+                    <p class="text-lg font-semibold flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-5 w-5 text-muted-foreground"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        {{ objectif.dateFin|date('d F Y') }}
+                    </p>
+                    {% set daysLeft = date(objectif.dateFin).diff(date('now')).days %}
+                    <p class="text-sm text-muted-foreground mt-1">
+                        {% if date(objectif.dateFin) < date('now') %}
+                            En retard
+                        {% else %}
+                            J-{{ daysLeft }}
+                        {% endif %}
+                    </p>
+                {% else %}
+                    <p class="text-muted-foreground">Aucune date limite fixée</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

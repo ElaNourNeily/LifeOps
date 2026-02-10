@@ -1,0 +1,1 @@
+ERROR: Cannot load resource "routing.controllers". in C:\Users\ce pc\Music\life-ops-personal-management\life-ops-personal-management\life-ops-symfony\vendor\symfony\config\Loader\Loader.php:68
