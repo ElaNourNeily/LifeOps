@@ -1,0 +1,46 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Utilisateurs - Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion des Utilisateurs</h1>
+        <p class="text-muted-foreground">Liste complète des utilisateurs enregistrés</p>
+    </div>
+
+    <div class="border-border bg-card rounded-lg border shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="border-b border-border bg-muted/50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">ID</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Email</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Nom</th>
+                        <th class="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Rôle</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for user in users %}
+                        <tr class="hover:bg-muted/50 transition-colors">
+                            <td class="px-4 py-3 text-sm text-card-foreground">{{ user.id }}</td>
+                            <td class="px-4 py-3 text-sm text-card-foreground">{{ user.email }}</td>
+                            <td class="px-4 py-3 text-sm text-card-foreground">{{ user.nom }} {{ user.prenom }}</td>
+                            <td class="px-4 py-3 text-sm">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                                    {% if user.role == 'ROLE_ADMIN' %}bg-primary/10 text-primary{% else %}bg-muted text-muted-foreground{% endif %}">
+                                    {{ user.role }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="px-4 py-8 text-center text-sm text-muted-foreground">Aucun utilisateur trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

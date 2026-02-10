@@ -1,0 +1,387 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion du temps</h1>
+            <div class="flex items-center gap-4 mt-2">
+                <a href="{{ path('app_time_index') }}" class="text-sm font-semibold {{ route starts with 'app_time' ? 'text-primary' : 'text-muted-foreground hover:text-foreground' }} transition-colors">
+                    📅 Calendrier
+                </a>
+                <a href="{{ path('app_planning_index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    ⚙️ Liste des plannings
+                </a>
+            </div>
+        </div>
+        <button onclick="document.getElementById('new-block-modal').classList.remove('hidden')" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#10b981] text-white hover:bg-[#059669] h-10 px-4 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter un bloc
+        </button>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center rounded-md border border-input bg-transparent">
+                {% set prevDate = view == 'day' ? currentDate|date_modify('-1 day') : startOfWeek|date_modify('-1 week') %}
+                {% set nextDate = view == 'day' ? currentDate|date_modify('+1 day') : startOfWeek|date_modify('+1 week') %}
+                
+                <a href="{{ path('app_time_index', {'date': prevDate|date('Y-m-d'), 'view': view}) }}" class="px-3 py-2 hover:bg-accent hover:text-accent-foreground border-r border-input">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </a>
+                <span class="px-4 py-2 text-sm font-medium capitalize">
+                    {{ formattedDateTitle }}
+                </span>
+                <a href="{{ path('app_time_index', {'date': nextDate|date('Y-m-d'), 'view': view}) }}" class="px-3 py-2 hover:bg-accent hover:text-accent-foreground border-l border-input">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </a>
+            </div>
+            <a href="{{ path('app_time_index', {'date': 'now'|date('Y-m-d'), 'view': view}) }}" class="inline-flex items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors">
+                Aujourd'hui
+            </a>
+            <a href="{{ path('app_time_export', {'date': startOfWeek|date('Y-m-d')}) }}" target="_blank" class="inline-flex items-center justify-center rounded-md border border-input bg-transparent px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors ml-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                PDF
+            </a>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <div class="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="activity-search" placeholder="Rechercher..." class="flex h-10 w-64 rounded-md border border-input bg-background pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            </div>
+            <div class="flex items-center rounded-md border border-input bg-transparent p-1">
+                <a href="{{ path('app_time_index', {'view': 'day', 'date': currentDate|date('Y-m-d')}) }}" class="rounded-sm px-3 py-1 text-sm font-medium transition-colors {% if view == 'day' %}bg-[#10b981] text-white shadow-sm{% else %}hover:bg-accent hover:text-accent-foreground{% endif %}">Jour</a>
+                <a href="{{ path('app_time_index', {'view': 'week', 'date': currentDate|date('Y-m-d')}) }}" class="rounded-sm px-3 py-1 text-sm font-medium transition-colors {% if view == 'week' %}bg-[#10b981] text-white shadow-sm{% else %}hover:bg-accent hover:text-accent-foreground{% endif %}">Semaine</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow overflow-hidden">
+        <!-- Header Row -->
+        <div class="grid border-b border-border" style="grid-template-columns: 80px repeat({{ weekDays|length }}, 1fr);">
+            <div class="p-4 border-r border-border bg-secondary/30"></div> <!-- Time column header -->
+            {% for day in weekDays %}
+                <div class="p-4 border-r border-border last:border-r-0 text-center bg-secondary/10">
+                    <span class="block text-xs uppercase text-muted-foreground mb-1">{{ day|date('D') }}</span>
+                    <div class="flex items-center justify-center gap-2 group/header">
+                        <div class="inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold {% if day|date('Y-m-d') == 'now'|date('Y-m-d') %}bg-[#10b981] text-white{% endif %}">
+                            {{ day|date('d') }}
+                        </div>
+                        <a href="{{ path('app_planning_edit', {'date': day|date('Y-m-d')}) }}" class="opacity-0 group-hover/header:opacity-100 transition-opacity text-muted-foreground hover:text-foreground" title="Paramètres du jour">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Body -->
+        <div class="grid" style="grid-template-columns: 80px repeat({{ weekDays|length }}, 1fr);">
+            <!-- Time Column -->
+            <div class="border-r border-border bg-secondary/10">
+                {% for i in gridStart..gridEnd %}
+                    <div class="h-20 border-b border-border/50 text-xs text-muted-foreground p-2 text-center relative">
+                        <span class="-top-3 relative bg-card px-1">{{ "%02d"|format(i) }}:00</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Days Columns -->
+            {% for day in weekDays %}
+                {% set dateKey = day|date('Y-m-d') %}
+                <div class="border-r border-border last:border-r-0 relative group">
+                    <!-- Grid lines -->
+                    {% for i in gridStart..gridEnd %}
+                        <div class="h-20 border-b border-border/50 hover:bg-accent/50 cursor-pointer transition-colors relative group/cell"
+                             onclick="openNewBlockModal('{{ day|date('Y-m-d') }}', '{{ "%02d"|format(i) }}:00')">
+                            <!-- Optional add icon on hover -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground/50"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <!-- Activities -->
+                    {% for activite in activitiesByDay[dateKey] %}
+                        {% set startHour = activite.heureDebutEstimee|date('G') %}
+                        {% set startMin = activite.heureDebutEstimee|date('i') %}
+                        {% set duration = activite.duree %}
+                        
+                        {# Calculate top position based on gridStart. Each hour is 80px (h-20 is 5rem=80px) #}
+                        {# (Hour - gridStart) * 80 + (Min / 60) * 80 #}
+                        {% set top = ((startHour - gridStart) * 80) + ((startMin / 60) * 80) %}
+                        {# Height based on duration. (Duration / 60) * 80 #}
+                        {% set height = (duration / 60) * 80 %}
+
+                        <div class="activity-block absolute left-1 right-1 rounded-md p-2 text-xs overflow-hidden hover:z-10 hover:shadow-lg transition-all cursor-pointer border border-white/20"
+                             style="top: {{ top }}px; height: {{ height }}px; background-color: {{ activite.couleur|default('#3b82f6') }}; color: white; pointer-events: auto;"
+                             title="{{ activite.titre }}"
+                             data-title="{{ activite.titre|lower }}"
+                             data-category="{{ activite.categorie|default('')|lower }}"
+                             onclick="event.stopPropagation(); openBlockModal({
+                                 id: {{ activite.id }},
+                                 titre: '{{ activite.titre|e('js') }}',
+                                 categorie: '{{ activite.categorie|default('')|e('js') }}',
+                                 date: '{{ dateKey }}',
+                                 start: '{{ activite.heureDebutEstimee|date('H:i') }}',
+                                 end: '{{ activite.heureFinEstimee|date('H:i') }}',
+                                 couleur: '{{ activite.couleur|default('') }}'
+                             })">
+                             <div class="font-bold truncate">{{ activite.titre }}</div>
+                             <div class="opacity-90">{{ activite.heureDebutEstimee|date('H:i') }} - {{ activite.heureFinEstimee|date('H:i') }}</div>
+                             {% if activite.categorie %}
+                                <div class="mt-1 inline-block px-1.5 py-0.5 rounded-sm bg-black/20 text-[10px]">{{ activite.categorie }}</div>
+                             {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <!-- Delete Form (Hidden) -->
+    <form id="delete-form" method="post" action="" class="hidden">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete') }}">
+    </form>
+
+    <!-- New/Edit Block Modal -->
+    <div id="new-block-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 hidden">
+        <div class="bg-card w-full max-w-md rounded-xl border border-border shadow-lg p-6 relative animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+            <button onclick="closeBlockModal()" class="absolute top-4 right-4 text-muted-foreground hover:text-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <h2 id="modal-title" class="text-xl font-bold mb-4"></h2>
+            
+            {{ form_start(form, {'attr': {'id': 'activite-form', 'data-turbo': 'false'}}) }}
+                <div class="space-y-4">
+                    <input type="hidden" name="activity_id" id="activity_id" value="{{ activityId|default('') }}">
+                    <div>
+                        {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
+                        {{ form_widget(form.titre, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                        <div class="text-destructive text-xs mt-1">{{ form_errors(form.titre) }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            {{ form_label(form.categorie, 'Catégorie', {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
+                            {{ form_widget(form.categorie, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                            <div class="text-destructive text-xs mt-1">{{ form_errors(form.categorie) }}</div>
+                        </div>
+                        <div>
+                             <label class="block text-sm font-medium mb-1">Date</label>
+                             <input type="date" id="modal-date" name="date" value="{{ currentDate|date('Y-m-d') }}" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        </div>
+                    </div>
+
+                     <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            {{ form_label(form.heureDebutEstimee, 'Début', {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
+                            {{ form_widget(form.heureDebutEstimee, {'id': 'modal-start-time', 'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                            <div class="text-destructive text-xs mt-1">{{ form_errors(form.heureDebutEstimee) }}</div>
+                        </div>
+                        <div>
+                             {{ form_label(form.heureFinEstimee, 'Fin', {'label_attr': {'class': 'block text-sm font-medium mb-1'}}) }}
+                            {{ form_widget(form.heureFinEstimee, {'id': 'modal-end-time', 'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                            <div class="text-destructive text-xs mt-1">{{ form_errors(form.heureFinEstimee) }}</div>
+                        </div>
+                    </div>
+
+                      <div>
+                        {{ form_label(form.couleur, 'Couleur', {'label_attr': {'class': 'block text-sm font-medium mb-2'}}) }}
+                        <div class="flex gap-3">
+                            {% for choice in form.couleur %}
+                                <label class="cursor-pointer relative">
+                                    {{ form_widget(choice, {'attr': {'class': 'peer sr-only'}}) }}
+                                    <div class="w-8 h-8 rounded-full border-2 border-transparent peer-checked:border-foreground peer-checked:ring-2 peer-checked:ring-offset-2 ring-offset-background transition-all" style="background-color: {{ choice.vars.value }}"></div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <div class="text-destructive text-xs mt-1">{{ form_errors(form.couleur) }}</div>
+                    </div>
+                    
+                    <div class="hidden">
+                         {{ form_row(form.priorite) }}
+                         {{ form_row(form.niveauUrgence) }}
+                         {{ form_row(form.etat) }}
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4">
+                        <button type="submit" class="flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#10b981] text-white hover:bg-[#059669] h-10 px-4 py-2">
+                            Enregistrer
+                        </button>
+                        <button type="button" id="delete-btn" class="ml-2 hidden inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-10 px-4 py-2">
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        function openBlockModal(data = null) {
+            console.log('openBlockModal called with data:', data);
+            const modal = document.getElementById('new-block-modal');
+            const form = document.getElementById('activite-form');
+            const title = document.getElementById('modal-title');
+            const deleteBtn = document.getElementById('delete-btn');
+            const deleteForm = document.getElementById('delete-form');
+
+            if (!modal || !form) return;
+
+            modal.classList.remove('hidden');
+
+            if (data) {
+                // Edit Mode
+                title.textContent = 'Modifier le bloc';
+                form.action = "{{ path('app_time_index') }}"; // Submit to index
+                document.getElementById('activity_id').value = data.id;
+                
+                // Populate fields
+                document.getElementById('activite_titre').value = data.titre;
+                document.getElementById('activite_categorie').value = data.categorie;
+                document.getElementById('modal-date').value = data.date;
+                document.getElementById('modal-start-time').value = data.start;
+                document.getElementById('modal-end-time').value = data.end;
+                
+                // Handle radio buttons for color
+                 const colorRadios = document.querySelectorAll('input[name="activite[couleur]"]');
+                 colorRadios.forEach(radio => {
+                     if (radio.value === data.couleur) radio.checked = true;
+                 });
+
+                // Show delete button
+                deleteBtn.classList.remove('hidden');
+                deleteBtn.onclick = function() {
+                    if(confirm('Êtes-vous sûr de vouloir supprimer ce bloc ?')) {
+                         deleteForm.action = `/time/activite/${data.id}/delete`;
+                         deleteForm.submit();
+                    }
+                };
+            } else {
+                // Create Mode
+                title.textContent = 'Nouveau bloc de temps';
+                form.action = "{{ path('app_time_index') }}";
+                document.getElementById('activity_id').value = '';
+                form.reset(); // Clear form
+                
+                // Default date if provided in another way, or handled by current date
+                const urlParams = new URLSearchParams(window.location.search);
+                const queryDate = urlParams.get('date');
+                if(queryDate) {
+                     document.getElementById('modal-date').value = queryDate;
+                }
+
+                deleteBtn.classList.add('hidden');
+            }
+        }
+        
+        window.openBlockModal = openBlockModal;
+
+        function openNewBlockModal(date, time) {
+             openBlockModal();
+             if (date) document.getElementById('modal-date').value = date;
+             if (time) {
+                document.getElementById('modal-start-time').value = time;
+                const [hours, minutes] = time.split(':');
+                const endH = (parseInt(hours) + 1).toString().padStart(2, '0');
+                document.getElementById('modal-end-time').value = `${endH}:${minutes}`;
+             }
+        }
+        window.openNewBlockModal = openNewBlockModal;
+        
+        function closeBlockModal() {
+            const modalEl = document.getElementById('new-block-modal');
+            if (modalEl) modalEl.classList.add('hidden');
+        }
+        window.closeBlockModal = closeBlockModal;
+
+        const modalEl = document.getElementById('new-block-modal');
+        if (modalEl) {
+            modalEl.addEventListener('click', function(e) {
+                if (e.target === modalEl) {
+                    closeBlockModal();
+                }
+            });
+        }
+
+        const hasErrors = document.querySelectorAll('form ul li').length > 0 || 
+                         Array.from(document.querySelectorAll('.text-destructive')).some(el => el.textContent.trim().length > 0);
+        
+        if (hasErrors && modalEl) {
+            modalEl.classList.remove('hidden');
+            
+            const existingId = document.getElementById('activity_id').value;
+            const title = document.getElementById('modal-title');
+            const deleteBtn = document.getElementById('delete-btn');
+            const deleteForm = document.getElementById('delete-form');
+
+            if (existingId) {
+                // Restore Edit Mode UI
+                title.textContent = 'Modifier le bloc';
+                deleteBtn.classList.remove('hidden');
+                
+                // Set up delete button
+                deleteBtn.onclick = function() {
+                    if(confirm('Êtes-vous sûr de vouloir supprimer ce bloc ?')) {
+                         deleteForm.action = `/time/activite/${existingId}/delete`;
+                         deleteForm.submit();
+                    }
+                };
+            } else {
+                // Ensure Create Mode UI
+                title.textContent = 'Nouveau bloc de temps';
+                deleteBtn.classList.add('hidden');
+            }
+        }
+
+        const activiteForm = document.getElementById('activite-form');
+        if (activiteForm) {
+            activiteForm.addEventListener('submit', function(e) {
+                const startInput = document.getElementById('modal-start-time');
+                const endInput = document.getElementById('modal-end-time');
+                
+                if (startInput.value && endInput.value) {
+                    if (endInput.value <= startInput.value) {
+                        e.preventDefault();
+                        alert("L'heure de fin doit être postérieure à l'heure de début.");
+                    }
+                }
+            });
+        }
+
+        const searchInput = document.getElementById('activity-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase().trim();
+                const blocks = document.querySelectorAll('.activity-block');
+                
+                blocks.forEach(block => {
+                    const blTitle = block.getAttribute('data-title') || '';
+                    const blCategory = block.getAttribute('data-category') || '';
+                    
+                    if (query === '' || blTitle.includes(query) || blCategory.includes(query)) {
+                        block.style.display = 'block';
+                        block.style.opacity = '1';
+                        block.style.transform = 'scale(1)';
+                    } else {
+                        block.style.opacity = '0';
+                        block.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            if (block.style.opacity === '0') {
+                                block.style.display = 'none';
+                            }
+                        }, 200);
+                    }
+                });
+            });
+        }
+    })();
+    </script>
+{% endblock %}

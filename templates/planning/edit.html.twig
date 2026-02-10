@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres du Jour - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <a href="{{ path('app_time_index', {'date': date|date('Y-m-d')}) }}" class="inline-flex items-center justify-center rounded-md w-10 h-10 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-foreground">Paramètres de la journée</h1>
+                <p class="text-muted-foreground">{{ date|date('d F Y')|trans }}</p>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-lg overflow-hidden">
+            <div class="p-6">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                    {% if not form.vars.valid %}
+                        <div class="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm mb-6">
+                            <h3 class="font-bold mb-2">Des erreurs ont été détectées :</h3>
+                            <ul class="list-disc list-inside space-y-1">
+                                {% for error in form.vars.errors %}
+                                    <li>{{ error.message }}</li>
+                                {% endfor %}
+                                {% for child in form.children %}
+                                    {% if not child.vars.valid %}
+                                        {% for error in child.vars.errors %}
+                                            <li><strong>{{ (child.vars.label|default(child.vars.name))|trans }} :</strong> {{ error.message }}</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <div class="space-y-4 mb-6">
+                        <div class="space-y-2">
+                            {{ form_label(form.date, null, {'label_attr': {'class': 'text-sm font-medium leading-none'}}) }}
+                            {{ form_widget(form.date, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                            <div class="text-xs text-muted-foreground italic">La date n'est pas modifiable.</div>
+                            <div class="text-destructive text-xs">{{ form_errors(form.date) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            {{ form_label(form.heure_debut_journee, null, {'label_attr': {'class': 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'}}) }}
+                            {{ form_widget(form.heure_debut_journee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                            <div class="text-destructive text-xs">{{ form_errors(form.heure_debut_journee) }}</div>
+                        </div>
+                        <div class="space-y-2">
+                            {{ form_label(form.heure_fin_journee, null, {'label_attr': {'class': 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'}}) }}
+                            {{ form_widget(form.heure_fin_journee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                            <div class="text-destructive text-xs">{{ form_errors(form.heure_fin_journee) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        {{ form_widget(form.disponibilite, {'attr': {'class': 'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary'}}) }}
+                        {{ form_label(form.disponibilite, null, {'label_attr': {'class': 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'}}) }}
+                    </div>
+                    <div class="text-destructive text-xs">{{ form_errors(form.disponibilite) }}</div>
+
+                    <div class="mt-8 pt-8 border-t border-border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-foreground">Activités prévues</h3>
+                            <button type="button" id="add-activity" class="inline-flex items-center justify-center rounded-md text-xs font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 h-8 px-3 transition-colors gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Ajouter une activité
+                            </button>
+                        </div>
+
+                        <div id="activities-wrapper" 
+                             class="space-y-4" 
+                             data-prototype="{{ include('planning/_activity_row.html.twig', { 'form': form.activites.vars.prototype })|e('html_attr') }}"
+                             data-index="{{ form.activites|length }}">
+                            {% for activityForm in form.activites %}
+                                {{ include('planning/_activity_row.html.twig', { 'form': activityForm }) }}
+                            {% endfor %}
+                        </div>
+
+                        {% if form.activites|length == 0 %}
+                            <div id="no-activities-msg" class="py-12 text-center rounded-xl border border-dashed border-border bg-muted/20">
+                                <p class="text-sm text-muted-foreground">Aucune activité configurée pour cette journée.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="pt-4 border-t border-border flex flex-col gap-4">
+                        <div class="flex flex-wrap gap-4">
+                            {% if planning.id %}
+                                <button type="button" 
+                                        onclick="if(confirm('Attention : cela supprimera toutes les activités de cette journée et réinitialisera les horaires. Continuer ?')) document.getElementById('form-delete-planning').submit();"
+                                        class="text-destructive hover:text-destructive/80 text-sm font-medium transition-colors border border-destructive/20 px-3 py-1 rounded-md hover:bg-destructive/5">
+                                    Réinitialiser la journée (Supprimer tout)
+                                </button>
+                            {% endif %}
+                        </div>
+                        <div class="flex justify-end gap-4 w-full">
+                            <a href="{{ path('app_time_index', {'date': date|date('Y-m-d')}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                                Annuler
+                            </a>
+                            <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-[#10b981] text-white hover:bg-[#059669] h-10 px-4 py-2">
+                                Enregistrer les paramètres
+                            </button>
+                        </div>
+                    </div>
+                {{ form_end(form) }}
+
+                {# External forms for dangerous actions #}
+                {% if planning.id %}
+                    <form id="form-delete-planning" method="post" action="{{ path('app_planning_delete', {'id': planning.id}) }}" class="hidden">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ planning.id) }}">
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-8 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm">
+            <div class="flex gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <p>Ces paramètres s'appliquent uniquement à cette journée spécifique. Les activités déjà planifiées ne seront pas modifiées, mais la grille visuelle s'adaptera à vos nouvelles heures.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    (function() {
+        /**
+         * Logic for dynamic activity collection management
+         */
+        document.addEventListener('turbo:load', function() {
+            const wrapper = document.getElementById('activities-wrapper');
+            const addButton = document.getElementById('add-activity');
+            const noMsg = document.getElementById('no-activities-msg');
+
+            if (!wrapper || !addButton) return;
+
+            const updateNoMsg = () => {
+                if (noMsg) {
+                    noMsg.style.display = (wrapper.children.length === 0) ? 'block' : 'none';
+                }
+            };
+
+            addButton.addEventListener('click', function() {
+                const prototype = wrapper.dataset.prototype;
+                const index = wrapper.dataset.index;
+                const newForm = prototype.replace(/__name__/g, index);
+                
+                wrapper.dataset.index = parseInt(index) + 1;
+                
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newForm;
+                const row = tempDiv.firstElementChild;
+                
+                wrapper.appendChild(row);
+                updateNoMsg();
+                
+                // Add remove listener to the new row
+                row.querySelector('.remove-activity').addEventListener('click', function() {
+                    row.remove();
+                    updateNoMsg();
+                });
+            });
+
+            // Add listeners to existing rows
+            wrapper.querySelectorAll('.remove-activity').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    btn.closest('.activity-row').remove();
+                    updateNoMsg();
+                });
+            });
+
+            updateNoMsg();
+        });
+    })();
+    </script>
+{% endblock %}

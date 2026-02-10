@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Planning - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        <div class="flex items-center gap-4 mb-8">
+            <a href="{{ path('app_planning_index') }}" class="inline-flex items-center justify-center rounded-md w-10 h-10 border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </a>
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-foreground">Nouveau planning</h1>
+                <p class="text-muted-foreground">Créez une configuration pour une nouvelle journée.</p>
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-lg overflow-hidden">
+            <div class="p-6">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                    {% if not form.vars.valid %}
+                        <div class="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-200 text-sm mb-6">
+                            <h3 class="font-bold mb-2">Des erreurs ont été détectées :</h3>
+                            {{ form_errors(form) }}
+                        </div>
+                    {% endif %}
+
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            {{ form_label(form.date, null, {'label_attr': {'class': 'text-sm font-medium leading-none'}}) }}
+                            {{ form_widget(form.date, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                            <div class="text-destructive text-xs">{{ form_errors(form.date) }}</div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                {{ form_label(form.heure_debut_journee, null, {'label_attr': {'class': 'text-sm font-medium leading-none'}}) }}
+                                {{ form_widget(form.heure_debut_journee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                                <div class="text-destructive text-xs">{{ form_errors(form.heure_debut_journee) }}</div>
+                            </div>
+                            <div class="space-y-2">
+                                {{ form_label(form.heure_fin_journee, null, {'label_attr': {'class': 'text-sm font-medium leading-none'}}) }}
+                                {{ form_widget(form.heure_fin_journee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                                <div class="text-destructive text-xs">{{ form_errors(form.heure_fin_journee) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-2 pt-2">
+                            {{ form_widget(form.disponibilite, {'attr': {'class': 'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary'}}) }}
+                            {{ form_label(form.disponibilite, null, {'label_attr': {'class': 'text-sm font-medium leading-none'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-border flex justify-end gap-3">
+                        <a href="{{ path('app_planning_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent h-10 px-4 py-2 transition-colors">
+                            Annuler
+                        </a>
+                        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors shadow-lg shadow-primary/20">
+                            Créer la journée
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

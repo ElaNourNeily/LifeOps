@@ -1,0 +1,80 @@
+Array
+(
+    [activity_id] => 
+    [activite] => Array
+        (
+            [titre] => music
+            [categorie] => Loisir
+            [heureDebutEstimee] => 09:00
+            [heureFinEstimee] => 12:00
+            [couleur] => #10b981
+            [priorite] => 1
+            [niveauUrgence] => 3
+            [etat] => todo
+            [_token] => 7fac85270f44.iz9UiOROilBHQ4Ub6uZhHUNgDJJmkhx6ImnByii-4xs._mgt3JQv4TYvCM9ZsLYMbho5buEswm1IekSHjGLMkW_9XDfJoDbLF3Qm3A
+        )
+
+    [date] => 2026-02-09
+)
+
+Activity ID: 
+Array
+(
+    [activity_id] => 
+    [activite] => Array
+        (
+            [titre] => music
+            [categorie] => Loisir
+            [heureDebutEstimee] => 09:00
+            [heureFinEstimee] => 12:00
+            [couleur] => #10b981
+            [priorite] => 1
+            [niveauUrgence] => 3
+            [etat] => todo
+            [_token] => ec413af8e0c3ff36424d425873eb5a84.nxb42OwIhvEBCc3U-0ZmkVA52_yX3soSwMY-QrlKqhE.6kGBjJxp7ZdpQoeWoRYL4glguY_djrsgmOt4BPM42GXpdZuZqHDHtjJslA
+        )
+
+    [date] => 2026-02-09
+)
+
+Activity ID: 
+Array
+(
+    [activity_id] => 
+    [activite] => Array
+        (
+            [titre] => music
+            [categorie] => Loisir
+            [heureDebutEstimee] => 09:00
+            [heureFinEstimee] => 12:00
+            [couleur] => #10b981
+            [priorite] => 1
+            [niveauUrgence] => 3
+            [etat] => todo
+            [_token] => 8c673a9b2d07a17.Tq_vtXguvizZGfBjDfiKYgL9Afof3ep-5ZgzQKvPwSQ.O_iW4QhP1UqxUrohV6jnEVukY4lVjZtMvbV1BuG9s1A4zIz0PFb_a-p8qQ
+        )
+
+    [date] => 2026-02-09
+)
+
+Activity ID: 
+Array
+(
+    [activity_id] => 
+    [activite] => Array
+        (
+            [titre] => music
+            [categorie] => Loisir
+            [heureDebutEstimee] => 12:00
+            [heureFinEstimee] => 13:00
+            [couleur] => #10b981
+            [priorite] => 1
+            [niveauUrgence] => 3
+            [etat] => todo
+            [_token] => f83.YttY0tls5CrCL4Wuuf0S_pMaeJl4D8tSVmN95bFyU1w.F4whhqkNj0yqZM_s461_jcpDGuoyX7pgDk47o_sAISgUuDuTnRSlbfFK3A
+        )
+
+    [date] => 2026-02-09
+)
+
+Activity ID: 

@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Plannings - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion du temps</h1>
+            <div class="flex items-center gap-4 mt-2">
+                <a href="{{ path('app_time_index') }}" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    📅 Calendrier
+                </a>
+                <a href="{{ path('app_planning_index') }}" class="text-sm font-semibold {{ route starts with 'app_planning' ? 'text-primary' : 'text-muted-foreground hover:text-foreground' }} transition-colors">
+                    ⚙️ Liste des plannings
+                </a>
+            </div>
+        </div>
+        <a href="{{ path('app_planning_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2 shadow-lg shadow-primary/20">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau planning
+        </a>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border bg-muted/50 transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Horaires</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Activités</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Statut</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for p in plannings %}
+                        <tr class="border-b border-border transition-colors hover:bg-muted/30 group">
+                            <td class="p-4 align-middle">
+                                <div class="flex flex-col">
+                                    <span class="font-semibold text-foreground">{{ p.date|date('d/m/Y') }}</span>
+                                    <span class="text-xs text-muted-foreground uppercase tracking-wider">{{ p.date|date('l')|trans }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 align-middle">
+                                <div class="flex items-center gap-2 text-muted-foreground">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    <span class="font-medium text-foreground">{{ p.heureDebutJournee|date('H:i') }} - {{ p.heureFinJournee|date('H:i') }}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 align-middle">
+                                <span class="inline-flex items-center rounded-full border border-border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                    {{ p.activites|length }} activités
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle">
+                                {% if p.disponibilite %}
+                                    <span class="flex items-center gap-1.5 text-xs text-emerald-500 font-medium">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                        Disponible
+                                    </span>
+                                {% else %}
+                                    <span class="flex items-center gap-1.5 text-xs text-pink-500 font-medium">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-pink-500"></span>
+                                        Indisponible
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="p-4 align-middle text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ path('app_time_index', {'date': p.date|date('Y-m-d')}) }}" class="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-all" title="Voir calendrier">
+                                        📅
+                                    </a>
+                                    <a href="{{ path('app_planning_edit', {'date': p.date|date('Y-m-d')}) }}" class="p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-all" title="Modifier">
+                                        ✏️
+                                    </a>
+                                    <form method="post" action="{{ path('app_planning_delete', {'id': p.id}) }}" class="inline" onsubmit="return confirm('Supprimer ce planning ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ p.id) }}">
+                                        <button class="p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all" title="Supprimer">
+                                            🗑️
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="p-12 text-center text-muted-foreground">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="p-3 rounded-full bg-muted/20">
+                                        📅
+                                    </div>
+                                    <p>Aucun planning configuré pour le moment.</p>
+                                    <a href="{{ path('app_planning_new') }}" class="text-sm text-primary hover:underline font-medium mt-1">Créer votre premier planning</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

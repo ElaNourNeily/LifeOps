@@ -1,0 +1,56 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion du Temps - Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion du Temps</h1>
+        <p class="text-muted-foreground">Administration des plannings et activités</p>
+    </div>
+
+    <div class="border rounded-lg shadow-sm">
+        <div class="p-6 border-b">
+            <h2 class="text-lg font-semibold">Dernières Activités (50)</h2>
+        </div>
+        <div class="flex flex-col gap-3">
+            {% for activite in activities %}
+                <div class="flex items-center gap-4 rounded-xl bg-[#1e1e1e] p-4 border border-border/10 shadow-sm relative overflow-hidden group hover:border-border transition-colors">
+                    {# Color Bar #}
+                    <div class="absolute left-0 top-0 bottom-0 w-1.5" style="background-color: {{ activite.couleur|default('#3b82f6') }}"></div>
+                    
+                    <div class="flex-1 pl-2">
+                        <div class="flex justify-between items-start mb-1">
+                            <h3 class="font-semibold text-base text-white tracking-tight leading-none">
+                                {{ activite.titre }}
+                            </h3>
+                             <span class="text-xs font-medium text-gray-500 bg-secondary/30 px-2 py-0.5 rounded">
+                                {{ activite.planning.date|date('d/m/Y') }}
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 text-sm text-gray-400 font-medium tracking-wide">
+                            <span>{{ activite.heureDebutEstimee|date('H:i') }} - {{ activite.heureFinEstimee|date('H:i') }}</span>
+                            <span class="text-gray-600">•</span>
+                            <span class="truncate max-w-[200px]" title="{{ activite.planning.utilisateur.email }}">{{ activite.planning.utilisateur.email }}</span>
+                            {% if activite.categorie %}
+                                <span class="text-gray-600">•</span>
+                                <span class="text-xs">{{ activite.categorie }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# Clock Icon #}
+                    <div class="text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                </div>
+            {% else %}
+                <div class="py-12 text-center">
+                    <p class="text-sm text-muted-foreground">Aucune activité trouvée.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
