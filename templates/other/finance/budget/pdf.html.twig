@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Budgets - PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #333; }
+        h1 { font-size: 18px; margin-bottom: 5px; }
+        .subtitle { color: #888; font-size: 11px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #2d2d3f; color: #fff; padding: 8px 10px; text-align: left; font-size: 11px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; font-size: 11px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .money { text-align: right; }
+        .header-right { text-align: right; }
+        .green { color: #38a169; }
+        
+        /* Paginator Styles */
+        @page { margin: 100px 25px; }
+        footer {
+            position: fixed; bottom: -60px; left: 0px; right: 0px;
+            height: 50px; text-align: center; font-size: 10px; color: #999;
+        }
+        .pagenum:before { content: counter(page); }
+    </style>
+</head>
+<body>
+    <footer>
+        <p>Page <span class="pagenum"></span> - LifeOps Budgets</p>
+    </footer>
+    <h1>Historique des Budgets</h1>
+    <p class="subtitle">Exporté le {{ "now"|date('d/m/Y H:i') }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Mois</th>
+                <th class="header-right">Revenu</th>
+                <th class="header-right">Plafond</th>
+                <th class="header-right">Économies</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for budget in budgets %}
+                <tr>
+                    <td>{{ budget.mois }}</td>
+                    <td class="money">{{ budget.revenuMensuel|number_format(2, ',', ' ') }} €</td>
+                    <td class="money">{{ budget.plafond|number_format(2, ',', ' ') }} €</td>
+                    <td class="money green">{{ budget.economies|number_format(2, ',', ' ') }} €</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" style="text-align:center;">Aucun budget.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

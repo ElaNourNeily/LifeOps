@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableaux de Bord - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="p-6 space-y-8">
+        {# Header #}
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold">📊 Tableaux de Bord</h1>
+                <p class="text-muted-foreground">Visualisez vos finances</p>
+            </div>
+            <div class="flex gap-4 items-center">
+                <form method="get" action="{{ path('app_finance_charts') }}" class="flex items-center gap-2">
+                    <select name="year" onchange="this.form.submit()" class="px-3 py-2 border rounded bg-card text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                        <option value="">Toutes les années</option>
+                        {% for year in availableYears %}
+                            <option value="{{ year }}" {{ selectedYear == year ? 'selected' : '' }}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+                <a href="{{ path('app_finance_index') }}" class="px-4 py-2 border rounded hover:bg-muted text-sm">← Retour</a>
+            </div>
+        </div>
+
+        {# Stats #}
+        <div class="grid grid-cols-3 gap-4">
+            <div class="border rounded p-4 bg-card">
+                <p class="text-sm text-muted-foreground">Budget Total</p>
+                <p class="text-2xl font-bold">{{ summaryStats.totalBudget|number_format(2, ',', ' ') }} €</p>
+            </div>
+            <div class="border rounded p-4 bg-card">
+                <p class="text-sm text-muted-foreground">Total Dépensé</p>
+                <p class="text-2xl font-bold">{{ summaryStats.totalSpent|number_format(2, ',', ' ') }} €</p>
+            </div>
+            <div class="border rounded p-4 bg-card">
+                <p class="text-sm text-muted-foreground">Reste</p>
+                <p class="text-2xl font-bold {{ summaryStats.totalRemaining < 0 ? 'text-red-500' : 'text-green-500' }}">{{ summaryStats.totalRemaining|number_format(2, ',', ' ') }} €</p>
+            </div>
+        </div>
+
+        {# Charts Grid #}
+        <div class="grid grid-cols-2 gap-6">
+            <div class="border rounded p-4 bg-card">
+                <h3 class="font-bold mb-4">Dépenses par Catégorie</h3>
+                <canvas id="pieChart" height="80"></canvas>
+            </div>
+            <div class="border rounded p-4 bg-card">
+                <h3 class="font-bold mb-4">Tendance Mensuelle</h3>
+                <canvas id="lineChart" height="80"></canvas>
+            </div>
+            <div class="border rounded p-4 bg-card">
+                <h3 class="font-bold mb-4">Revenu vs Dépenses</h3>
+                <canvas id="barChart" height="80"></canvas>
+            </div>
+            <div class="border rounded p-4 bg-card">
+                <h3 class="font-bold mb-4">Consommation Budget</h3>
+                <canvas id="consumptionChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        setTimeout(function() {
+            const pieData = {{ expensesByCategoryData|json_encode|raw }};
+            const lineData = {{ monthlySpensingData|json_encode|raw }};
+            const barData = {{ budgetVsActualData|json_encode|raw }};
+            const consumptionData = {{ budgetConsumptionData|json_encode|raw }};
+
+            // Pie Chart
+            if (pieData.labels && pieData.labels.length > 0) {
+                new Chart(document.getElementById('pieChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: pieData.labels,
+                        datasets: [{
+                            data: pieData.data,
+                            backgroundColor: pieData.backgroundColor
+                        }]
+                    }
+                });
+            }
+
+            // Line Chart
+            if (lineData.labels && lineData.labels.length > 0) {
+                new Chart(document.getElementById('lineChart'), {
+                    type: 'line',
+                    data: {
+                        labels: lineData.labels,
+                        datasets: [{
+                            label: 'Dépenses',
+                            data: lineData.data,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    }
+                });
+            }
+
+            // Bar Chart
+            if (barData.labels && barData.labels.length > 0) {
+                new Chart(document.getElementById('barChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: barData.labels,
+                        datasets: [
+                            {
+                                label: 'Revenu',
+                                data: barData.budget,
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                            },
+                            {
+                                label: 'Dépensé',
+                                data: barData.actual,
+                                backgroundColor: 'rgba(239, 68, 68, 0.8)'
+                            }
+                        ]
+                    }
+                });
+            }
+
+            // Consumption Chart
+            if (consumptionData.labels && consumptionData.labels.length > 0) {
+                new Chart(document.getElementById('consumptionChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: consumptionData.labels,
+                        datasets: [
+                            {
+                                label: 'Consommé',
+                                data: consumptionData.consumed,
+                                backgroundColor: 'rgba(239, 68, 68, 0.8)'
+                            },
+                            {
+                                label: 'Disponible',
+                                data: consumptionData.remaining,
+                                backgroundColor: 'rgba(34, 197, 94, 0.8)'
+                            }
+                        ]
+                    },
+                    options: {
+                        indexAxis: 'y'
+                    }
+                });
+            }
+        }, 500);
+    </script>
+{% endblock %}

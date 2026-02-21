@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Planning du Jour</h1>
+            <p class="text-muted-foreground">{{ today|date('d/m/Y') }}</p>
+        </div>
+        <a href="{{ path('app_activite_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter Activité
+        </a>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+        {% if planning and planning.activites|length > 0 %}
+            <div class="space-y-4">
+                {% for activite in planning.activites %}
+                    <div class="flex items-center gap-4 rounded-lg bg-secondary/50 p-4 border border-border/50 transition-colors hover:bg-secondary/70">
+                         <div class="flex-shrink-0 w-24 text-center">
+                            <span class="block text-sm font-bold text-foreground">{{ activite.heureDebutEstimee|date('H:i') }}</span>
+                            <span class="block text-xs text-muted-foreground">{{ activite.heureFinEstimee|date('H:i') }}</span>
+                        </div>
+                        
+                        <div class="w-1 h-12 rounded-full self-stretch bg-primary"></div>
+                        
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-foreground">{{ activite.titre }}</h3>
+                             <div class="flex gap-2 mt-1">
+                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold
+                                    {% if activite.priorite == 'high' %}border-transparent bg-destructive/20 text-destructive
+                                    {% elseif activite.priorite == 'medium' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                                    {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                                ">
+                                    {{ activite.priorite|capitalize }}
+                                </span>
+                                 <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
+                                    Urgence: {{ activite.niveauUrgence }}/5
+                                </span>
+                            </div>
+                        </div>
+
+                         <div class="flex-shrink-0">
+                             <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
+                                {% if activite.etat == 'done' %}border-transparent bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]
+                                {% elseif activite.etat == 'in-progress' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                                {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                            ">
+                                {{ activite.etat|capitalize }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="p-4 rounded-full bg-secondary inline-block mb-4">
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 text-muted-foreground"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h3 class="text-lg font-medium text-foreground">Rien de prévu</h3>
+                <p class="text-muted-foreground mt-1">Votre planning pour aujourd'hui est vide.</p>
+                <div class="mt-6">
+                     <a href="{{ path('app_activite_new') }}" class="text-primary hover:underline">Commencer à planifier</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
