@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Suivi - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-foreground">Détail du {{ suivi.date|date('d/m/Y') }}</h1>
+                <p class="text-muted-foreground">Vue détaillée de votre journée</p>
+            </div>
+            <div class="flex gap-2">
+                 <a href="{{ path('app_suivi_sante_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    Retour
+                </a>
+                <a href="{{ path('app_suivi_sante_edit', {'id': suivi.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2">
+                    Modifier
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Sleep -->
+            <div class="rounded-xl border border-border bg-card p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-2xl">😴</span>
+                    <h3 class="font-semibold">Sommeil</h3>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Durée:</span>
+                        <span class="font-medium">{{ suivi.heuresSommeil }}h</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Qualité:</span>
+                        <span class="font-medium">{{ suivi.qualiteSommeil }}/10</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physical -->
+             <div class="rounded-xl border border-border bg-card p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-2xl">🏃</span>
+                    <h3 class="font-semibold">Physique</h3>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Activité:</span>
+                        <span class="font-medium">{{ suivi.minutesActivite }} min</span>
+                    </div>
+                    {% if suivi.activite %}
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Type:</span>
+                        <span class="font-medium">{{ suivi.activite }}</span>
+                    </div>
+                    {% endif %}
+                    {% if suivi.poids %}
+                    <div class="flex justify-between border-t border-border pt-2 mt-2">
+                        <span class="text-muted-foreground">Poids:</span>
+                        <span class="font-medium">{{ suivi.poids }} kg</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+             <!-- Wellbeing -->
+             <div class="rounded-xl border border-border bg-card p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-2xl">🧘</span>
+                    <h3 class="font-semibold">Bien-être</h3>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Humeur:</span>
+                        <span class="font-medium">{{ suivi.humeur }}/10</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-muted-foreground">Eau:</span>
+                        <span class="font-medium">{{ suivi.verresEau }} verres</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         {% if suivi.notes %}
+            <div class="rounded-xl border border-border bg-card p-6 mb-6">
+                <h3 class="font-semibold mb-3">Notes personnelles</h3>
+                <p class="text-muted-foreground whitespace-pre-wrap">{{ suivi.notes }}</p>
+            </div>
+        {% endif %}
+
+        <div class="border-t border-border pt-6">
+            {{ include('suivi_sante/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

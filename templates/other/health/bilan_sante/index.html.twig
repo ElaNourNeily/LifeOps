@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique Bilans - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Historique des Bilans</h1>
+            <p class="text-muted-foreground">Consultez vos bilans de santé périodiques</p>
+        </div>
+        <div>
+             <a href="{{ path('app_bilan_sante_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
+                <span>➕</span> Nouveau Bilan
+            </a>
+        </div>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border flex justify-between items-center">
+            <h3 class="font-semibold">Liste des bilans</h3>
+            <div class="flex gap-2">
+                 <a href="{{ path('app_bilan_sante_index', {filter: 'risk'}) }}" class="text-xs px-2 py-1 rounded border {{ app.request.query.get('filter') == 'risk' ? 'bg-destructive text-white' : 'hover:bg-accent' }}">
+                    ⚠️ Risque uniquement
+                </a>
+            </div>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                     <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Période</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            <a href="{{ path('app_bilan_sante_index', {sort: 'score_forme', direction: 'DESC'}) }}">Forme</a>
+                        </th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                             <a href="{{ path('app_bilan_sante_index', {sort: 'niveau_stress', direction: 'DESC'}) }}">Stress</a>
+                        </th>
+                         <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                             <a href="{{ path('app_bilan_sante_index', {sort: 'niveau_fatigue', direction: 'DESC'}) }}">Fatigue</a>
+                        </th>
+                         <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Risque Burnout</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                 <tbody class="[&_tr:last-child]:border-0">
+                {% for bilan in bilans %}
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted {{ bilan.isRisqueBurnout ? 'bg-destructive/5' : '' }}">
+                        <td class="p-4 align-middle font-medium">
+                            <a href="{{ path('app_bilan_sante_show', {id: bilan.id}) }}" class="hover:underline">
+                                {{ bilan.dateDebut|date('d/m') }} - {{ bilan.dateFin|date('d/m/Y') }}
+                            </a>
+                        </td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center justify-center rounded-full bg-secondary w-8 h-8 font-bold text-sm">
+                                {{ bilan.scoreForme }}
+                            </span>
+                        </td>
+                         <td class="p-4 align-middle">
+                            <span class="inline-flex items-center justify-center rounded-full w-8 h-8 font-bold text-sm {{ bilan.niveauStress >= 8 ? 'bg-destructive/20 text-destructive' : 'bg-secondary' }}">
+                                {{ bilan.niveauStress }}
+                            </span>
+                        </td>
+                         <td class="p-4 align-middle">
+                            <span class="inline-flex items-center justify-center rounded-full w-8 h-8 font-bold text-sm {{ bilan.niveauFatigue >= 8 ? 'bg-warning/20 text-warning' : 'bg-secondary' }}">
+                                {{ bilan.niveauFatigue }}
+                            </span>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if bilan.isRisqueBurnout %}
+                                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-destructive text-destructive-foreground shadow">
+                                    ÉLEVÉ
+                                </span>
+                            {% else %}
+                                <span class="text-muted-foreground text-xs">Faible</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                             <div class="flex justify-end gap-2">
+                                 <a href="{{ path('app_bilan_sante_show', {id: bilan.id}) }}" class="text-muted-foreground hover:text-foreground" title="Voir les détails">
+                                    👁️
+                                </a>
+                                <a href="{{ path('app_bilan_sante_export_pdf', {id: bilan.id}) }}" class="text-muted-foreground hover:text-primary" title="Exporter en PDF">
+                                    📄
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                         <td colspan="6" class="p-4 text-center text-muted-foreground">Aucun bilan enregistré.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

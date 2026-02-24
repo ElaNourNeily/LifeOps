@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Suivi - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Modifier le suivi</h1>
+            <p class="text-muted-foreground">Date: {{ suivi.date|date('d/m/Y') }}</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                
+                {# Hidden date if we don't want to change it, or show it #}
+                <div class="hidden">
+                    {{ form_row(form.date) }}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        {{ form_label(form.heuresSommeil, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.heuresSommeil, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.qualiteSommeil, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.qualiteSommeil, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                 <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        {{ form_label(form.minutesActivite, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.minutesActivite, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.activite, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.activite, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                     <div>
+                        {{ form_label(form.verresEau, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.verresEau, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.humeur, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.humeur, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.poids, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.poids, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                 <div>
+                    {{ form_label(form.notes, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.notes, {'attr': {'class': 'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <a href="{{ path('app_suivi_sante_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        Mettre à jour
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

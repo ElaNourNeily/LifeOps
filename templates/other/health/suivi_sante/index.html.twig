@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Santé - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion Santé</h1>
+            <p class="text-muted-foreground">Suivez votre forme et bien-être</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ path('app_bilan_sante_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                <span>📋</span> Nouveau Bilan
+            </a>
+            <a href="{{ path('app_suivi_sante_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
+                <span>➕</span> Ajouter Suivi
+            </a>
+            <a href="{{ path('app_bilan_sante_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                <span>📚</span> Historique Bilans
+            </a>
+            <a href="{{ path('app_health_chat') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-accent text-accent-foreground hover:bg-accent/90 h-10 px-4 py-2 gap-2">
+                <span>💬</span> Chat Santé AI
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Review -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {# Average Sleep #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <h3 class="text-sm font-medium text-muted-foreground">Moyenne Sommeil (7j)</h3>
+            <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-bold">{{ avgSleep|number_format(1, ',', ' ') }}</span>
+                <span class="text-sm text-muted-foreground">h / nuit</span>
+            </div>
+        </div>
+
+        {# Average Water #}
+         <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <h3 class="text-sm font-medium text-muted-foreground">Moyenne Eau (7j)</h3>
+             <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-bold">{{ avgWater|number_format(1, ',', ' ') }}</span>
+                <span class="text-sm text-muted-foreground">verres / jour</span>
+            </div>
+        </div>
+
+        {# Last Bilan Score #}
+         <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <h3 class="text-sm font-medium text-muted-foreground">Dernier Score Forme</h3>
+             <div class="flex items-baseline gap-2 mt-2">
+                <span class="text-3xl font-bold">
+                    {% if latestBilan %}
+                        {{ latestBilan.scoreForme }}/10
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
+            </div>
+             {% if latestBilan %}
+                <p class="text-xs text-muted-foreground mt-1">du {{ latestBilan.dateDebut|date('d/m') }} au {{ latestBilan.dateFin|date('d/m') }}</p>
+                {% if latestBilan.isRisqueBurnout %}
+                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80 mt-2">
+                        Risque Burnout
+                    </span>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Filters & Sort -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-4 items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-muted-foreground">Trier par:</span>
+            <div class="flex rounded-md shadow-sm">
+                <a href="{{ path('app_suivi_sante_index', {sort: 'date', direction: currentSort == 'date' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border border-input {{ currentSort == 'date' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }} rounded-l-md">
+                   Date {{ currentSort == 'date' ? (currentDirection == 'ASC' ? '⬆' : '⬇') : '' }}
+                </a>
+                <a href="{{ path('app_suivi_sante_index', {sort: 'heuresSommeil', direction: currentSort == 'heuresSommeil' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border-t border-b border-r border-input {{ currentSort == 'heuresSommeil' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }}">
+                   Sommeil {{ currentSort == 'heuresSommeil' ? (currentDirection == 'ASC' ? '⬆' : '⬇') : '' }}
+                </a>
+                <a href="{{ path('app_suivi_sante_index', {sort: 'humeur', direction: currentSort == 'humeur' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border-t border-b border-r border-input {{ currentSort == 'humeur' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }}">
+                   Humeur {{ currentSort == 'humeur' ? (currentDirection == 'ASC' ? '⬆' : '⬇') : '' }}
+                </a>
+                 <a href="{{ path('app_suivi_sante_index', {sort: 'minutesActivite', direction: currentSort == 'minutesActivite' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border-t border-b border-r border-input {{ currentSort == 'minutesActivite' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }} rounded-r-md">
+                   Activité {{ currentSort == 'minutesActivite' ? (currentDirection == 'ASC' ? '⬆' : '⬇') : '' }}
+                </a>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-medium text-muted-foreground">Période:</span>
+            <div class="flex rounded-md shadow-sm">
+                 <a href="{{ path('app_suivi_sante_index', {period: 'week'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border border-input {{ currentPeriod == 'week' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }} rounded-l-md">
+                   Semaine
+                </a>
+                <a href="{{ path('app_suivi_sante_index', {period: 'month'}) }}" 
+                   class="px-3 py-1.5 text-xs font-medium border-t border-b border-r border-input {{ currentPeriod == 'month' ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }}">
+                   Mois
+                </a>
+                 <a href="{{ path('app_suivi_sante_index') }}" 
+                   class="px-3 py-1.5 text-xs font-medium border-t border-b border-r border-input {{ currentPeriod is null ? 'bg-accent text-accent-foreground' : 'bg-background hover:bg-accent hover:text-accent-foreground' }} rounded-r-md">
+                   Tout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border">
+            <h3 class="font-semibold">Historique Quotidien</h3>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                     <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Sommeil</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Eau/Poids</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Humeur</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Activité</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                 <tbody class="[&_tr:last-child]:border-0">
+                {% for suivi in suivis %}
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <td class="p-4 align-middle font-medium">
+                            <a href="{{ path('app_suivi_sante_show', {id: suivi.id}) }}" class="hover:underline">
+                                {{ suivi.date|date('d/m/Y') }}
+                            </a>
+                        </td>
+                        <td class="p-4 align-middle">
+                            <div class="flex flex-col">
+                                <span>{{ suivi.heuresSommeil }}h</span>
+                                <span class="text-xs text-muted-foreground">Qualité: {{ suivi.qualiteSommeil }}/10</span>
+                            </div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            <div class="flex flex-col">
+                                <span>💧 {{ suivi.verresEau }} verres</span>
+                                {% if suivi.poids %}
+                                    <span class="text-xs text-muted-foreground">⚖️ {{ suivi.poids }} kg</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            <div class="flex items-center gap-2">
+                                <div class="w-16 h-2 rounded-full bg-secondary overflow-hidden">
+                                    <div class="h-full bg-[hsl(var(--chart-{{ suivi.humeur > 5 ? '2' : '5' }}))]" style="width: {{ suivi.humeur * 10 }}%"></div>
+                                </div>
+                                <span>{{ suivi.humeur }}/10</span>
+                            </div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {% if suivi.minutesActivite > 0 %}
+                                <div class="flex flex-col">
+                                    <span>{{ suivi.minutesActivite }} min</span>
+                                    {% if suivi.activite %}
+                                        <span class="text-xs text-muted-foreground">{{ suivi.activite }}</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted-foreground">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                             <div class="flex justify-end gap-2">
+                                <a href="{{ path('app_suivi_sante_edit', {id: suivi.id}) }}" class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8">
+                                    ✏️
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                         <td colspan="6" class="p-4 text-center text-muted-foreground">Aucun suivi enregistré pour cette période.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

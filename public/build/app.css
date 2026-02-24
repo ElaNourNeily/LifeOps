@@ -1,0 +1,13 @@
+/* 
+  Tailwind CSS Build Placeholder
+  
+  The automatic build failed in this environment. 
+  Please run 'npm run build:css' or 'php bin/console tailwind:build' manually.
+*/
+body {
+    background-color: #f0f0f0;
+    color: #333;
+    font-family: sans-serif;
+    padding: 20px;
+    text-align: center;
+}

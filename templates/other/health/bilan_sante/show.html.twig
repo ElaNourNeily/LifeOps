@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail Bilan - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-foreground">Bilan du {{ bilan.dateDebut|date('d/m') }} au {{ bilan.dateFin|date('d/m') }}</h1>
+                <p class="text-muted-foreground">Analyse périodique</p>
+            </div>
+            <div class="flex gap-2">
+                 <a href="{{ path('app_bilan_sante_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2">
+                    Retour
+                </a>
+                <a href="{{ path('app_bilan_sante_edit', {'id': bilan.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-9 px-4 py-2">
+                    Modifier
+                </a>
+                <a href="{{ path('app_bilan_sante_export_pdf', {'id': bilan.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4 py-2 gap-2">
+                    <span>📄</span> PDF
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="rounded-xl border border-border bg-card p-6 text-center">
+                <h3 class="text-sm font-medium text-muted-foreground mb-2">Score Forme</h3>
+                <span class="text-4xl font-bold">{{ bilan.scoreForme }}/10</span>
+            </div>
+             <div class="rounded-xl border border-border bg-card p-6 text-center">
+                <h3 class="text-sm font-medium text-muted-foreground mb-2">Stress</h3>
+                <span class="text-4xl font-bold {{ bilan.niveauStress >= 8 ? 'text-destructive' : '' }}">{{ bilan.niveauStress }}/10</span>
+            </div>
+             <div class="rounded-xl border border-border bg-card p-6 text-center">
+                <h3 class="text-sm font-medium text-muted-foreground mb-2">Fatigue</h3>
+                <span class="text-4xl font-bold {{ bilan.niveauFatigue >= 8 ? 'text-warning' : '' }}">{{ bilan.niveauFatigue }}/10</span>
+            </div>
+        </div>
+
+         <div class="rounded-xl border border-border bg-card p-6 mb-6">
+            <div class="flex items-center gap-2 mb-4">
+                 <h3 class="font-semibold">Statut Burnout</h3>
+                 {% if bilan.isRisqueBurnout %}
+                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-destructive text-destructive-foreground">
+                        RISQUE DÉTECTÉ
+                    </span>
+                 {% else %}
+                    <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-green-500/20 text-green-700">
+                        Ras
+                    </span>
+                 {% endif %}
+            </div>
+             <h3 class="font-semibold mb-2">Recommandations & Analyse</h3>
+            <p class="text-muted-foreground whitespace-pre-wrap">{{ bilan.recommandations }}</p>
+        </div>
+
+        <div class="border-t border-border pt-6">
+             <form method="post" action="{{ path('app_bilan_sante_delete', {'id': bilan.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce bilan ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ bilan.id) }}">
+                <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-destructive text-destructive-foreground hover:bg-destructive/90 h-9 px-4 py-2 w-full sm:w-auto">
+                    Supprimer ce bilan
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

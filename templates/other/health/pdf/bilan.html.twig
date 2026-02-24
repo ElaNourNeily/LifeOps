@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; color: #333; line-height: 1.5; }
+        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #6C4AB6; padding-bottom: 10px; }
+        h1 { color: #6C4AB6; margin: 0; }
+        .info { margin-bottom: 20px; }
+        h3 { color: #6C4AB6; border-left: 4px solid #6C4AB6; padding-left: 10px; margin-top: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; word-wrap: break-word; }
+        th { background: #f8f9fa; color: #6C4AB6; font-weight: bold; }
+        .risk-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; }
+        .risk-elevated { background: #fee2e2; color: #dc2626; }
+        .risk-low { background: #dcfce7; color: #16a34a; }
+        .risk-medium { background: #fef9c3; color: #ca8a04; }
+        .section { margin-bottom: 20px; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 10px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bilan Santé Personnel</h1>
+        <p>LifeOps - Votre assistant bien-être</p>
+    </div>
+
+    <div class="info">
+        <p><strong>Utilisateur :</strong> {{ bilan.utilisateur.prenom }} {{ bilan.utilisateur.nom }}</p>
+        <p><strong>Période du bilan :</strong> {{ bilan.dateDebut|date('d/m/Y') }} au {{ bilan.dateFin|date('d/m/Y') }}</p>
+        <p><strong>Date de génération :</strong> {{ "now"|date('d/m/Y H:i') }}</p>
+    </div>
+
+    <div class="section">
+        <h3>Indicateurs Moyens (7 jours)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Sommeil</th>
+                    <th>Humeur</th>
+                    <th>Eau</th>
+                    <th>Activité</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for suivi in suivis %}
+                    <tr>
+                        <td>{{ suivi.date|date('d/m/Y') }}</td>
+                        <td>{{ suivi.heuresSommeil }}h ({{ suivi.qualiteSommeil }}/10)</td>
+                        <td>{{ suivi.humeur }}/10</td>
+                        <td>{{ suivi.verresEau }} verres</td>
+                        <td>{{ suivi.minutesActivite }} min</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">Aucun suivi trouvé pour cette période.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Analyse Intelligence Artificielle</h3>
+        {% if analyse %}
+            <p>
+                <strong>Niveau de Risque Burnout :</strong> 
+                <span class="risk-badge {% if analyse.risque_burnout == 'Elevé' %}risk-elevated{% elseif analyse.risque_burnout == 'Moyen' %}risk-medium{% else %}risk-low{% endif %}">
+                    {{ analyse.risque_burnout }}
+                </span>
+            </p>
+            <p><strong>Scores estimés :</strong></p>
+            <ul>
+                <li>Fatigue : {{ analyse.score_fatigue }}/10</li>
+                <li>Stress : {{ analyse.score_stress }}/10</li>
+                <li>Forme Physique : {{ analyse.score_forme }}/10</li>
+            </ul>
+            <p><strong>Synthèse :</strong></p>
+            <p>{{ analyse.explication }}</p>
+
+            <h3>Recommandations Personnalisées</h3>
+            <ul>
+                {% for conseil in analyse.conseils %}
+                    <li>{{ conseil }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>L'analyse IA n'a pas pu être générée ou récupérée pour ce bilan.</p>
+            <p><strong>Recommandations enregistrées :</strong></p>
+            <p>{{ bilan.recommandations|nl2br }}</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        Document généré automatiquement par LifeOps - © {{ "now"|date('Y') }}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Bilan - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Nouveau Bilan</h1>
+            <p class="text-muted-foreground">Analyse automatique basée sur les 7 derniers jours</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+             <div class="mb-4 bg-muted/50 p-4 rounded-lg text-sm border border-muted">
+                <p><strong>💡 Note:</strong> Les scores ci-dessous ont été pré-calculés en fonction de vos suivis quotidiens. Vous pouvez les ajuster si nécessaire.</p>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                
+                 <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        {{ form_label(form.dateDebut, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.dateFin, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                     <div>
+                        {{ form_label(form.scoreForme, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.scoreForme, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.niveauFatigue, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.niveauFatigue, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.niveauStress, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.niveauStress, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                <div>
+                     <div class="flex items-center space-x-2 mb-4">
+                        {{ form_widget(form.risqueBurnout, {'attr': {'class': 'h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary', 'disabled': 'disabled'}}) }}
+                        {{ form_label(form.risqueBurnout, null, {'label_attr': {'class': 'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'}}) }}
+                        <p class="text-xs text-muted-foreground ml-2">(Calculé automatiquement)</p>
+                    </div>
+                </div>
+
+
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <a href="{{ path('app_suivi_sante_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        Créer Bilan
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
