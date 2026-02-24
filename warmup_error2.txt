@@ -1,6 +1,0 @@
-
- // Warming up the cache   
- // for the dev            
- // environment with debug 
- // true                   
-

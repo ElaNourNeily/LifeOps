@@ -1,4 +1,0 @@
-# UX Turbo configuration
-framework:
-    csrf_protection:
-        enabled: true
