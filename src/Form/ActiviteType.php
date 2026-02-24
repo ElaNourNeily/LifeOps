@@ -3,10 +3,15 @@
 namespace App\Form;
 
 use App\Entity\Activite;
+<<<<<<< HEAD
 use App\Entity\Planning;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
+=======
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+>>>>>>> ebaffe1c (first commit)
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,11 +26,19 @@ class ActiviteType extends AbstractType
                 'label' => 'Titre de l\'activité',
                 'attr' => ['placeholder' => 'Réunion, Sport...']
             ])
+<<<<<<< HEAD
             ->add('heureDebutEstimee', TimeType::class, [
                 'label' => 'Heure de début',
                 'widget' => 'single_text',
             ])
             ->add('heureFinEstimee', TimeType::class, [
+=======
+            ->add('heure_debut_estimee', TimeType::class, [
+                'label' => 'Heure de début',
+                'widget' => 'single_text',
+            ])
+            ->add('heure_fin_estimee', TimeType::class, [
+>>>>>>> ebaffe1c (first commit)
                 'label' => 'Heure de fin',
                 'widget' => 'single_text',
             ])
@@ -60,6 +73,7 @@ class ActiviteType extends AbstractType
                     'Haute' => 3,
                 ],
             ])
+<<<<<<< HEAD
             ->add('niveauUrgence', RangeType::class, [
                 'label' => 'Urgence (1-5)',
                 'attr' => ['min' => 1, 'max' => 5],
@@ -70,6 +84,14 @@ class ActiviteType extends AbstractType
                     'À faire' => 'todo',
                     'En cours' => 'in-progress',
                     'Terminé' => 'done',
+=======
+            ->add('niveau_urgence', ChoiceType::class, [
+                'label' => 'Niveau d\'urgence',
+                'choices' => [
+                    'Faible' => 'faible',
+                    'Moyen' => 'moyen',
+                    'Élevé' => 'eleve',
+>>>>>>> ebaffe1c (first commit)
                 ],
             ])
         ;

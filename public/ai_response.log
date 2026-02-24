@@ -1,0 +1,1102 @@
+[2026-02-24 02:03:45] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Could not resolve host: generativelanguage.googleapis.com for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:04:50] Response:
+{
+    "suggestions": [
+        {
+            "date": "2024-05-20",
+            "new_activities": [
+                {
+                    "title": "Planification de la semaine",
+                    "start": "09:00",
+                    "end": "09:30",
+                    "priority": 1,
+                    "urgency": 9,
+                    "category": "Organisation",
+                    "color": "#3498db",
+                    "reason": "Indispensable pour d\u00e9finir les objectifs et priorit\u00e9s de la semaine."
+                },
+                {
+                    "title": "Travail de fond \/ Deep Work",
+                    "start": "09:30",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": 8,
+                    "category": "Productivit\u00e9",
+                    "color": "#e67e22",
+                    "reason": "Le matin est le moment id\u00e9al pour les t\u00e2ches demandant une forte concentration."
+                },
+                {
+                    "title": "Gestion administrative et emails",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 2,
+                    "urgency": 5,
+                    "category": "Admin",
+                    "color": "#95a5a6",
+                    "reason": "T\u00e2ches \u00e0 faible \u00e9nergie apr\u00e8s le d\u00e9jeuner."
+                },
+                {
+                    "title": "Activit\u00e9 physique \/ Sport",
+                    "start": "17:30",
+                    "end": "18:30",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Sant\u00e9",
+                    "color": "#2ecc71",
+                    "reason": "Maintenir un \u00e9quilibre physique pour une meilleure productivit\u00e9 mentale."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:00",
+                    "end": "14:00",
+                    "reccomendation": "D\u00e9jeuner et marche digestive."
+                },
+                {
+                    "start": "15:30",
+                    "end": "16:00",
+                    "reccomendation": "Pause caf\u00e9 ou \u00e9tirements."
+                }
+            ]
+        },
+        {
+            "date": "2024-05-21",
+            "new_activities": [
+                {
+                    "title": "Projet Principal - Session 1",
+                    "start": "09:00",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": 10,
+                    "category": "Travail",
+                    "color": "#e74c3c",
+                    "reason": "Priorit\u00e9 maximale pour avancer sur les dossiers critiques."
+                },
+                {
+                    "title": "Apprentissage \/ Veille",
+                    "start": "16:00",
+                    "end": "17:30",
+                    "priority": 3,
+                    "urgency": 3,
+                    "category": "D\u00e9veloppement",
+                    "color": "#9b59b6",
+                    "reason": "D\u00e9velopper ses comp\u00e9tences pour le long terme."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:00",
+                    "end": "13:30",
+                    "reccomendation": "Repos complet."
+                },
+                {
+                    "start": "14:00",
+                    "end": "16:00",
+                    "reccomendation": "Cr\u00e9neau flexible pour rendez-vous ou impr\u00e9vus."
+                }
+            ]
+        }
+    ],
+    "summary": "Comme votre semaine \u00e9tait vide, j'ai structur\u00e9 un emploi du temps type bas\u00e9 sur la m\u00e9thode du 'Time Blocking'. Les matin\u00e9es sont r\u00e9serv\u00e9es au travail de haute concentration (Deep Work) car les facult\u00e9s cognitives y sont optimales. Les apr\u00e8s-midis sont d\u00e9di\u00e9s \u00e0 l'administration, \u00e0 la veille et au bien-\u00eatre physique. Cette structure permet de garantir une progression sur vos projets prioritaires tout en \u00e9vitant le burn-out."
+}
+[2026-02-24 02:05:21] Response:
+{
+    "suggestions": [
+        {
+            "date": "2024-05-20",
+            "new_activities": [
+                {
+                    "title": "Planification Hebdomadaire",
+                    "start": "09:00",
+                    "end": "10:00",
+                    "priority": 1,
+                    "urgency": 9,
+                    "category": "Management",
+                    "color": "#4A90E2",
+                    "reason": "Indispensable pour d\u00e9finir les objectifs de la semaine et prioriser les t\u00e2ches."
+                },
+                {
+                    "title": "Travail de Fond (Deep Work)",
+                    "start": "10:00",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": 8,
+                    "category": "Productivit\u00e9",
+                    "color": "#50E3C2",
+                    "reason": "Le pic de concentration matinal est id\u00e9al pour les t\u00e2ches \u00e0 haute valeur ajout\u00e9e."
+                },
+                {
+                    "title": "Gestion Administrative & Emails",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 3,
+                    "urgency": 5,
+                    "category": "Admin",
+                    "color": "#F5A623",
+                    "reason": "T\u00e2ches r\u00e9p\u00e9titives plac\u00e9es en d\u00e9but d'apr\u00e8s-midi lors de la baisse d'\u00e9nergie post-d\u00e9jeuner."
+                },
+                {
+                    "title": "R\u00e9unions ou Collaboration",
+                    "start": "16:00",
+                    "end": "17:30",
+                    "priority": 2,
+                    "urgency": 6,
+                    "category": "Communication",
+                    "color": "#BD10E0",
+                    "reason": "Cr\u00e9neau propice aux \u00e9changes apr\u00e8s avoir avanc\u00e9 sur ses propres priorit\u00e9s."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:00",
+                    "end": "14:00",
+                    "reccomendation": "D\u00e9jeuner et marche active"
+                },
+                {
+                    "start": "15:30",
+                    "end": "16:00",
+                    "reccomendation": "Pause caf\u00e9 et d\u00e9connexion"
+                }
+            ]
+        },
+        {
+            "date": "2024-05-21",
+            "new_activities": [
+                {
+                    "title": "Bloc Projet Prioritaire",
+                    "start": "09:00",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": 10,
+                    "category": "Focus",
+                    "color": "#D0021B",
+                    "reason": "Concentration maximale sur l'urgence principale de la semaine."
+                },
+                {
+                    "title": "Suivi Dossiers",
+                    "start": "14:00",
+                    "end": "16:00",
+                    "priority": 2,
+                    "urgency": 7,
+                    "category": "Op\u00e9rationnel",
+                    "color": "#7ED321",
+                    "reason": "Avancement des dossiers secondaires."
+                },
+                {
+                    "title": "Veille & Formation",
+                    "start": "16:30",
+                    "end": "18:00",
+                    "priority": 3,
+                    "urgency": 3,
+                    "category": "D\u00e9veloppement",
+                    "color": "#9013FE",
+                    "reason": "Temps d\u00e9di\u00e9 \u00e0 l'apprentissage en fin de journ\u00e9e."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:00",
+                    "end": "14:00",
+                    "reccomendation": "Pause d\u00e9jeuner"
+                },
+                {
+                    "start": "16:00",
+                    "end": "16:30",
+                    "reccomendation": "\u00c9tirements"
+                }
+            ]
+        }
+    ],
+    "summary": "Comme votre emploi du temps \u00e9tait vide, j'ai structur\u00e9 un mod\u00e8le de semaine bas\u00e9 sur les principes du Time Blocking. Les matin\u00e9es sont r\u00e9serv\u00e9es au 'Deep Work' (priorit\u00e9 haute), les d\u00e9buts d'apr\u00e8s-midi aux t\u00e2ches administratives, et les fins de journ\u00e9e \u00e0 la collaboration ou \u00e0 la formation. Des pauses strat\u00e9giques ont \u00e9t\u00e9 ins\u00e9r\u00e9es pour maintenir un niveau d'\u00e9nergie constant."
+}
+[2026-02-24 02:05:33] Response:
+{
+    "suggestions": [
+        {
+            "date": "2024-05-20",
+            "new_activities": [
+                {
+                    "title": "Planification de la semaine & Priorisation",
+                    "start": "09:00",
+                    "end": "10:00",
+                    "priority": 1,
+                    "urgency": 9,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Indispensable pour d\u00e9finir les objectifs cl\u00e9s de la semaine d\u00e8s le lundi matin."
+                },
+                {
+                    "title": "Deep Work - Projet Prioritaire A",
+                    "start": "10:00",
+                    "end": "12:30",
+                    "priority": 1,
+                    "urgency": 8,
+                    "category": "Travail de fond",
+                    "color": "#D0021B",
+                    "reason": "Utilisation du pic d'\u00e9nergie matinal pour les t\u00e2ches complexes demandant une forte concentration."
+                },
+                {
+                    "title": "Traitement Emails & Administratif",
+                    "start": "14:00",
+                    "end": "15:00",
+                    "priority": 3,
+                    "urgency": 5,
+                    "category": "Admin",
+                    "color": "#F5A623",
+                    "reason": "T\u00e2ches \u00e0 faible charge cognitive plac\u00e9es apr\u00e8s le d\u00e9jeuner."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:30",
+                    "end": "14:00",
+                    "reccomendation": "D\u00e9jeuner et marche pour la r\u00e9cup\u00e9ration mentale."
+                },
+                {
+                    "start": "15:00",
+                    "end": "15:15",
+                    "reccomendation": "Micro-pause hydratation."
+                }
+            ]
+        },
+        {
+            "date": "2024-05-21",
+            "new_activities": [
+                {
+                    "title": "Deep Work - Projet Prioritaire B",
+                    "start": "09:00",
+                    "end": "11:30",
+                    "priority": 1,
+                    "urgency": 7,
+                    "category": "Travail de fond",
+                    "color": "#D0021B",
+                    "reason": "Continuit\u00e9 sur les dossiers critiques."
+                },
+                {
+                    "title": "R\u00e9unions & Appels",
+                    "start": "14:00",
+                    "end": "16:00",
+                    "priority": 2,
+                    "urgency": 6,
+                    "category": "Communication",
+                    "color": "#7ED321",
+                    "reason": "Regroupement des interactions sociales en apr\u00e8s-midi."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "11:30",
+                    "end": "12:00",
+                    "reccomendation": "Pause active ou \u00e9tirements."
+                }
+            ]
+        },
+        {
+            "date": "2024-05-22",
+            "new_activities": [
+                {
+                    "title": "Revue de milieu de semaine",
+                    "start": "09:00",
+                    "end": "09:45",
+                    "priority": 2,
+                    "urgency": 5,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Ajustement du planning en fonction de l'avancement des deux premiers jours."
+                },
+                {
+                    "title": "Focus Cr\u00e9ativit\u00e9 \/ R&D",
+                    "start": "10:00",
+                    "end": "12:00",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "D\u00e9veloppement",
+                    "color": "#BD10E0",
+                    "reason": "Slot d\u00e9di\u00e9 \u00e0 l'innovation ou \u00e0 l'apprentissage."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "14:00",
+                    "end": "15:30",
+                    "reccomendation": "Slot flexible pour impr\u00e9vus ou sport."
+                }
+            ]
+        }
+    ],
+    "summary": "Puisqu'aucune activit\u00e9 n'\u00e9tait pr\u00e9vue, j'ai structur\u00e9 un cadre de semaine id\u00e9al bas\u00e9 sur la m\u00e9thode 'Time Blocking'. Les matin\u00e9es sont r\u00e9serv\u00e9es au 'Deep Work' (travail de haute intensit\u00e9) pour maximiser la productivit\u00e9. Les apr\u00e8s-midis sont d\u00e9di\u00e9s aux t\u00e2ches administratives et aux communications, l\u00e0 o\u00f9 l'\u00e9nergie baisse g\u00e9n\u00e9ralement. J'ai \u00e9galement int\u00e9gr\u00e9 des slots de planification pour assurer un suivi rigoureux de vos priorit\u00e9s."
+}
+[2026-02-24 02:05:53] Response:
+{
+    "suggestions": [
+        {
+            "date": "2024-05-20",
+            "new_activities": [
+                {
+                    "title": "Planification de la semaine et objectifs",
+                    "start": "09:00",
+                    "end": "10:00",
+                    "priority": 1,
+                    "urgency": 9,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Indispensable pour d\u00e9finir les priorit\u00e9s de la semaine d\u00e8s le lundi matin."
+                },
+                {
+                    "title": "Deep Work : Projet Principal",
+                    "start": "10:15",
+                    "end": "12:15",
+                    "priority": 1,
+                    "urgency": 8,
+                    "category": "Travail",
+                    "color": "#D0021B",
+                    "reason": "Bloc de concentration maximale sur la t\u00e2che la plus complexe de la journ\u00e9e."
+                },
+                {
+                    "title": "Traitement des emails et administratif",
+                    "start": "14:00",
+                    "end": "15:00",
+                    "priority": 3,
+                    "urgency": 5,
+                    "category": "Admin",
+                    "color": "#F5A623",
+                    "reason": "T\u00e2ches \u00e0 faible charge cognitive pour le d\u00e9but d'apr\u00e8s-midi."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "12:15",
+                    "end": "13:45",
+                    "reccomendation": "D\u00e9jeuner et marche en ext\u00e9rieur"
+                },
+                {
+                    "start": "16:00",
+                    "end": "17:00",
+                    "reccomendation": "Sport ou activit\u00e9 physique"
+                }
+            ]
+        },
+        {
+            "date": "2024-05-21",
+            "new_activities": [
+                {
+                    "title": "Deep Work : Session 2",
+                    "start": "09:00",
+                    "end": "11:30",
+                    "priority": 1,
+                    "urgency": 7,
+                    "category": "Travail",
+                    "color": "#D0021B",
+                    "reason": "Poursuite des t\u00e2ches critiques pendant le pic d'\u00e9nergie matinal."
+                },
+                {
+                    "title": "R\u00e9unions et appels",
+                    "start": "14:00",
+                    "end": "16:00",
+                    "priority": 2,
+                    "urgency": 6,
+                    "category": "Communication",
+                    "color": "#7ED321",
+                    "reason": "Regroupement des interactions sociales pour limiter les interruptions."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "11:30",
+                    "end": "12:30",
+                    "reccomendation": "Pause lecture"
+                }
+            ]
+        },
+        {
+            "date": "2024-05-22",
+            "new_activities": [
+                {
+                    "title": "Apprentissage et Formation",
+                    "start": "09:00",
+                    "end": "11:00",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Learning",
+                    "color": "#9013FE",
+                    "reason": "Investissement dans le d\u00e9veloppement des comp\u00e9tences personnelles."
+                },
+                {
+                    "title": "Revue de milieu de semaine",
+                    "start": "16:00",
+                    "end": "17:00",
+                    "priority": 2,
+                    "urgency": 5,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Ajustement du planning pour les jours restants."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "13:00",
+                    "end": "14:00",
+                    "reccomendation": "Micro-sieste ou m\u00e9ditation"
+                }
+            ]
+        },
+        {
+            "date": "2024-05-23",
+            "new_activities": [
+                {
+                    "title": "Finalisation dossiers critiques",
+                    "start": "09:00",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": 9,
+                    "category": "Travail",
+                    "color": "#D0021B",
+                    "reason": "Boucler les livrables avant la fin de semaine."
+                },
+                {
+                    "title": "R\u00e9seautage ou veille sectorielle",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 3,
+                    "urgency": 3,
+                    "category": "Networking",
+                    "color": "#50E3C2",
+                    "reason": "Ouverture vers l'ext\u00e9rieur et nouvelles opportunit\u00e9s."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "16:00",
+                    "end": "17:30",
+                    "reccomendation": "Temps libre cr\u00e9atif"
+                }
+            ]
+        },
+        {
+            "date": "2024-05-24",
+            "new_activities": [
+                {
+                    "title": "T\u00e2ches administratives r\u00e9siduelles",
+                    "start": "09:00",
+                    "end": "10:30",
+                    "priority": 3,
+                    "urgency": 6,
+                    "category": "Admin",
+                    "color": "#F5A623",
+                    "reason": "Nettoyage de la liste de t\u00e2ches pour ne rien laisser tra\u00eener."
+                },
+                {
+                    "title": "Bilan hebdomadaire et pr\u00e9paration S+1",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 1,
+                    "urgency": 8,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Fermer la semaine mentalement et anticiper la suivante."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "16:00",
+                    "end": "18:00",
+                    "reccomendation": "D\u00e9compression de fin de semaine"
+                }
+            ]
+        }
+    ],
+    "summary": "Votre emploi du temps \u00e9tant vide, j'ai con\u00e7u une structure de semaine id\u00e9ale bas\u00e9e sur la m\u00e9thode du 'Time Blocking'. Les matin\u00e9es sont r\u00e9serv\u00e9es au 'Deep Work' (travail de fond) car c'est l\u00e0 que la concentration est maximale. Les apr\u00e8s-midis sont allou\u00e9s aux r\u00e9unions, \u00e0 l'administratif et \u00e0 l'apprentissage. Ce cadre assure que vos priorit\u00e9s de haute importance (Priorit\u00e9 1) sont trait\u00e9es en premier tout en pr\u00e9servant des temps de pause essentiels \u00e0 votre productivit\u00e9 durable."
+}
+[2026-02-24 02:12:26] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Idle timeout reached for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:12:52] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Routine Matinale & Pr\u00e9paration",
+                    "start": "06:00",
+                    "end": "07:30",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Personnel",
+                    "color": "#4CAF50",
+                    "reason": "Commencer la journ\u00e9e t\u00f4t permet de pr\u00e9parer l'esprit avant la session d'\u00e9ducation \u00e0 haute priorit\u00e9."
+                },
+                {
+                    "title": "Travail Profond (Focus)",
+                    "start": "11:30",
+                    "end": "13:00",
+                    "priority": 3,
+                    "urgency": 7,
+                    "category": "Travail",
+                    "color": "#2196F3",
+                    "reason": "Profiter de l'\u00e9lan intellectuel apr\u00e8s la session d'\u00e9ducation pour traiter des dossiers complexes."
+                },
+                {
+                    "title": "T\u00e2ches Administratives \/ Emails",
+                    "start": "14:30",
+                    "end": "16:00",
+                    "priority": 1,
+                    "urgency": 5,
+                    "category": "Travail",
+                    "color": "#FF9800",
+                    "reason": "Regrouper les t\u00e2ches \u00e0 faible intensit\u00e9 cognitive durant le creux d'\u00e9nergie de l'apr\u00e8s-midi."
+                },
+                {
+                    "title": "Activit\u00e9 Physique \/ Sport",
+                    "start": "17:30",
+                    "end": "18:45",
+                    "priority": 2,
+                    "urgency": 3,
+                    "category": "Sant\u00e9",
+                    "color": "#E91E63",
+                    "reason": "Maintenir un \u00e9quilibre vie pro\/perso et d\u00e9compresser apr\u00e8s la journ\u00e9e de travail."
+                }
+            ],
+            "modifications": [
+                {
+                    "original_title": "education",
+                    "new_start": "08:00",
+                    "new_end": "11:00",
+                    "reason": "L'horaire est maintenu car le matin est id\u00e9al pour l'apprentissage et la concentration maximale requise par une priorit\u00e9 haute."
+                }
+            ],
+            "free_slots": [
+                {
+                    "start": "07:30",
+                    "end": "08:00",
+                    "reccomendation": "Transition et trajet vers le lieu de formation\/travail."
+                },
+                {
+                    "start": "11:00",
+                    "end": "11:30",
+                    "reccomendation": "Pause de d\u00e9connexion n\u00e9cessaire apr\u00e8s 3h de concentration."
+                },
+                {
+                    "start": "13:00",
+                    "end": "14:30",
+                    "reccomendation": "D\u00e9jeuner et marche digestive."
+                },
+                {
+                    "start": "18:45",
+                    "end": "22:00",
+                    "reccomendation": "Temps libre, d\u00eener et routine de sommeil."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation pour le 24 f\u00e9vrier capitalise sur votre session d'\u00e9ducation matinale. Nous avons structur\u00e9 la journ\u00e9e en blocs de temps (Time Blocking) : un r\u00e9veil proactif, une session de travail profond post-\u00e9ducation, et un bloc administratif l'apr\u00e8s-midi. Des cr\u00e9neaux de r\u00e9cup\u00e9ration (pauses, sport) sont ins\u00e9r\u00e9s pour \u00e9viter l'\u00e9puisement et maintenir une productivit\u00e9 constante jusqu'\u00e0 22h."
+}
+[2026-02-24 02:13:26] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Session de Travail Profond (Deep Work)",
+                    "start": "13:30",
+                    "end": "16:00",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Travail",
+                    "color": "#3498db",
+                    "reason": "Exploiter le pic de concentration de l'apr\u00e8s-midi pour avancer sur des t\u00e2ches secondaires apr\u00e8s l'\u00e9ducation du matin."
+                },
+                {
+                    "title": "Activit\u00e9 Physique \/ Sport",
+                    "start": "17:30",
+                    "end": "18:30",
+                    "priority": 2,
+                    "urgency": 3,
+                    "category": "Sant\u00e9",
+                    "color": "#2ecc71",
+                    "reason": "Maintenir un \u00e9quilibre mental et physique pour soutenir la charge de travail cognitive \u00e9lev\u00e9e."
+                }
+            ],
+            "modifications": [
+                {
+                    "original_title": "education",
+                    "new_start": "08:30",
+                    "new_end": "11:30",
+                    "reason": "L\u00e9ger d\u00e9calage pour permettre une routine matinale compl\u00e8te (06:00-08:30) afin de maximiser la vigilance pendant la session d'\u00e9ducation \u00e0 haute priorit\u00e9."
+                }
+            ],
+            "free_slots": [
+                {
+                    "start": "06:00",
+                    "end": "08:30",
+                    "reccomendation": "Routine matinale : Petit-d\u00e9jeuner, m\u00e9ditation ou lecture pour pr\u00e9parer le cerveau."
+                },
+                {
+                    "start": "11:30",
+                    "end": "13:30",
+                    "reccomendation": "Pause d\u00e9jeuner et d\u00e9connexion totale pour \u00e9viter la fatigue d\u00e9cisionnelle."
+                },
+                {
+                    "start": "16:00",
+                    "end": "17:30",
+                    "reccomendation": "T\u00e2ches administratives l\u00e9g\u00e8res ou emails (Low energy slot)."
+                },
+                {
+                    "start": "18:30",
+                    "end": "22:00",
+                    "reccomendation": "D\u00e9tente et pr\u00e9paration au sommeil (hygi\u00e8ne de vie)."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation pour le 24 f\u00e9vrier capitalise sur votre priorit\u00e9 haute ('education') en la pla\u00e7ant en d\u00e9but de journ\u00e9e apr\u00e8s une phase de pr\u00e9paration. Nous avons ajout\u00e9 des blocs de travail structur\u00e9s l'apr\u00e8s-midi et int\u00e9gr\u00e9 des pauses strat\u00e9giques ainsi qu'une activit\u00e9 physique pour pr\u00e9venir le burn-out et maintenir une productivit\u00e9 constante sur le long terme."
+}
+[2026-02-24 02:14:03] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Application pratique & R\u00e9vision",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Travail",
+                    "color": "#4A90E2",
+                    "reason": "Renforcer les connaissances acquises durant la session d'\u00e9ducation matinale pendant que l'esprit est encore frais."
+                },
+                {
+                    "title": "Activit\u00e9 physique \/ Sport",
+                    "start": "17:30",
+                    "end": "18:30",
+                    "priority": 1,
+                    "urgency": 3,
+                    "category": "Sant\u00e9",
+                    "color": "#27AE60",
+                    "reason": "R\u00e9duction du stress li\u00e9 \u00e0 l'apprentissage intense et am\u00e9lioration de la concentration \u00e0 long terme."
+                }
+            ],
+            "modifications": [
+                {
+                    "original_title": "education",
+                    "new_start": "08:30",
+                    "new_end": "11:30",
+                    "reason": "D\u00e9calage l\u00e9ger pour permettre une routine matinale compl\u00e8te (06:00-08:30) favorisant une meilleure attention."
+                }
+            ],
+            "free_slots": [
+                {
+                    "start": "06:00",
+                    "end": "08:30",
+                    "reccomendation": "Routine matinale, petit-d\u00e9jeuner et m\u00e9ditation."
+                },
+                {
+                    "start": "11:30",
+                    "end": "14:00",
+                    "reccomendation": "D\u00e9jeuner et pause de d\u00e9connexion totale."
+                },
+                {
+                    "start": "15:30",
+                    "end": "17:30",
+                    "reccomendation": "T\u00e2ches administratives l\u00e9g\u00e8res ou lecture personnelle."
+                },
+                {
+                    "start": "18:30",
+                    "end": "22:00",
+                    "reccomendation": "Repos, d\u00eener et pr\u00e9paration au sommeil."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation se concentre sur l'exploitation du pic de vigilance matinal pour votre activit\u00e9 principale (education). Nous avons ajout\u00e9 des sessions de consolidation l'apr\u00e8s-midi et int\u00e9gr\u00e9 des plages de r\u00e9cup\u00e9ration essentielles pour maintenir une haute performance cognitive tout au long de la journ\u00e9e."
+}
+[2026-02-24 02:14:30] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Routine Matinale et Planification",
+                    "start": "06:30",
+                    "end": "07:30",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Personnel",
+                    "color": "#4CAF50",
+                    "reason": "Pr\u00e9parer le mental et le corps avant la session d'\u00e9ducation \u00e0 haute priorit\u00e9."
+                },
+                {
+                    "title": "Session de Focus \/ Application pratique",
+                    "start": "13:00",
+                    "end": "15:00",
+                    "priority": 3,
+                    "urgency": 6,
+                    "category": "Travail",
+                    "color": "#2196F3",
+                    "reason": "Mise en pratique imm\u00e9diate des concepts appris le matin pour une meilleure r\u00e9tention."
+                },
+                {
+                    "title": "Activit\u00e9 Physique ou Marche",
+                    "start": "17:00",
+                    "end": "18:00",
+                    "priority": 2,
+                    "urgency": 3,
+                    "category": "Sant\u00e9",
+                    "color": "#FF9800",
+                    "reason": "D\u00e9compression n\u00e9cessaire apr\u00e8s une journ\u00e9e cognitive intense."
+                }
+            ],
+            "modifications": [
+                {
+                    "original_title": "education",
+                    "new_start": "08:00",
+                    "new_end": "11:00",
+                    "reason": "Maintenu en d\u00e9but de journ\u00e9e pour profiter du pic de concentration matinal, id\u00e9al pour l'apprentissage de haute priorit\u00e9."
+                }
+            ],
+            "free_slots": [
+                {
+                    "start": "11:00",
+                    "end": "13:00",
+                    "reccomendation": "Pause d\u00e9jeuner prolong\u00e9e et repos pour \u00e9viter la fatigue mentale."
+                },
+                {
+                    "start": "15:00",
+                    "end": "17:00",
+                    "reccomendation": "T\u00e2ches administratives l\u00e9g\u00e8res ou temps libre."
+                },
+                {
+                    "start": "18:00",
+                    "end": "22:00",
+                    "reccomendation": "D\u00e9connexion totale et pr\u00e9paration au sommeil."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation pour le 24 f\u00e9vrier 2026 capitalise sur votre session d'\u00e9ducation matinale. Nous avons ajout\u00e9 une routine de pr\u00e9paration et une session d'application l'apr\u00e8s-midi pour maximiser l'efficacit\u00e9 de votre travail. Des blocs de r\u00e9cup\u00e9ration ont \u00e9t\u00e9 strat\u00e9giquement plac\u00e9s entre les sessions intensives pour maintenir un haut niveau d'\u00e9nergie jusqu'\u00e0 la fin de la journ\u00e9e."
+}
+[2026-02-24 02:14:41] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Planification de la journ\u00e9e",
+                    "start": "06:30",
+                    "end": "07:15",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "Organisation",
+                    "color": "#4A90E2",
+                    "reason": "Une session courte pour structurer vos objectifs avant de commencer votre t\u00e2che prioritaire."
+                },
+                {
+                    "title": "Traitement administratif et Emails",
+                    "start": "14:00",
+                    "end": "15:30",
+                    "priority": 1,
+                    "urgency": 3,
+                    "category": "Travail",
+                    "color": "#F5A623",
+                    "reason": "T\u00e2ches \u00e0 faible charge cognitive apr\u00e8s la pause d\u00e9jeuner."
+                },
+                {
+                    "title": "Veille et Lecture",
+                    "start": "17:00",
+                    "end": "18:00",
+                    "priority": 2,
+                    "urgency": 2,
+                    "category": "Education",
+                    "color": "#7ED321",
+                    "reason": "Capitaliser sur la th\u00e9matique \u00e9ducation entam\u00e9e le matin."
+                }
+            ],
+            "modifications": [
+                {
+                    "original_title": "education",
+                    "new_start": "08:00",
+                    "new_end": "11:00",
+                    "reason": "Maintenu en d\u00e9but de journ\u00e9e pour profiter du pic de concentration matinale pour une t\u00e2che de haute priorit\u00e9."
+                }
+            ],
+            "free_slots": [
+                {
+                    "start": "11:00",
+                    "end": "12:00",
+                    "reccomendation": "Pause cognitive et marche l\u00e9g\u00e8re apr\u00e8s l'effort intellectuel."
+                },
+                {
+                    "start": "12:00",
+                    "end": "13:30",
+                    "reccomendation": "D\u00e9jeuner et d\u00e9connexion."
+                },
+                {
+                    "start": "19:00",
+                    "end": "22:00",
+                    "reccomendation": "Temps libre et pr\u00e9paration au sommeil."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation se concentre sur la pr\u00e9servation de votre bloc d'\u00e9ducation matinal tout en ajoutant des segments de planification et de suivi administratif. Nous avons ins\u00e9r\u00e9 des pauses claires pour \u00e9viter la fatigue mentale et assur\u00e9 une fin de journ\u00e9e calme pour favoriser la r\u00e9cup\u00e9ration."
+}
+[2026-02-24 02:15:00] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : HTTP\/2 503  returned for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:16:00] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Idle timeout reached for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:28:21] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Recv failure: Connection was reset for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:28:22] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Could not resolve host: generativelanguage.googleapis.com for \"https:\/\/generativelanguage.googleapis.com\/v1beta\/models\/gemini-flash-latest:generateContent?key=AIzaSyAY21lrv1yx1CZTIWyTT8ifeI-2WpiMMu0\".",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:28:59] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Travail Profond (Deep Work)",
+                    "start": "08:30",
+                    "end": "11:30",
+                    "priority": 3,
+                    "urgency": 9,
+                    "category": "Professionnel",
+                    "color": "#e74c3c",
+                    "reason": "Exploitation du pic d'\u00e9nergie matinal apr\u00e8s le sport pour les t\u00e2ches \u00e0 haute valeur ajout\u00e9e."
+                },
+                {
+                    "title": "Gestion Administrative et Emails",
+                    "start": "11:30",
+                    "end": "12:30",
+                    "priority": 2,
+                    "urgency": 6,
+                    "category": "Organisation",
+                    "color": "#3498db",
+                    "reason": "Regroupement des t\u00e2ches r\u00e9actives avant la pause d\u00e9jeuner."
+                },
+                {
+                    "title": "D\u00e9jeuner et Marche",
+                    "start": "12:30",
+                    "end": "13:30",
+                    "priority": 2,
+                    "urgency": 5,
+                    "category": "Sant\u00e9",
+                    "color": "#2ecc71",
+                    "reason": "R\u00e9cup\u00e9ration n\u00e9cessaire pour maintenir la productivit\u00e9 l'apr\u00e8s-midi."
+                },
+                {
+                    "title": "R\u00e9unions et Collaboration",
+                    "start": "14:00",
+                    "end": "16:30",
+                    "priority": 2,
+                    "urgency": 7,
+                    "category": "Professionnel",
+                    "color": "#f1c40f",
+                    "reason": "Cr\u00e9neau id\u00e9al pour les interactions sociales et le travail d'\u00e9quipe."
+                },
+                {
+                    "title": "Veille et Apprentissage",
+                    "start": "17:30",
+                    "end": "18:30",
+                    "priority": 2,
+                    "urgency": 4,
+                    "category": "D\u00e9veloppement Personnel",
+                    "color": "#9b59b6",
+                    "reason": "Investissement long terme dans les comp\u00e9tences."
+                },
+                {
+                    "title": "Planification et Revue du jour",
+                    "start": "21:00",
+                    "end": "21:30",
+                    "priority": 3,
+                    "urgency": 8,
+                    "category": "Organisation",
+                    "color": "#34495e",
+                    "reason": "Pr\u00e9parer le succ\u00e8s du lendemain et lib\u00e9rer la charge mentale avant le sommeil."
+                }
+            ],
+            "modifications": [],
+            "free_slots": [
+                {
+                    "start": "07:00",
+                    "end": "08:30",
+                    "reccomendation": "Douche, petit-d\u00e9jeuner nutritif et trajet."
+                },
+                {
+                    "start": "16:30",
+                    "end": "17:30",
+                    "reccomendation": "Pause cr\u00e9ative ou traitement des urgences de fin de journ\u00e9e."
+                },
+                {
+                    "start": "18:30",
+                    "end": "21:00",
+                    "reccomendation": "Temps personnel, d\u00eener et d\u00e9connexion num\u00e9rique."
+                },
+                {
+                    "start": "21:30",
+                    "end": "22:00",
+                    "reccomendation": "Routine de sommeil (lecture, m\u00e9ditation)."
+                }
+            ]
+        }
+    ],
+    "summary": "L'optimisation repose sur l'exploitation du 'Golden Window' de productivit\u00e9 matinale juste apr\u00e8s votre s\u00e9ance de sport. Nous avons structur\u00e9 la journ\u00e9e en blocs th\u00e9matiques (Time Blocking) pour minimiser la fatigue d\u00e9cisionnelle : focus intense le matin, collaboration l'apr\u00e8s-midi, et apprentissage\/repos en soir\u00e9e. Le cr\u00e9neau de sport \u00e0 6h00 est maintenu car il sert de catalyseur \u00e9nerg\u00e9tique pour le reste de votre planning."
+}
+[2026-02-24 02:29:31] Response:
+{
+    "error": "Format de r\u00e9ponse IA invalide.",
+    "suggestions": [],
+    "summary": "L'IA a renvoy\u00e9 une r\u00e9ponse illisible."
+}
+[2026-02-24 02:39:32] Response:
+{
+    "suggestions": [
+        {
+            "date": "2026-02-24",
+            "new_activities": [
+                {
+                    "title": "Petit-d\u00e9jeuner et Routine matinale",
+                    "start": "07:00",
+                    "end": "08:00",
+                    "priority": 2,
+                    "urgency": "moyen",
+                    "category": "Personnel",
+                    "color": "#3b82f6",
+                    "reason": "Transition post-sport pour bien d\u00e9marrer la journ\u00e9e."
+                },
+                {
+                    "title": "Bloc de travail profond (Priorit\u00e9s hautes)",
+                    "start": "08:00",
+                    "end": "12:00",
+                    "priority": 1,
+                    "urgency": "eleve",
+                    "category": "Travail",
+                    "color": "#10b981",
+                    "reason": "Exploitation du pic de concentration apr\u00e8s l'exercice."
+                },
+                {
+                    "title": "D\u00e9jeuner et Repos",
+                    "start": "12:00",
+                    "end": "13:00",
+                    "priority": 2,
+                    "urgency": "faible",
+                    "category": "Repos",
+                    "color": "#9ca3af",
+                    "reason": "Pause n\u00e9cessaire pour \u00e9viter la fatigue cognitive."
+                },
+                {
+                    "title": "T\u00e2ches administratives et Courriels",
+                    "start": "13:00",
+                    "end": "15:00",
+                    "priority": 3,
+                    "urgency": "moyen",
+                    "category": "Travail",
+                    "color": "#10b981",
+                    "reason": "T\u00e2ches \u00e0 faible \u00e9nergie pour le d\u00e9but d'apr\u00e8s-midi."
+                },
+                {
+                    "title": "Apprentissage \/ D\u00e9veloppement personnel",
+                    "start": "15:00",
+                    "end": "17:00",
+                    "priority": 2,
+                    "urgency": "faible",
+                    "category": "Personnel",
+                    "color": "#3b82f6",
+                    "reason": "Investissement dans vos comp\u00e9tences personnelles."
+                },
+                {
+                    "title": "Loisir et D\u00e9tente",
+                    "start": "17:00",
+                    "end": "19:00",
+                    "priority": 3,
+                    "urgency": "faible",
+                    "category": "Loisir",
+                    "color": "#ec4899",
+                    "reason": "D\u00e9connexion pour favoriser l'\u00e9quilibre vie pro\/perso."
+                },
+                {
+                    "title": "D\u00eener et Pr\u00e9paration soir\u00e9e",
+                    "start": "19:00",
+                    "end": "21:00",
+                    "priority": 2,
+                    "urgency": "faible",
+                    "category": "Personnel",
+                    "color": "#3b82f6",
+                    "reason": "Temps personnel de qualit\u00e9."
+                },
+                {
+                    "title": "D\u00e9connexion et lecture",
+                    "start": "21:00",
+                    "end": "22:00",
+                    "priority": 3,
+                    "urgency": "faible",
+                    "category": "Repos",
+                    "color": "#9ca3af",
+                    "reason": "Routine de sommeil pour optimiser la r\u00e9cup\u00e9ration."
+                }
+            ],
+            "modifications": [],
+            "free_slots": []
+        }
+    ],
+    "summary": "L'optimisation pour le 24 f\u00e9vrier conserve votre s\u00e9ance de sport matinale tout en structurant le reste de la journ\u00e9e pour maximiser votre efficacit\u00e9. J'ai instaur\u00e9 un bloc de 'Travail profond' d\u00e8s 8h00 pour profiter de l'\u00e9lan d'\u00e9nergie apr\u00e8s le sport. L'apr\u00e8s-midi est \u00e9quilibr\u00e9 entre t\u00e2ches administratives et d\u00e9veloppement personnel, finissant par une phase de d\u00e9connexion totale d\u00e8s 17h00 pour garantir votre bien-\u00eatre sur le long terme."
+}
+[2026-02-24 02:39:40] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Quota \u00e9puis\u00e9 (429). Veuillez attendre 60 secondes avant de r\u00e9essayer ou utilisez une autre cl\u00e9 API.",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:39:47] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Quota \u00e9puis\u00e9 (429). Veuillez attendre 60 secondes avant de r\u00e9essayer ou utilisez une autre cl\u00e9 API.",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}
+[2026-02-24 02:39:55] Response:
+{
+    "error": "Erreur lors de la communication avec l'IA Gemini : Quota \u00e9puis\u00e9 (429). Veuillez attendre 60 secondes avant de r\u00e9essayer ou utilisez une autre cl\u00e9 API.",
+    "suggestions": [],
+    "summary": "Impossible de g\u00e9n\u00e9rer des suggestions pour le moment."
+}

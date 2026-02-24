@@ -12,6 +12,7 @@
 
     <!-- Nav -->
     <nav class="flex-1 overflow-y-auto px-3 py-4">
+<<<<<<< HEAD
                 {% set navSections = [
             {
                 'label': 'General',
@@ -30,6 +31,15 @@
                 'items': [
                     {'label': 'Front Office', 'href': path('app_dashboard'), 'icon': 'external-link'}
                 ]
+=======
+        {% set navSections = [
+            {
+                'label': 'Admin',
+                'items': [
+                    {'label': 'Dashboard', 'href': path('app_admin_dashboard'), 'icon': 'layout-dashboard'},
+                    {'label': 'Utilisateurs', 'href': path('app_admin_users'), 'icon': 'users'}
+                ]
+>>>>>>> ebaffe1c (first commit)
             }
         ] %}
 
@@ -55,7 +65,19 @@
     </nav>
 
     <!-- Collapse toggle -->
+<<<<<<< HEAD
     <div class="border-t border-border p-3">
+=======
+    <div class="border-t border-border p-3 space-y-2">
+        <form action="{{ path('app_logout') }}" method="POST" class="w-full">
+            <input type="hidden" name="_token" value="{{ csrf_token('logout') }}">
+            <button type="submit"
+                    class="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-500/80 hover:bg-red-500/10 hover:text-red-500 transition-colors">
+                <i data-lucide="log-out" class="h-5 w-5"></i>
+                <span class="sidebar-text">Déconnexion</span>
+            </button>
+        </form>
+>>>>>>> ebaffe1c (first commit)
         <button id="sidebar-toggle"
                 class="flex w-full items-center justify-center rounded-lg p-2 text-[hsl(215,14%,55%)] transition-colors hover:bg-[hsl(220,16%,12%)] hover:text-[hsl(210,20%,95%)]">
             <i data-lucide="chevron-left" class="h-5 w-5"></i>

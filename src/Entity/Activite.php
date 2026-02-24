@@ -178,4 +178,33 @@ class Activite
 
         return $this;
     }
+<<<<<<< HEAD
+=======
+
+    public function getStatutDynamique(): string
+    {
+        $now = new \DateTime();
+        $date = $this->planning?->getDate();
+        
+        if (!$date || !$this->heure_debut_estimee || !$this->heure_fin_estimee) {
+            return 'En attente';
+        }
+
+        $start = clone $this->heure_debut_estimee;
+        $end = clone $this->heure_fin_estimee;
+        
+        $start->setDate((int)$date->format('Y'), (int)$date->format('m'), (int)$date->format('d'));
+        $end->setDate((int)$date->format('Y'), (int)$date->format('m'), (int)$date->format('d'));
+
+        if ($now < $start) {
+            return 'En attente';
+        }
+
+        if ($now > $end) {
+            return 'Terminé';
+        }
+
+        return 'En cours';
+    }
+>>>>>>> ebaffe1c (first commit)
 }

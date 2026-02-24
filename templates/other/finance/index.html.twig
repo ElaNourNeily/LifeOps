@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finances - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion Financière</h1>
+            <p class="text-muted-foreground">Suivez vos budgets et dépenses</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ path('app_budget_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                Nouveau Budget
+            </a>
+            <a href="{{ path('app_depense_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                Ajouter Dépense
+            </a>
+        </div>
+    </div>
+
+    {# Budget Summary Card #}
+    {% if currentBudget %}
+        <div class="mb-8 rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Budget du Mois ({{ currentBudget.mois }})</h2>
+                <span class="text-sm text-muted-foreground">Revenu: {{ currentBudget.revenuMensuel|number_format(2, ',', ' ') }} €</span>
+            </div>
+            
+            {% set percentage = currentBudget.plafond > 0 ? (totalDepensesMonth / currentBudget.plafond) * 100 : 0 %}
+            
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span>Dépenses: {{ totalDepensesMonth|number_format(2, ',', ' ') }} €</span>
+                    <span>Plafond: {{ currentBudget.plafond|number_format(2, ',', ' ') }} €</span>
+                </div>
+                <div class="h-2 w-full rounded-full bg-secondary">
+                    <div class="h-full rounded-full transition-all duration-500 {{ percentage > 100 ? 'bg-destructive' : (percentage > 80 ? 'bg-[hsl(var(--warning))]' : 'bg-primary') }}" style="width: {{ min(percentage, 100) }}%"></div>
+                </div>
+                <p class="text-xs text-right text-muted-foreground">Reste: {{ (currentBudget.plafond - totalDepensesMonth)|number_format(2, ',', ' ') }} €</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="mb-8 p-6 rounded-xl border border-dashed border-border text-center text-muted-foreground">
+            Pas de budget défini pour ce mois. <a href="{{ path('app_budget_new') }}" class="text-primary hover:underline">Créer un budget</a>
+        </div>
+    {% endif %}
+
+    {# Expenses List #}
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border">
+            <h3 class="font-semibold">Historique des dépenses</h3>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Titre</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Catégorie</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Montant</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                {% for depense in depenses %}
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <td class="p-4 align-middle">{{ depense.date|date('d/m/Y') }}</td>
+                        <td class="p-4 align-middle font-medium">{{ depense.titre }}</td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
+                                {{ depense.categorie|capitalize }}
+                            </span>
+                        </td>
+                        <td class="p-4 align-middle text-right text-destructive font-medium">
+                            -{{ depense.montant|number_format(2, ',', ' ') }} €
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="p-4 text-center text-muted-foreground">Aucune dépense enregistrée.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

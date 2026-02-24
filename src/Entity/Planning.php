@@ -150,3 +150,7 @@ class Planning
         return $this;
     }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> ebaffe1c (first commit)

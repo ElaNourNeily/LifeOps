@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord - {% endblock %}
+
+{% block body %}
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-foreground text-balance">
+            Tableau de bord
+        </h1>
+        <p class="mt-1 text-muted-foreground">
+            Vue d'ensemble de votre vie personnelle
+        </p>
+    </div>
+
+    {# Stats Grid #}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+        {# Tasks #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm p-6">
+            <div class="flex items-center gap-4">
+                <div class="p-2 rounded-lg bg-[hsl(var(--chart-2))]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-[hsl(var(--chart-2))]"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Tâches en cours</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold">{{ stats.inProgressTasks + stats.todoTasks }}</h3>
+                    </div>
+                    <p class="text-xs text-muted-foreground">{{ stats.doneTasks }} terminées</p>
+                </div>
+            </div>
+        </div>
+
+        {# Balance #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm p-6">
+            <div class="flex items-center gap-4">
+                <div class="p-2 rounded-lg bg-[hsl(var(--success))]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-[hsl(var(--success))]"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Balance (Mois)</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold">{{ stats.balance|number_format(2, ',', ' ') }} €</h3>
+                    </div>
+                    <p class="text-xs text-muted-foreground">
+                        <span class="text-muted-foreground">Budget: {{ stats.budget|number_format(0) }} €</span>
+                        <span class="mx-1">•</span>
+                        <span class="text-destructive">{{ stats.totalDepenses|number_format(0) }} € dép.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {# Health #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm p-6">
+             <div class="flex items-center gap-4">
+                <div class="p-2 rounded-lg bg-[hsl(var(--chart-5))]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-[hsl(var(--chart-5))]"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Forme (Bilan)</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold">
+                            {% if latestBilan %}
+                                {{ latestBilan.scoreForme }}/10
+                            {% else %}
+                                -/10
+                            {% endif %}
+                        </h3>
+                    </div>
+                    <p class="text-xs text-muted-foreground">
+                        {% if latestBilan %}
+                            Stress: {{ latestBilan.niveauStress }}/10
+                        {% else %}
+                            Aucun bilan
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {# Goals #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow-sm p-6">
+             <div class="flex items-center gap-4">
+                <div class="p-2 rounded-lg bg-[hsl(var(--warning))]/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6 text-[hsl(var(--warning))]"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Objectifs actifs</p>
+                    <div class="flex items-baseline gap-2">
+                        <h3 class="text-2xl font-bold">{{ stats.activeObjectifs }}</h3>
+                    </div>
+                    <p class="text-xs text-muted-foreground">en cours</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Sections #}
+    <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {# Recent Tasks #}
+        <div class="rounded-xl border border-border bg-card p-5">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-card-foreground">Tâches récentes</h2>
+                <a href="#" class="flex items-center gap-1 text-sm text-primary hover:underline">
+                    Voir tout <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+            <div class="flex flex-col gap-3">
+                {% for tache in recentTaches %}
+                    <div class="flex items-center justify-between rounded-lg bg-secondary/50 px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="h-2 w-2 rounded-full
+                                {% if tache.statut == 'done' %}bg-[hsl(var(--success))]
+                                {% elseif tache.statut == 'in-progress' %}bg-[hsl(var(--warning))]
+                                {% else %}bg-muted-foreground{% endif %}">
+                            </div>
+                            <span class="text-sm font-medium text-card-foreground">{{ tache.titre }}</span>
+                        </div>
+                        <span class="rounded-full px-2.5 py-0.5 text-xs font-medium
+                            {% if tache.priorite == 'high' %}bg-destructive/10 text-destructive
+                            {% elseif tache.priorite == 'medium' %}bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))]
+                            {% else %}bg-muted text-muted-foreground{% endif %}">
+                            {{ tache.priorite|capitalize }}
+                        </span>
+                    </div>
+                {% else %}
+                    <p class="py-8 text-center text-sm text-muted-foreground">Aucune tâche.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# Today's Schedule #}
+        <div class="rounded-xl border border-border bg-card p-5">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-card-foreground">Planning du jour</h2>
+                <a href="#" class="flex items-center gap-1 text-sm text-primary hover:underline">
+                    Voir tout <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3.5 w-3.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+            </div>
+            <div class="flex flex-col gap-3">
+                {% if planning %}
+                    {% for activite in planning.activites %}
+                        <div class="flex items-center gap-3 rounded-lg bg-secondary/50 px-4 py-3">
+                            <div class="h-8 w-1 rounded-full bg-primary"></div>
+                             <div class="flex-1">
+                                <p class="text-sm font-medium text-card-foreground">{{ activite.titre }}</p>
+                                <p class="text-xs text-muted-foreground">
+                                    {{ activite.heureDebutEstimee|date('H:i') }} - {{ activite.heureFinEstimee|date('H:i') }}
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                         <p class="py-8 text-center text-sm text-muted-foreground">Aucune activité prévue.</p>
+                    {% endfor %}
+                {% else %}
+                    <p class="py-8 text-center text-sm text-muted-foreground">Pas de planning pour aujourd'hui.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

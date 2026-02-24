@@ -19,5 +19,11 @@ services:
     App\:
         resource: '../src/'
 
+<<<<<<< HEAD
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+=======
+    App\Service\AIPlannerService:
+        arguments:
+            $apiKey: '%env(GEMINI_API_KEY)%'
+>>>>>>> ebaffe1c (first commit)

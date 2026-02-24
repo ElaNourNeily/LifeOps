@@ -1,0 +1,151 @@
+[2026-02-24 02:06:38] Starting persistence for user 4
+[2026-02-24 02:06:38] Processing day: 2024-05-20
+[2026-02-24 02:06:38] Creating new planning for date 2024-05-20
+[2026-02-24 02:06:38] Found 4 new activities
+[2026-02-24 02:06:38] Persisted activity: Planification de la semaine
+[2026-02-24 02:06:38] Persisted activity: Travail de fond / Deep Work
+[2026-02-24 02:06:38] Persisted activity: Gestion administrative et emails
+[2026-02-24 02:06:38] Persisted activity: Activité physique / Sport
+[2026-02-24 02:06:38] Found 2 free slots to possibly persist
+[2026-02-24 02:06:38] Persisted free slot as activity: Déjeuner et marche digestive.
+[2026-02-24 02:06:38] Persisted free slot as activity: Pause café ou étirements.
+[2026-02-24 02:06:38] Processing day: 2024-05-21
+[2026-02-24 02:06:38] Creating new planning for date 2024-05-21
+[2026-02-24 02:06:38] Found 2 new activities
+[2026-02-24 02:06:38] Persisted activity: Projet Principal - Session 1
+[2026-02-24 02:06:38] Persisted activity: Apprentissage / Veille
+[2026-02-24 02:06:38] Found 2 free slots to possibly persist
+[2026-02-24 02:06:38] Persisted free slot as activity: Repos complet.
+[2026-02-24 02:06:38] Persisted free slot as activity: Créneau flexible pour rendez-vous ou imprévus.
+[2026-02-24 02:06:38] Persistence complete (flush)
+[2026-02-24 02:06:39] Starting persistence for user 4
+[2026-02-24 02:06:39] Processing day: 2024-05-20
+[2026-02-24 02:06:39] Found 4 new activities
+[2026-02-24 02:06:39] Persisted activity: Planification Hebdomadaire
+[2026-02-24 02:06:39] Persisted activity: Travail de Fond (Deep Work)
+[2026-02-24 02:06:39] Persisted activity: Gestion Administrative & Emails
+[2026-02-24 02:06:39] Persisted activity: Réunions ou Collaboration
+[2026-02-24 02:06:39] Found 2 free slots to possibly persist
+[2026-02-24 02:06:39] Persisted free slot as activity: Déjeuner et marche active
+[2026-02-24 02:06:39] Persisted free slot as activity: Pause café et déconnexion
+[2026-02-24 02:06:39] Processing day: 2024-05-21
+[2026-02-24 02:06:39] Found 3 new activities
+[2026-02-24 02:06:39] Persisted activity: Bloc Projet Prioritaire
+[2026-02-24 02:06:39] Persisted activity: Suivi Dossiers
+[2026-02-24 02:06:39] Persisted activity: Veille & Formation
+[2026-02-24 02:06:39] Found 2 free slots to possibly persist
+[2026-02-24 02:06:39] Persisted free slot as activity: Pause déjeuner
+[2026-02-24 02:06:39] Persisted free slot as activity: Étirements
+[2026-02-24 02:06:39] Persistence complete (flush)
+[2026-02-24 02:06:39] Starting persistence for user 4
+[2026-02-24 02:06:39] Processing day: 2024-05-20
+[2026-02-24 02:06:39] Found 3 new activities
+[2026-02-24 02:06:39] Persisted activity: Planification de la semaine & Priorisation
+[2026-02-24 02:06:39] Persisted activity: Deep Work - Projet Prioritaire A
+[2026-02-24 02:06:39] Persisted activity: Traitement Emails & Administratif
+[2026-02-24 02:06:39] Found 2 free slots to possibly persist
+[2026-02-24 02:06:39] Persisted free slot as activity: Déjeuner et marche pour la récupération mentale.
+[2026-02-24 02:06:39] Persisted free slot as activity: Micro-pause hydratation.
+[2026-02-24 02:06:39] Processing day: 2024-05-21
+[2026-02-24 02:06:39] Found 2 new activities
+[2026-02-24 02:06:39] Persisted activity: Deep Work - Projet Prioritaire B
+[2026-02-24 02:06:39] Persisted activity: Réunions & Appels
+[2026-02-24 02:06:39] Found 1 free slots to possibly persist
+[2026-02-24 02:06:39] Persisted free slot as activity: Pause active ou étirements.
+[2026-02-24 02:06:39] Processing day: 2024-05-22
+[2026-02-24 02:06:39] Creating new planning for date 2024-05-22
+[2026-02-24 02:06:39] Found 2 new activities
+[2026-02-24 02:06:39] Persisted activity: Revue de milieu de semaine
+[2026-02-24 02:06:39] Persisted activity: Focus Créativité / R&D
+[2026-02-24 02:06:39] Found 1 free slots to possibly persist
+[2026-02-24 02:06:39] Persisted free slot as activity: Slot flexible pour imprévus ou sport.
+[2026-02-24 02:06:39] Persistence complete (flush)
+[2026-02-24 02:06:40] Starting persistence for user 4
+[2026-02-24 02:06:40] Processing day: 2024-05-20
+[2026-02-24 02:06:40] Found 3 new activities
+[2026-02-24 02:06:40] Persisted activity: Planification de la semaine et objectifs
+[2026-02-24 02:06:40] Persisted activity: Deep Work : Projet Principal
+[2026-02-24 02:06:40] Persisted activity: Traitement des emails et administratif
+[2026-02-24 02:06:40] Found 2 free slots to possibly persist
+[2026-02-24 02:06:40] Persisted free slot as activity: Déjeuner et marche en extérieur
+[2026-02-24 02:06:40] Persisted free slot as activity: Sport ou activité physique
+[2026-02-24 02:06:40] Processing day: 2024-05-21
+[2026-02-24 02:06:40] Found 2 new activities
+[2026-02-24 02:06:40] Persisted activity: Deep Work : Session 2
+[2026-02-24 02:06:40] Persisted activity: Réunions et appels
+[2026-02-24 02:06:40] Found 1 free slots to possibly persist
+[2026-02-24 02:06:40] Persisted free slot as activity: Pause lecture
+[2026-02-24 02:06:40] Processing day: 2024-05-22
+[2026-02-24 02:06:40] Found 2 new activities
+[2026-02-24 02:06:40] Persisted activity: Apprentissage et Formation
+[2026-02-24 02:06:40] Persisted activity: Revue de milieu de semaine
+[2026-02-24 02:06:40] Found 1 free slots to possibly persist
+[2026-02-24 02:06:40] Persisted free slot as activity: Micro-sieste ou méditation
+[2026-02-24 02:06:40] Processing day: 2024-05-23
+[2026-02-24 02:06:40] Creating new planning for date 2024-05-23
+[2026-02-24 02:06:40] Found 2 new activities
+[2026-02-24 02:06:40] Persisted activity: Finalisation dossiers critiques
+[2026-02-24 02:06:40] Persisted activity: Réseautage ou veille sectorielle
+[2026-02-24 02:06:40] Found 1 free slots to possibly persist
+[2026-02-24 02:06:40] Persisted free slot as activity: Temps libre créatif
+[2026-02-24 02:06:40] Processing day: 2024-05-24
+[2026-02-24 02:06:40] Creating new planning for date 2024-05-24
+[2026-02-24 02:06:40] Found 2 new activities
+[2026-02-24 02:06:40] Persisted activity: Tâches administratives résiduelles
+[2026-02-24 02:06:40] Persisted activity: Bilan hebdomadaire et préparation S+1
+[2026-02-24 02:06:40] Found 1 free slots to possibly persist
+[2026-02-24 02:06:40] Persisted free slot as activity: Décompression de fin de semaine
+[2026-02-24 02:06:40] Persistence complete (flush)
+[2026-02-24 02:16:09] Starting persistence for user 4
+[2026-02-24 02:16:09] Processing day: 2026-02-24
+[2026-02-24 02:16:09] Found 3 new activities
+[2026-02-24 02:16:09] Persisted activity: Routine Matinale et Planification
+[2026-02-24 02:16:09] Persisted activity: Session de Focus / Application pratique
+[2026-02-24 02:16:09] Persisted activity: Activité Physique ou Marche
+[2026-02-24 02:16:09] Found 3 free slots to possibly persist
+[2026-02-24 02:16:09] Persisted free slot as activity: Pause déjeuner prolongée et repos pour éviter la fatigue mentale.
+[2026-02-24 02:16:09] Persisted free slot as activity: Tâches administratives légères ou temps libre.
+[2026-02-24 02:16:09] Persisted free slot as activity: Déconnexion totale et préparation au sommeil.
+[2026-02-24 02:16:09] Found 1 modifications
+[2026-02-24 02:16:09] Updated activity: education
+[2026-02-24 02:16:09] Persistence complete (flush)
+[2026-02-24 02:16:10] Starting persistence for user 4
+[2026-02-24 02:16:10] Processing day: 2026-02-24
+[2026-02-24 02:16:10] Found 3 new activities
+[2026-02-24 02:16:10] Persisted activity: Planification de la journée
+[2026-02-24 02:16:10] Persisted activity: Traitement administratif et Emails
+[2026-02-24 02:16:10] Persisted activity: Veille et Lecture
+[2026-02-24 02:16:10] Found 3 free slots to possibly persist
+[2026-02-24 02:16:10] Persisted free slot as activity: Pause cognitive et marche légère après l'effort intellectuel.
+[2026-02-24 02:16:10] Persisted free slot as activity: Déjeuner et déconnexion.
+[2026-02-24 02:16:10] Persisted free slot as activity: Temps libre et préparation au sommeil.
+[2026-02-24 02:16:10] Found 1 modifications
+[2026-02-24 02:16:10] Updated activity: education
+[2026-02-24 02:16:10] Persistence complete (flush)
+[2026-02-24 02:29:50] Starting persistence for user 4
+[2026-02-24 02:29:50] Processing day: 2026-02-24
+[2026-02-24 02:29:50] Found 6 new activities
+[2026-02-24 02:29:50] Persisted activity: Travail Profond (Deep Work)
+[2026-02-24 02:29:50] Persisted activity: Gestion Administrative et Emails
+[2026-02-24 02:29:50] Persisted activity: Déjeuner et Marche
+[2026-02-24 02:29:50] Persisted activity: Réunions et Collaboration
+[2026-02-24 02:29:50] Persisted activity: Veille et Apprentissage
+[2026-02-24 02:29:50] Persisted activity: Planification et Revue du jour
+[2026-02-24 02:29:50] Found 4 free slots to possibly persist
+[2026-02-24 02:29:50] Persisted free slot as activity: Douche, petit-déjeuner nutritif et trajet.
+[2026-02-24 02:29:50] Persisted free slot as activity: Pause créative ou traitement des urgences de fin de journée.
+[2026-02-24 02:29:50] Persisted free slot as activity: Temps personnel, dîner et déconnexion numérique.
+[2026-02-24 02:29:50] Persisted free slot as activity: Routine de sommeil (lecture, méditation).
+[2026-02-24 02:29:50] Persistence complete (flush)
+[2026-02-24 02:39:55] Starting persistence for user 4
+[2026-02-24 02:39:55] Processing day: 2026-02-24
+[2026-02-24 02:39:55] Found 8 new activities
+[2026-02-24 02:39:55] Persisted activity: Petit-déjeuner et Routine matinale
+[2026-02-24 02:39:55] Persisted activity: Bloc de travail profond (Priorités hautes)
+[2026-02-24 02:39:55] Persisted activity: Déjeuner et Repos
+[2026-02-24 02:39:55] Persisted activity: Tâches administratives et Courriels
+[2026-02-24 02:39:55] Persisted activity: Apprentissage / Développement personnel
+[2026-02-24 02:39:55] Persisted activity: Loisir et Détente
+[2026-02-24 02:39:55] Persisted activity: Dîner et Préparation soirée
+[2026-02-24 02:39:55] Persisted activity: Déconnexion et lecture
+[2026-02-24 02:39:56] Persistence complete (flush)

@@ -20,4 +20,17 @@ class ActiviteRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Activite::class);
     }
+<<<<<<< HEAD
+=======
+
+    public function findByUser($user)
+    {
+        return $this->createQueryBuilder('a')
+            ->join('a.planning', 'p')
+            ->where('p.utilisateur = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
+>>>>>>> ebaffe1c (first commit)
 }

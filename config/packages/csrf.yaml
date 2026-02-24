@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 # Enable CSRF protection
 framework:
     csrf_protection: true
 
+=======
+# Enable CSRF protection for forms
+framework:
+    form:
+        csrf_protection:
+            enabled: true
+>>>>>>> ebaffe1c (first commit)

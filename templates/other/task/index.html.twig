@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tâches - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Tâches</h1>
+            <p class="text-muted-foreground">Gérez vos tâches et priorités</p>
+        </div>
+        <a href="{{ path('app_tasks_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouvelle Tâche
+        </a>
+    </div>
+
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Titre</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Statut</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Priorité</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date limite</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                {% for tache in taches %}
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <td class="p-4 align-middle font-medium">{{ tache.titre }}</td>
+                        <td class="p-4 align-middle">
+                            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
+                                {% if tache.statut == 'done' %}border-transparent bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]
+                                {% elseif tache.statut == 'in-progress' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                                {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                            ">
+                                {{ tache.statut|capitalize }}
+                            </div>
+                        </td>
+                         <td class="p-4 align-middle">
+                            <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
+                                {% if tache.priorite == 'high' %}border-transparent bg-destructive/20 text-destructive
+                                {% elseif tache.priorite == 'medium' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                                {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
+                            ">
+                                {{ tache.priorite|capitalize }}
+                            </div>
+                        </td>
+                        <td class="p-4 align-middle">
+                            {{ tache.deadline ? tache.deadline|date('d/m/Y H:i') : '-' }}
+                        </td>
+                        <td class="p-4 align-middle text-right">
+                             <div class="flex justify-end gap-2">
+                                <a href="{{ path('app_tasks_edit', {'id': tache.id}) }}" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-transparent text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                </a>
+                             </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="p-4 text-center text-muted-foreground">Aucune tâche trouvée</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

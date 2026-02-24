@@ -39,4 +39,75 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * Find users by optional search and sort parameters.
+     *
+     * @param string|null $search search term for name or email
+     * @param string|null $sort one of: 'created', 'name', 'email'
+     * @param string $order 'asc' or 'desc'
+     * @return Utilisateur[]
+     */
+    public function findByFilters(?string $search, ?string $sort, string $order = 'desc', ?int $minAge = null, ?int $maxAge = null): array
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        if ($search) {
+            $term = mb_strtolower(trim($search));
+            $orX = $qb->expr()->orX();
+            $orX->add($qb->expr()->like("LOWER(CONCAT(u.nom, ' ', u.prenom))", ':s'));
+            $orX->add($qb->expr()->like('LOWER(u.email)', ':s'));
+
+            $qb->andWhere($orX)
+               ->setParameter('s', '%' . $term . '%');
+        }
+
+        if ($minAge !== null) {
+            $qb->andWhere('u.age >= :minAge')
+               ->setParameter('minAge', $minAge);
+        }
+
+        if ($maxAge !== null) {
+            $qb->andWhere('u.age <= :maxAge')
+               ->setParameter('maxAge', $maxAge);
+        }
+
+        switch ($sort) {
+            case 'name':
+                $qb->orderBy('u.nom', $order);
+                break;
+            case 'email':
+                $qb->orderBy('u.email', $order);
+                break;
+            case 'created':
+            default:
+                $qb->orderBy('u.created_at', $order);
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function countTotalUsers(): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countAdmins(): int
+    {
+        // Counts users who have 'ROLE_ADMIN' as their primary role OR in their roles somehow.
+        // Since the current implementation stores role as a single string column:
+        return $this->createQueryBuilder('u')
+            ->select('count(u.id)')
+            ->where('u.role = :role')
+            ->setParameter('role', 'ROLE_ADMIN')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+>>>>>>> ebaffe1c (first commit)
 }

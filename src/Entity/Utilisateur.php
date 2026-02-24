@@ -9,8 +9,18 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+<<<<<<< HEAD
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+=======
+use App\Enum\UserRole;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use DateTimeImmutable;
+
+#[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cette adresse email.')]
+>>>>>>> ebaffe1c (first commit)
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -42,13 +52,89 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $empreinte_faciale = null;
 
+<<<<<<< HEAD
+=======
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $ban_until = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created_at = null;
+    
+    #[ORM\Column(type: Types::INTEGER, nullable: true)]
+    #[Assert\NotBlank(message: "L'âge est obligatoire.")]
+    #[Assert\Range(min: 0, max: 120, notInRangeMessage: "L'âge doit être compris entre {{ min }} et {{ max }} ans.")]
+    private ?int $age = null;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Feedback::class, orphanRemoval: true)]
+    private Collection $feedbacks;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: BilanSante::class, orphanRemoval: true)]
+    private Collection $bilanSantes;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: SuiviSante::class, orphanRemoval: true)]
+    private Collection $suiviSantes;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Budget::class, orphanRemoval: true)]
+    private Collection $budgets;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Depense::class, orphanRemoval: true)]
+    private Collection $depenses;
+>>>>>>> ebaffe1c (first commit)
 
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Planning::class, orphanRemoval: true)]
     private Collection $plannings;
 
+<<<<<<< HEAD
     public function __construct()
     {
         $this->plannings = new ArrayCollection();
+=======
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: TaskSpace::class, orphanRemoval: true)]
+    private Collection $taskSpaces;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Tache::class, orphanRemoval: true)]
+    private Collection $taches;
+
+    #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Objectif::class, orphanRemoval: true)]
+    private Collection $objectifs;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
+    #[ORM\Column(length: 6, nullable: true)]
+    private ?string $verificationCode = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $verificationCodeExpiresAt = null;
+
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $googleId = null;
+
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $facebookId = null;
+
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    private ?string $githubId = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $telephone = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $hasSetPassword = true;
+
+    public function __construct()
+    {
+        $this->feedbacks = new ArrayCollection();
+        $this->bilanSantes = new ArrayCollection();
+        $this->suiviSantes = new ArrayCollection();
+        $this->budgets = new ArrayCollection();
+        $this->depenses = new ArrayCollection();
+        $this->plannings = new ArrayCollection();
+        $this->taskSpaces = new ArrayCollection();
+        $this->taches = new ArrayCollection();
+        $this->objectifs = new ArrayCollection();
+        $this->created_at = new \DateTime();
+>>>>>>> ebaffe1c (first commit)
     }
 
     public function getId(): ?int
@@ -80,6 +166,46 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+<<<<<<< HEAD
+=======
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): static
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(?string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function hasSetPassword(): bool
+    {
+        return $this->hasSetPassword;
+    }
+
+    public function setHasSetPassword(bool $hasSetPassword): static
+    {
+        $this->hasSetPassword = $hasSetPassword;
+
+        return $this;
+    }
+
+
+>>>>>>> ebaffe1c (first commit)
     public function getEmail(): ?string
     {
         return $this->email;
@@ -107,12 +233,23 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
+<<<<<<< HEAD
         $role = $this->role;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
         
         if ($role && $role !== 'ROLE_USER') {
             $roles[] = $role;
+=======
+        $roles = [];
+
+        $roleEnum = UserRole::fromString($this->role ?? 'ROLE_USER');
+        $roles[] = $roleEnum->value;
+        
+        // Ensure at least one role exists (fallback to ROLE_USER)
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+>>>>>>> ebaffe1c (first commit)
         }
 
         return array_unique($roles);
@@ -123,12 +260,23 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // This is a bit tricky since we store a single role string but Symfony expects array
         // We'll take the first role that isn't ROLE_USER, or default to ROLE_USER
         foreach ($roles as $r) {
+<<<<<<< HEAD
             if ($r !== 'ROLE_USER') {
                 $this->role = $r;
                 return $this;
             }
         }
         $this->role = 'ROLE_USER';
+=======
+            $value = is_string($r) ? $r : (method_exists($r, 'value') ? $r->value : null);
+            if ($value && $value !== 'ROLE_USER') {
+                $this->role = $value;
+                return $this;
+            }
+        }
+
+        $this->role = UserRole::USER->value;
+>>>>>>> ebaffe1c (first commit)
 
         return $this;
     }
@@ -145,6 +293,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+<<<<<<< HEAD
+=======
+    public function getRoleEnum(): UserRole
+    {
+        return UserRole::fromString($this->role ?? UserRole::USER->value);
+    }
+
+    public function setRoleEnum(UserRole $role): static
+    {
+        $this->role = $role->value;
+
+        return $this;
+    }
+
+>>>>>>> ebaffe1c (first commit)
     /**
      * @see PasswordAuthenticatedUserInterface
      */
@@ -181,6 +344,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         // $this->plainPassword = null;
     }
 
+<<<<<<< HEAD
     public function getPhoto(): ?string
     {
         return $this->photo;
@@ -192,6 +356,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+=======
+
+>>>>>>> ebaffe1c (first commit)
 
     public function getEmpreinteFaciale(): ?string
     {
@@ -205,6 +372,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+<<<<<<< HEAD
 
     /**
      * @return Collection<int, Planning>
@@ -219,20 +387,166 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->plannings->contains($planning)) {
             $this->plannings->add($planning);
             $planning->setUtilisateur($this);
+=======
+    public function getBanUntil(): ?\DateTimeInterface
+    {
+        return $this->ban_until;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $createdAt): static
+    {
+        $this->created_at = $createdAt;
+
+        return $this;
+    }
+
+    public function getAge(): ?int
+    {
+        return $this->age;
+    }
+
+    public function setAge(?int $age): static
+    {
+        $this->age = $age;
+
+        return $this;
+    }
+
+    public function setBanUntil(?\DateTimeInterface $ban_until): static
+    {
+        $this->ban_until = $ban_until;
+
+        return $this;
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->ban_until !== null && $this->ban_until > new \DateTime();
+    }
+
+    /**
+     * @return Collection<int, Feedback>
+     */
+    public function getFeedbacks(): Collection
+    {
+        return $this->feedbacks;
+    }
+
+    public function addFeedback(Feedback $feedback): static
+    {
+        if (!$this->feedbacks->contains($feedback)) {
+            $this->feedbacks->add($feedback);
+            $feedback->setUtilisateur($this);
+>>>>>>> ebaffe1c (first commit)
         }
 
         return $this;
     }
 
+<<<<<<< HEAD
     public function removePlanning(Planning $planning): static
     {
         if ($this->plannings->removeElement($planning)) {
             // set the owning side to null (unless already changed)
             if ($planning->getUtilisateur() === $this) {
                 $planning->setUtilisateur(null);
+=======
+    public function removeFeedback(Feedback $feedback): static
+    {
+        if ($this->feedbacks->removeElement($feedback)) {
+            // set the owning side to null (unless already changed)
+            if ($feedback->getUtilisateur() === $this) {
+                $feedback->setUtilisateur(null);
+>>>>>>> ebaffe1c (first commit)
             }
         }
 
         return $this;
     }
+<<<<<<< HEAD
+=======
+    
+    // Other getters and setters for relationships will be generated or inferred, 
+    // but for brevity I will add them as I create the related entities to avoid errors 
+    // due to missing classes. Actually, I am referencing classes that don't exist yet (Feedback, etc.).
+    // PHP doesn't strictly check for existence at file creation time if namespace is correct, 
+    // but IDEs might complain. Doctrine will definitely complain during schema validation if they don't exist.
+    // I will proceed to create all files.
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getVerificationCode(): ?string
+    {
+        return $this->verificationCode;
+    }
+
+    public function setVerificationCode(?string $verificationCode): static
+    {
+        $this->verificationCode = $verificationCode;
+
+        return $this;
+    }
+
+    public function getVerificationCodeExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->verificationCodeExpiresAt;
+    }
+
+    public function setVerificationCodeExpiresAt(?\DateTimeImmutable $verificationCodeExpiresAt): static
+    {
+        $this->verificationCodeExpiresAt = $verificationCodeExpiresAt;
+
+        return $this;
+    }
+
+    public function getGoogleId(): ?string
+    {
+        return $this->googleId;
+    }
+
+    public function setGoogleId(?string $googleId): static
+    {
+        $this->googleId = $googleId;
+
+        return $this;
+    }
+
+    public function getFacebookId(): ?string
+    {
+        return $this->facebookId;
+    }
+
+    public function setFacebookId(?string $facebookId): static
+    {
+        $this->facebookId = $facebookId;
+
+        return $this;
+    }
+
+    public function getGithubId(): ?string
+    {
+        return $this->githubId;
+    }
+
+    public function setGithubId(?string $githubId): static
+    {
+        $this->githubId = $githubId;
+
+        return $this;
+    }
+>>>>>>> ebaffe1c (first commit)
 }

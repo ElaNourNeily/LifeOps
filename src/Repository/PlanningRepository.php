@@ -20,4 +20,24 @@ class PlanningRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Planning::class);
     }
+<<<<<<< HEAD
+=======
+
+    /**
+     * @return Planning[]
+     */
+    public function findByUserAndPeriod($userId, \DateTimeInterface $start, \DateTimeInterface $end): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.utilisateur = :userId')
+            ->andWhere('p.date >= :start')
+            ->andWhere('p.date <= :end')
+            ->setParameter('userId', $userId)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('p.date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+>>>>>>> ebaffe1c (first commit)
 }

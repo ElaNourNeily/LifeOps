@@ -15,4 +15,11 @@ return [
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
     Symfonycasts\TailwindBundle\SymfonycastsTailwindBundle::class => ['all' => true],
+<<<<<<< HEAD
+=======
+    SymfonyCasts\Bundle\VerifyEmail\SymfonyCastsVerifyEmailBundle::class => ['all' => true],
+    KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
+    SymfonyCasts\Bundle\ResetPassword\SymfonyCastsResetPasswordBundle::class => ['all' => true],
+    Symfony\UX\Chartjs\ChartjsBundle::class => ['all' => true],
+>>>>>>> ebaffe1c (first commit)
 ];

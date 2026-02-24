@@ -1,0 +1,60 @@
+<div class="activity-row p-5 rounded-xl border border-border bg-card/50 shadow-sm transition-all hover:bg-card group relative">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {# Title & Categorie #}
+        <div class="md:col-span-4 space-y-4">
+            <div class="space-y-1.5">
+                {{ form_label(form.titre, null, {'label_attr': {'class': 'text-xs font-semibold uppercase tracking-wider text-muted-foreground'}}) }}
+                {{ form_widget(form.titre, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                {{ form_errors(form.titre) }}
+            </div>
+            <div class="space-y-1.5">
+                {{ form_label(form.categorie, null, {'label_attr': {'class': 'text-xs font-semibold uppercase tracking-wider text-muted-foreground'}}) }}
+                {{ form_widget(form.categorie, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                {{ form_errors(form.categorie) }}
+            </div>
+        </div>
+
+        {# Times #}
+        <div class="md:col-span-3 space-y-4">
+            <div class="space-y-1.5">
+                {{ form_label(form.heure_debut_estimee, null, {'label_attr': {'class': 'text-xs font-semibold uppercase tracking-wider text-muted-foreground'}}) }}
+                {{ form_widget(form.heure_debut_estimee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                {{ form_errors(form.heure_debut_estimee) }}
+            </div>
+            <div class="space-y-1.5">
+                {{ form_label(form.heure_fin_estimee, null, {'label_attr': {'class': 'text-xs font-semibold uppercase tracking-wider text-muted-foreground'}}) }}
+                {{ form_widget(form.heure_fin_estimee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'}}) }}
+                {{ form_errors(form.heure_fin_estimee) }}
+            </div>
+        </div>
+
+        {# Color & Status #}
+        <div class="md:col-span-4 space-y-4">
+            <div class="space-y-1.5">
+                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1.5">Couleur & Priorité</span>
+                <div class="flex items-center gap-4">
+                    <div class="flex-1">
+                        {{ form_widget(form.couleur) }}
+                        {{ form_errors(form.couleur) }}
+                    </div>
+                    <div class="w-24">
+                        {{ form_widget(form.priorite, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-2 py-2 text-xs focus-visible:outline-none'}}) }}
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="space-y-1.5">
+                     {{ form_label(form.niveau_urgence, null, {'label_attr': {'class': 'text-xs font-semibold uppercase tracking-wider text-muted-foreground'}}) }}
+                     {{ form_widget(form.niveau_urgence, {'attr': {'class': 'w-full h-8 accent-primary mt-2'}}) }}
+                </div>
+            </div>
+        </div>
+
+        {# Remove Button #}
+        <div class="md:col-span-1 flex items-center justify-end">
+            <button type="button" class="remove-activity p-2 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all" title="Supprimer l'activité">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+    </div>
+</div>
