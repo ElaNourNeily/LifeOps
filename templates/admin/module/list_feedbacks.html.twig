@@ -4,9 +4,106 @@
 
 {% block body %}
 <div class="flex flex-col gap-8">
-    <div>
-        <h1 class="text-2xl font-bold text-card-foreground">Feedbacks</h1>
-        <p class="text-sm text-muted-foreground">Retours des utilisateurs du Front Office</p>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-card-foreground">Feedbacks</h1>
+            <p class="text-sm text-muted-foreground">Retours des utilisateurs du Front Office</p>
+        </div>
+    </div>
+
+    {# Statistics Dashboard #}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {# Key Metrics #}
+        <div class="md:col-span-1 space-y-4">
+            <div class="bg-card border border-border rounded-xl p-5 shadow-sm">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">Total Feedbacks</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-3xl font-black text-foreground">{{ stats.total }}</span>
+                    <span class="text-muted-foreground text-sm mb-1 pb-0.5">messages</span>
+                </div>
+            </div>
+            <a href="{{ path('app_admin_feedback', {filter: 'flagged'}) }}" class="block bg-card border border-border rounded-xl p-5 shadow-sm border-l-4 {{ stats.flagged > 0 ? 'border-l-destructive shadow-lg shadow-destructive/5 hover:border-destructive/50' : 'border-l-green-500 hover:border-green-500/50' }} transition-all group {{ currentFilter == 'flagged' ? 'ring-2 ring-destructive ring-offset-2 ring-offset-background' : '' }}">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1 group-hover:text-destructive transition-colors">Feedbacks Signalés</span>
+                <div class="flex items-end gap-2">
+                    <span class="text-3xl font-black {{ stats.flagged > 0 ? 'text-destructive' : 'text-green-500' }}">{{ stats.flagged }}</span>
+                    <span class="text-muted-foreground text-sm mb-1 pb-0.5">à vérifier</span>
+                </div>
+                {% if currentFilter == 'flagged' %}
+                    <span class="text-[10px] text-destructive font-bold mt-2 block uppercase animate-pulse">Filtrage actif</span>
+                {% endif %}
+            </a>
+            {% if currentFilter %}
+                <a href="{{ path('app_admin_feedback') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold rounded-lg border border-border transition-all w-full justify-center">
+                    <span>🔄</span> Tous les feedbacks
+                </a>
+            {% endif %}
+            <div class="bg-card border border-border rounded-xl p-5 shadow-sm">
+                <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">Note Moyenne</span>
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl font-black text-yellow-500">{{ stats.average }}</span>
+                    <div class="flex text-yellow-500 text-xs">
+                        {% for i in 1..5 %}
+                            <span>{{ i <= stats.average ? '⭐' : '☆' }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Distribution Bars #}
+        <div class="md:col-span-3 bg-card border border-border rounded-xl p-6 shadow-sm">
+            <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-4">Répartition des notes</span>
+            <div class="space-y-3">
+                {% for star, count in stats.distribution|reverse(true) %}
+                    {% set percentage = stats.total > 0 ? (count / stats.total * 100) : 0 %}
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-1 w-12 shrink-0">
+                            <span class="text-sm font-bold text-foreground">{{ star }}</span>
+                            <span class="text-yellow-500 text-xs">⭐</span>
+                        </div>
+                        <div class="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
+                            <div class="h-full bg-primary transition-all duration-500" style="width: {{ percentage }}%"></div>
+                        </div>
+                        <div class="w-16 text-right">
+                            <span class="text-sm font-medium text-foreground">{{ count }}</span>
+                            <span class="text-[10px] text-muted-foreground ml-1">({{ percentage|round }}%)</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Filters Bar #}
+    <div class="flex flex-wrap items-center gap-6 bg-card border border-border p-4 rounded-xl shadow-sm">
+        <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider">Filtrer par Type :</span>
+            <div class="flex bg-secondary p-1 rounded-lg border border-border">
+                <a href="{{ path('app_admin_feedback', {filter: currentFilter, sort: currentSort, direction: currentDirection}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all {{ currentType is empty ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background/50' }}">
+                    Tous
+                </a>
+                <a href="{{ path('app_admin_feedback', {type: 'bug', filter: currentFilter, sort: currentSort, direction: currentDirection}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all {{ currentType == 'bug' ? 'bg-destructive text-white shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background/50' }}">
+                    Bugs
+                </a>
+                <a href="{{ path('app_admin_feedback', {type: 'suggestion', filter: currentFilter, sort: currentSort, direction: currentDirection}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all {{ currentType == 'suggestion' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background/50' }}">
+                    Suggestions
+                </a>
+                <a href="{{ path('app_admin_feedback', {type: 'autre', filter: currentFilter, sort: currentSort, direction: currentDirection}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all {{ currentType == 'autre' ? 'bg-blue-500 text-white shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-background/50' }}">
+                    Autres
+                </a>
+            </div>
+        </div>
+
+        {% if currentFilter or currentType %}
+            <a href="{{ path('app_admin_feedback') }}" class="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1 ml-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                Réinitialiser les filtres
+            </a>
+        {% endif %}
     </div>
 
     <div class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
@@ -14,31 +111,80 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-secondary/50 text-muted-foreground">
                     <tr>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Statut</th>
                         <th class="px-6 py-4 font-medium uppercase tracking-wider">Utilisateur</th>
                         <th class="px-6 py-4 font-medium uppercase tracking-wider">Message</th>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_feedback', {filter: currentFilter, type: currentType, sort: 'note', direction: currentSort == 'note' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Note
+                                <span class="text-[10px] {{ currentSort == 'note' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ currentSort == 'note' ? (currentDirection == 'DESC' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_feedback', {filter: currentFilter, type: currentType, sort: 'date', direction: currentSort == 'date' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Date
+                                <span class="text-[10px] {{ currentSort == 'date' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ currentSort == 'date' ? (currentDirection == 'DESC' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border">
                     {% for feedback in feedbacks %}
-                        <tr class="hover:bg-secondary/30 transition-colors">
+                        <tr class="hover:bg-secondary/30 transition-colors {{ not feedback.isVisible ? 'bg-destructive/5' : '' }}">
+                            <td class="px-6 py-4">
+                                {% if not feedback.isVisible %}
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-destructive/10 text-destructive text-[10px] font-bold uppercase border border-destructive/20 animate-pulse">
+                                        ⚠️ Flagged
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-green-500/10 text-green-500 text-[10px] font-bold uppercase border border-green-500/20">
+                                        Valide
+                                    </span>
+                                {% endif %}
+                            </td>
                             <td class="px-6 py-4">
                                 <span class="font-medium text-card-foreground">
                                     {{ feedback.utilisateur ? feedback.utilisateur.nom ~ ' ' ~ feedback.utilisateur.prenom : 'Anonyme' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-muted-foreground max-w-md truncate">{{ feedback.message }}</td>
-                            <td class="px-6 py-4 text-muted-foreground text-xs">
-                                {{ feedback.created_at ? feedback.created_at|date('d/m/Y H:i') : 'N/A' }}
+                            <td class="px-6 py-4 text-muted-foreground max-w-md">
+                                <p class="{{ not feedback.isVisible ? 'italic text-destructive/80' : '' }} line-clamp-2">
+                                    {{ feedback.message }}
+                                </p>
                             </td>
                             <td class="px-6 py-4">
-                                <button class="text-primary hover:text-primary/80 transition-colors">Détails</button>
+                                <div class="flex text-yellow-500 text-[10px]">
+                                    {% for i in 1..5 %}
+                                        <span>{{ i <= feedback.note ? '⭐' : '☆' }}</span>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-muted-foreground text-xs">
+                                {{ feedback.date ? feedback.date|date('d/m/Y H:i') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    {% if not feedback.isVisible %}
+                                        <form method="post" action="{{ path('app_admin_user_ban', {id: feedback.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir bannir cet utilisateur pour 30 jours ?');" class="inline">
+                                            <button type="submit" class="px-3 py-1 bg-destructive text-white rounded-md text-[10px] font-bold hover:bg-destructive/90 transition-all shadow-lg shadow-destructive/20">Bannir</button>
+                                        </form>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('app_admin_feedback_delete', {id: feedback.id}) }}" onsubmit="return confirm('Supprimer ce feedback ?');" class="inline">
+                                        <button type="submit" class="p-2 text-muted-foreground hover:text-destructive transition-colors" title="Supprimer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-muted-foreground">Aucun feedback trouvé.</td>
+                            <td colspan="5" class="px-6 py-8 text-center text-muted-foreground">Aucun feedback trouvé.</td>
                         </tr>
                     {% endfor %}
                 </tbody>

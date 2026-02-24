@@ -1,0 +1,157 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Laisser un avis - LifeOps{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-[calc(100vh-160px)]">
+    <div class="w-full max-w-2xl">
+        <div class="bg-card/50 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden">
+            {# Header #}
+            <div class="bg-primary/5 px-8 py-10 border-b border-border text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary mb-6 text-3xl">
+                    💬
+                </div>
+                <h1 class="text-3xl font-bold tracking-tight text-foreground mb-3">Votre avis compte</h1>
+                <p class="text-muted-foreground text-lg max-w-md mx-auto">
+                    Aidez-nous à améliorer LifeOps en partageant votre expérience ou en signalant un problème.
+                </p>
+            </div>
+
+            {# Form #}
+            <div class="p-8 md:p-10">
+                {{ form_start(form, {'attr': {'class': 'space-y-8'}}) }}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            {{ form_label(form.type_feedback) }}
+                            {{ form_widget(form.type_feedback) }}
+                            {{ form_errors(form.type_feedback) }}
+                        </div>
+                        <div class="space-y-2">
+                            {{ form_label(form.module_cible) }}
+                            {{ form_widget(form.module_cible) }}
+                            {{ form_errors(form.module_cible) }}
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-card-foreground">Votre note</label>
+                        <div class="flex items-center gap-3" id="star-rating">
+                            {% for i in 1..5 %}
+                                <button type="button" data-value="{{ i }}" class="star-btn transition-all duration-200 hover:scale-125">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="star-icon text-muted-foreground/40 fill-transparent pointer-events-none transition-all duration-300">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                    </svg>
+                                </button>
+                            {% endfor %}
+                        </div>
+                        {{ form_widget(form.note) }}
+                        {{ form_errors(form.note) }}
+                    </div>
+
+                    <div class="space-y-2">
+                        {{ form_label(form.message) }}
+                        {{ form_widget(form.message) }}
+                        {{ form_errors(form.message) }}
+                    </div>
+
+                    <div class="pt-4 flex items-center gap-4">
+                        <button type="submit" class="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                            Envoyer mon retour 🚀
+                        </button>
+                        <a href="{{ path('app_dashboard') }}" class="bg-secondary hover:bg-secondary/80 text-foreground font-medium py-3 px-6 rounded-xl transition-all border border-border">
+                            Annuler
+                        </a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+
+            {# Footer Note #}
+            <div class="bg-secondary/20 px-8 py-6 border-t border-border flex items-center gap-4 text-sm text-muted-foreground">
+                <div class="w-10 h-10 rounded-full bg-background flex items-center justify-center text-xl">
+                    🤝
+                </div>
+                <p>Vos retours sont lus par notre équipe et nous aident à prioriser les prochaines fonctionnalités.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function initStarRating() {
+        const starContainer = document.getElementById('star-rating');
+        if (!starContainer) return;
+
+        const stars = starContainer.querySelectorAll('.star-btn');
+        const noteInput = document.getElementById('{{ form.note.vars.id }}');
+
+        if (!noteInput) return;
+
+        stars.forEach(star => {
+            // Remove old listeners if any (though Turbo usually replaces the body)
+            star.onclick = null;
+            star.onmouseenter = null;
+            star.onmouseleave = null;
+
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                noteInput.value = value;
+                updateStars(value);
+            });
+
+            star.addEventListener('mouseenter', function() {
+                updateStars(this.getAttribute('data-value'));
+            });
+
+            star.addEventListener('mouseleave', function() {
+                updateStars(noteInput.value || 0);
+            });
+        });
+
+        function updateStars(value) {
+            stars.forEach(star => {
+                const starValue = star.getAttribute('data-value');
+                const icon = star.querySelector('.star-icon');
+                
+                if (starValue <= value) {
+                    icon.classList.remove('text-muted-foreground/40', 'fill-transparent');
+                    icon.style.color = '#fbbf24';
+                    icon.style.fill = '#fbbf24';
+                    icon.style.filter = 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.8))';
+                } else {
+                    icon.classList.add('text-muted-foreground/40', 'fill-transparent');
+                    icon.style.color = '';
+                    icon.style.fill = '';
+                    icon.style.filter = 'none';
+                }
+            });
+        }
+
+        // Set initial state
+        updateStars(noteInput.value || 0);
+    }
+
+    document.addEventListener('DOMContentLoaded', initStarRating);
+    document.addEventListener('turbo:load', initStarRating);
+</script>
+
+<style>
+    .star-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        outline: none;
+    }
+    /* Custom styles for form elements to match glassmorphism */
+    select, input, textarea {
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+    select:focus, input:focus, textarea:focus {
+        border-color: #fbbf24 !important; /* amber-400 */
+        background-color: rgba(0, 0, 0, 0.5) !important;
+    }
+</style>
+{% endblock %}

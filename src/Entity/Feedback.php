@@ -36,6 +36,9 @@ class Feedback
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
+    #[ORM\Column]
+    private bool $isVisible = true;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class Feedback
     public function setUtilisateur(?Utilisateur $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function isVisible(): bool
+    {
+        return $this->isVisible;
+    }
+
+    public function setIsVisible(bool $isVisible): static
+    {
+        $this->isVisible = $isVisible;
 
         return $this;
     }

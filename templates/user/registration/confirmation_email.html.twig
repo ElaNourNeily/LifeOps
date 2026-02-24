@@ -1,18 +1,23 @@
-<h1>Bonjour !</h1>
+{% extends 'emails/base_email.html.twig' %}
 
-<p>
-    Merci de vous être inscrit sur LifeOps. <br>
-    Votre code de vérification est : 
-</p>
-
-<div style="font-size: 24px; font-weight: bold; background: #f4f4f4; padding: 10px; display: inline-block; border-radius: 5px;">
-    {{ verificationCode }}
-</div>
-
-<p>
-    Ce code expirera dans 15 minutes.
-</p>
-
-<p>
-    Si vous n'avez pas créé de compte, vous pouvez ignorer cet email.
-</p>
+{% block body %}
+    <h1>Bienvenue sur LifeOps !</h1>
+    
+    <p>Merci de vous être inscrit. Nous sommes ravis de vous compter parmi nos membres.</p>
+    
+    <p>Pour finaliser la création de votre compte, veuillez utiliser le code de vérification ci-dessous :</p>
+    
+    <div class="code-display">
+        {{ verificationCode }}
+    </div>
+    
+    <p><strong>Note :</strong> Ce code expirera dans 15 minutes pour des raisons de sécurité.</p>
+    
+    <div class="divider"></div>
+    
+    <p style="font-size: 14px; color: #666666;">
+        Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité. Votre adresse n'aura pas été validée.
+    </p>
+    
+    <p>À très bientôt,<br>L'équipe LifeOps</p>
+{% endblock %}

@@ -22,10 +22,15 @@ class AdminDashboardController extends AbstractController
         $search = $request->query->get('q');
         $minAge = $request->query->get('minAge');
         $maxAge = $request->query->get('maxAge');
+
+        // Convert age strings to integers if they are not empty
+        $minAgeInt = ($minAge !== null && $minAge !== '') ? (int) $minAge : null;
+        $maxAgeInt = ($maxAge !== null && $maxAge !== '') ? (int) $maxAge : null;
+
         $sort = $request->query->get('sort', 'created');
         $order = strtolower($request->query->get('order', 'desc')) === 'asc' ? 'asc' : 'desc';
 
-        $users = $userRepo->findByFilters($search, $sort, $order, $minAge, $maxAge);
+        $users = $userRepo->findByFilters($search, $sort, $order, $minAgeInt, $maxAgeInt);
 
         $totalUsers = $userRepo->countTotalUsers(); // Global count
         $adminUsers = $userRepo->countAdmins(); // Global admin count
@@ -90,5 +95,29 @@ class AdminDashboardController extends AbstractController
         $em->flush();
 
         return new JsonResponse(['success' => true, 'message' => 'Utilisateur débanni']);
+    }
+
+    #[Route('/admin/users/{id}/promote', name: 'app_admin_promote_user', methods: ['POST'])]
+    public function promoteUser(
+        Utilisateur $user,
+        EntityManagerInterface $em,
+        Request $request
+    ): JsonResponse {
+        $data = json_decode($request->getContent(), true);
+        $token = $data['_token'] ?? '';
+
+        if (!$this->isCsrfTokenValid('promote' . $user->getId(), $token)) {
+            return new JsonResponse(['error' => 'Invalid CSRF token'], 400);
+        }
+
+        $roles = $user->getRoles();
+        if (!in_array('ROLE_ADMIN', $roles)) {
+            $roles[] = 'ROLE_ADMIN';
+            $user->setRoles(array_values($roles));
+            $em->flush();
+            return new JsonResponse(['success' => true, 'message' => sprintf('%s est maintenant administrateur.', $user->getEmail())]);
+        }
+
+        return new JsonResponse(['error' => 'User is already an admin'], 400);
     }
 }

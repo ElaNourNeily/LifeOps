@@ -1,21 +1,27 @@
-<h1>Bonjour !</h1>
+{% extends 'emails/base_email.html.twig' %}
 
-<p>
-    Pour réinitialiser votre mot de passe LifeOps, veuillez cliquer sur le lien ci-dessous :
-</p>
-
-<p>
-    <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">
-        {{ url('app_reset_password', {token: resetToken.token}) }}
-    </a>
-</p>
-
-<p>
-    Ce lien expirera dans <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
-</p>
-
-<p>
-    Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.
-</p>
-
-<p>Merci,<br>L'équipe LifeOps</p>
+{% block body %}
+    <h1>Réinitialisation de votre mot de passe</h1>
+    
+    <p>Bonjour,</p>
+    
+    <p>Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte LifeOps.</p>
+    
+    <p>Pour définir un nouveau mot de passe, veuillez cliquer sur le bouton ci-dessous :</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="{{ url('app_reset_password', {token: resetToken.token}) }}" class="button">
+            Réinitialiser mon mot de passe
+        </a>
+    </div>
+    
+    <p>Ce lien expirera dans <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.</p>
+    
+    <div class="divider"></div>
+    
+    <p style="font-size: 14px; color: #666666;">
+        Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité. Votre mot de passe restera inchangé.
+    </p>
+    
+    <p>L'équipe LifeOps</p>
+{% endblock %}

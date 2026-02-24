@@ -1,0 +1,98 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Feedbacks de {{ user.prenom }} {{ user.nom }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-col gap-8 text-foreground">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-4 mb-2">
+                <a href="{{ path('app_admin_feedback') }}" class="text-muted-foreground hover:text-primary transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </a>
+                <h1 class="text-2xl font-bold">Feedbacks de {{ user.prenom }} {{ user.nom }}</h1>
+            </div>
+            <p class="text-sm text-muted-foreground ml-9">Retours envoyés par cet utilisateur</p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="flex items-center bg-card border border-border rounded-lg p-1">
+                <a href="{{ path('app_admin_user_feedbacks', {id: user.id, sort: 'date', direction: currentSort == 'date' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 {{ currentSort == 'date' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <span>📅 Date</span>
+                    {% if currentSort == 'date' %}
+                        <span>{{ currentDirection == 'DESC' ? '▼' : '▲' }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ path('app_admin_user_feedbacks', {id: user.id, sort: 'note', direction: currentSort == 'note' and currentDirection == 'DESC' ? 'ASC' : 'DESC'}) }}" 
+                   class="px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 {{ currentSort == 'note' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-secondary' }}">
+                    <span>⭐ Note</span>
+                    {% if currentSort == 'note' %}
+                        <span>{{ currentDirection == 'DESC' ? '▼' : '▲' }}</span>
+                    {% endif %}
+                </a>
+            </div>
+            <div class="bg-card border border-border px-4 py-2 rounded-lg text-sm text-muted-foreground flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]"></span>
+                {{ feedbacks|length }} retour(s)
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-4">
+        {% for feedback in feedbacks %}
+            <div class="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-4 flex-1">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider 
+                                {% if feedback.typeFeedback == 'bug' %}bg-destructive/10 text-destructive border border-destructive/20
+                                {% elseif feedback.typeFeedback == 'suggestion' %}bg-primary/10 text-primary border border-primary/20
+                                {% else %}bg-secondary text-muted-foreground border border-border{% endif %}">
+                                {{ feedback.typeFeedback|capitalize }}
+                            </span>
+                            <span class="text-xs text-muted-foreground">
+                                • {{ feedback.date|date('d/m/Y H:i') }}
+                            </span>
+                            <div class="flex items-center gap-1 text-yellow-500 ml-4">
+                                {% for i in 1..5 %}
+                                    <span class="text-xs">{{ i <= feedback.note ? '⭐' : '☆' }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="bg-background/50 rounded-lg p-4 border border-border/50 text-sm leading-relaxed">
+                            {{ feedback.message }}
+                        </div>
+
+                        <div class="flex items-center gap-6">
+                            <div class="text-xs">
+                                <span class="text-muted-foreground uppercase tracking-tighter font-bold mr-2">Module :</span>
+                                <span class="font-medium text-foreground bg-secondary px-2 py-0.5 rounded">
+                                    {{ feedback.moduleCible|capitalize }}
+                                </span>
+                            </div>
+                            <div class="text-xs">
+                                <span class="text-muted-foreground uppercase tracking-tighter font-bold mr-2">Statut :</span>
+                                <span class="font-medium px-2 py-0.5 rounded
+                                    {% if feedback.statut == 'nouveau' %}text-blue-400 bg-blue-500/10
+                                    {% elseif feedback.statut == 'traité' %}text-green-400 bg-green-500/10
+                                    {% else %}text-muted-foreground bg-secondary{% endif %}">
+                                    {{ feedback.statut|capitalize }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-16 bg-card border border-dashed border-border rounded-2xl text-center">
+                <div class="w-16 h-16 rounded-full bg-secondary items-center justify-center flex text-3xl mb-4">
+                    📭
+                </div>
+                <h3 class="font-bold mb-1">Aucun feedback</h3>
+                <p class="text-sm text-muted-foreground">Cet utilisateur n'a pas encore partagé d'avis.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

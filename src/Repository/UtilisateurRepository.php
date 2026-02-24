@@ -79,6 +79,9 @@ class UtilisateurRepository extends ServiceEntityRepository implements PasswordU
             case 'email':
                 $qb->orderBy('u.email', $order);
                 break;
+            case 'age':
+                $qb->orderBy('u.age', $order);
+                break;
             case 'created':
             default:
                 $qb->orderBy('u.created_at', $order);

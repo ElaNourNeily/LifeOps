@@ -14,23 +14,21 @@
 
     <!-- Users Stats -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <!-- Utilisateurs -->
-        <a href="{{ path('app_admin_users') }}">
-            <div class="border-border bg-card transition-colors hover:bg-secondary/50 rounded-lg border shadow-sm">
-                <div class="p-5">
-                    <div class="flex items-start justify-between">
-                        <div class="flex flex-col gap-1">
-                            <p class="text-sm text-muted-foreground">Total Utilisateurs</p>
-                            <p class="text-3xl font-bold text-card-foreground">{{ total_users }}</p>
-                            <p class="text-xs text-muted-foreground">{{ admin_users }} admin</p>
-                        </div>
-                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(199,89%,48%)]/15 text-[hsl(199,89%,48%)]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </div>
+        {# Utilisateurs (Static info) #}
+        <div class="border-border bg-card rounded-lg border shadow-sm">
+            <div class="p-5">
+                <div class="flex items-start justify-between">
+                    <div class="flex flex-col gap-1">
+                        <p class="text-sm text-muted-foreground">Total Utilisateurs</p>
+                        <p class="text-3xl font-bold text-card-foreground">{{ total_users }}</p>
+                        <p class="text-xs text-muted-foreground">{{ admin_users }} admin</p>
+                    </div>
+                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(199,89%,48%)]/15 text-[hsl(199,89%,48%)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                     </div>
                 </div>
             </div>
-        </a>
+        </div>
     </div>
 
     <!-- Users List Section -->
@@ -51,17 +49,6 @@
                     <input type="number" name="maxAge" placeholder="Age max" value="{{ maxAge|default('') }}" class="w-20 px-3 py-2 rounded border border-border bg-background text-foreground focus:outline-none" />
                 </div>
 
-                <select name="sort" class="mt-2 sm:mt-0 sm:ml-2 px-2 py-2 rounded border border-border bg-background text-foreground">
-                    <option value="created" {{ sort == 'created' ? 'selected' }}>| Date création</option>
-                    <option value="name" {{ sort == 'name' ? 'selected' }}>Nom</option>
-                    <option value="email" {{ sort == 'email' ? 'selected' }}>Email</option>
-                </select>
-
-                <select name="order" class="mt-2 sm:mt-0 sm:ml-2 px-2 py-2 rounded border border-border bg-background text-foreground">
-                    <option value="desc" {{ order == 'desc' ? 'selected' }}>Décroissant</option>
-                    <option value="asc" {{ order == 'asc' ? 'selected' }}>Croissant</option>
-                </select>
-
                 <div class="mt-2 sm:mt-0 sm:ml-2">
                     <button type="submit" class="px-3 py-2 rounded bg-[hsl(160,84%,39%)] text-[hsl(220,20%,7%)] font-medium">Filtrer</button>
                     <a href="{{ path('app_admin_dashboard') }}" class="ml-2 px-3 py-2 rounded border border-border text-muted-foreground">Réinitialiser</a>
@@ -72,10 +59,38 @@
             <table class="w-full text-left text-sm">
                 <thead class="bg-secondary/50 text-muted-foreground">
                     <tr>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Nom / Prénom</th>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Créé le</th>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Email</th>
-                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Age</th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_dashboard', app.request.query.all|merge({sort: 'name', order: sort == 'name' and order == 'asc' ? 'desc' : 'asc'})) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Nom / Prénom
+                                <span class="text-[10px] {{ sort == 'name' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ sort == 'name' ? (order == 'desc' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_dashboard', app.request.query.all|merge({sort: 'created', order: sort == 'created' and order == 'asc' ? 'desc' : 'asc'})) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Créé le
+                                <span class="text-[10px] {{ sort == 'created' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ sort == 'created' ? (order == 'desc' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_dashboard', app.request.query.all|merge({sort: 'email', order: sort == 'email' and order == 'asc' ? 'desc' : 'asc'})) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Email
+                                <span class="text-[10px] {{ sort == 'email' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ sort == 'email' ? (order == 'desc' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">
+                            <a href="{{ path('app_admin_dashboard', app.request.query.all|merge({sort: 'age', order: sort == 'age' and order == 'asc' ? 'desc' : 'asc'})) }}" class="flex items-center gap-1 hover:text-foreground transition-colors group">
+                                Age
+                                <span class="text-[10px] {{ sort == 'age' ? 'text-primary' : 'text-muted-foreground/30' }}">
+                                    {{ sort == 'age' ? (order == 'desc' ? '▼' : '▲') : '⇅' }}
+                                </span>
+                            </a>
+                        </th>
                         <th class="px-6 py-4 font-medium uppercase tracking-wider">Rôle</th>
                         <th class="px-6 py-4 font-medium uppercase tracking-wider">Actions</th>
                     </tr>
@@ -84,10 +99,14 @@
                     {% for user in users %}
                         <tr class="hover:bg-secondary/30 transition-colors">
                             <td class="px-6 py-4">
-                                <span class="font-medium text-card-foreground">{{ user.nom }} {{ user.prenom }}</span>
+                                <span class="font-medium text-card-foreground">
+                                    {{ (user.nom ~ ' ' ~ user.prenom)|highlight(search) }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-muted-foreground">{{ user.createdAt ? user.createdAt|date('Y-m-d') : '' }}</td>
-                            <td class="px-6 py-4 text-muted-foreground">{{ user.email }}</td>
+                            <td class="px-6 py-4 text-muted-foreground">
+                                {{ user.email|highlight(search) }}
+                            </td>
                             <td class="px-6 py-4 text-muted-foreground">{{ user.age ?? '-' }} ans</td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors {{ 'ROLE_ADMIN' in user.roles ? 'bg-primary/15 text-primary border-primary/30' : 'bg-secondary text-muted-foreground border-border' }}">
@@ -111,6 +130,16 @@
                                             <span>Débannir</span>
                                         </button>
                                     {% endif %}
+
+                                    {% if 'ROLE_ADMIN' not in user.roles %}
+                                        <button 
+                                            onclick="if(confirm('Promouvoir {{ user.prenom }} en administrateur ?')) { promoteUser({{ user.id }}, '{{ csrf_token('promote' ~ user.id) }}'); }"
+                                            class="px-3 py-1.5 text-xs font-medium rounded bg-primary/20 text-primary hover:bg-primary/30 transition-colors border border-primary/30"
+                                            title="Promouvoir au rang d'administrateur">
+                                            <span>Promouvoir Admin</span>
+                                        </button>
+                                    {% endif %}
+
                                     <button 
                                         onclick="if(confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) { deleteUser({{ user.id }}); }"
                                         class="px-3 py-1.5 text-xs font-medium rounded bg-red-500/20 text-red-600 hover:bg-red-500/30 transition-colors border border-red-500/30"
@@ -180,6 +209,26 @@ function unbanUser(userId) {
             location.reload();
         } else {
             alert('Erreur lors du débannissement');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function promoteUser(userId, csrfToken) {
+    fetch(`/admin/users/${userId}/promote`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ _token: csrfToken })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Erreur: ' + (data.error || 'Inconnue'));
         }
     })
     .catch(error => console.error('Error:', error));
