@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+{% block title %}Inviter des membres — {{ taskSpace.nom }} - LifeOps{% endblock %}
+{% block body %}
+
+<div class="max-w-2xl mx-auto">
+    {# Breadcrumb #}
+    <div class="flex items-center gap-2 mb-6 text-xs text-muted-foreground">
+        <a href="{{ path('app_taskspace_index') }}" class="hover:text-foreground">Projets</a>
+        <span>/</span>
+        <a href="{{ path('app_taskspace_board', {id: taskSpace.id}) }}" class="hover:text-foreground">{{ taskSpace.nom }}</a>
+        <span>/</span>
+        <span class="text-foreground">Inviter</span>
+    </div>
+
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-foreground">Inviter des membres</h1>
+        <p class="text-muted-foreground">Recherchez un utilisateur par email ou nom pour l'ajouter au projet.</p>
+    </div>
+
+    {# ── SEARCH BAR ── #}
+    <div class="relative mb-6">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <input type="text" id="user-search-input" 
+               class="flex h-12 w-full rounded-md border border-input bg-background pl-10 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" 
+               placeholder="Taper un nom ou email...">
+    </div>
+
+    {# ── SEARCH RESULTS CONTAINER ── #}
+    <div id="search-results" class="bg-card border border-border rounded-xl shadow-sm overflow-hidden hidden">
+        <ul id="results-list" class="divide-y divide-border">
+            </ul>
+    </div>
+
+    <div class="mt-6 text-center">
+        <a href="{{ path('app_taskspace_members', {id: taskSpace.id}) }}" class="text-sm text-primary hover:underline">
+            Voir les membres actuels de l'équipe →
+        </a>
+    </div>
+</div>
+
+{# ── AJAX SEARCH JAVASCRIPT ── #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('user-search-input');
+    const resultsContainer = document.getElementById('search-results');
+    const resultsList = document.getElementById('results-list');
+    
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        debounceTimer = setTimeout(() => {
+            // Fetch users from the controller (you must have a route returning JSON for this)
+            fetch(`{{ path('app_taskspace_search_users', {id: taskSpace.id}) }}?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(users => {
+                    resultsList.innerHTML = '';
+                    
+                    if (users.length === 0) {
+                        resultsList.innerHTML = '<li class="p-4 text-center text-sm text-muted-foreground">Aucun utilisateur trouvé.</li>';
+                    } else {
+                        users.forEach(user => {
+                            // Generate the Invite Form for each user
+                            const li = document.createElement('li');
+                            li.className = "flex items-center justify-between p-4 hover:bg-muted/10 transition-colors";
+                            li.innerHTML = `
+                                <div class="flex items-center gap-3">
+                                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
+                                        ${user.avatar}
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-semibold text-foreground">${user.name}</p>
+                                        <p class="text-xs text-muted-foreground">${user.email}</p>
+                                    </div>
+                                </div>
+                                <form method="POST" action="/taskspace/{{ taskSpace.id }}/invite/${user.id}/add">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-8 px-3">
+                                        + Inviter
+                                    </button>
+                                </form>
+                            `;
+                            resultsList.appendChild(li);
+                        });
+                    }
+                    resultsContainer.classList.remove('hidden');
+                });
+        }, 300); // 300ms debounce
+    });
+});
+</script>
+{% endblock %}

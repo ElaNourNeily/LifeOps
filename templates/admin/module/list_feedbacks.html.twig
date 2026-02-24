@@ -1,0 +1,49 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Feedbacks{% endblock %}
+
+{% block body %}
+<div class="flex flex-col gap-8">
+    <div>
+        <h1 class="text-2xl font-bold text-card-foreground">Feedbacks</h1>
+        <p class="text-sm text-muted-foreground">Retours des utilisateurs du Front Office</p>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-secondary/50 text-muted-foreground">
+                    <tr>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Utilisateur</th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Message</th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-4 font-medium uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for feedback in feedbacks %}
+                        <tr class="hover:bg-secondary/30 transition-colors">
+                            <td class="px-6 py-4">
+                                <span class="font-medium text-card-foreground">
+                                    {{ feedback.utilisateur ? feedback.utilisateur.nom ~ ' ' ~ feedback.utilisateur.prenom : 'Anonyme' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-muted-foreground max-w-md truncate">{{ feedback.message }}</td>
+                            <td class="px-6 py-4 text-muted-foreground text-xs">
+                                {{ feedback.created_at ? feedback.created_at|date('d/m/Y H:i') : 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <button class="text-primary hover:text-primary/80 transition-colors">Détails</button>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="px-6 py-8 text-center text-muted-foreground">Aucun feedback trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

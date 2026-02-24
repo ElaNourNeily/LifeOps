@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Transaction - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="mx-auto max-w-2xl">
+        <h1 class="mb-8 text-3xl font-bold tracking-tight text-foreground">Nouvelle transaction</h1>
+        
+        <form method="post" class="space-y-6">
+            <div>
+                <label for="title" class="block text-sm font-medium text-foreground">Titre</label>
+                <input type="text" name="title" id="title" required class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                    <label for="amount" class="block text-sm font-medium text-foreground">Montant (€)</label>
+                    <input type="number" step="0.01" name="amount" id="amount" required class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+                </div>
+                <div>
+                    <label for="type" class="block text-sm font-medium text-foreground">Type</label>
+                    <select name="type" id="type" class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+                        <option value="expense">Dépense</option>
+                        <option value="income">Revenu</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div>
+                     <label for="category" class="block text-sm font-medium text-foreground">Catégorie</label>
+                     <input type="text" name="category" id="category" list="categories" required class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+                     <datalist id="categories">
+                        <option value="Nourriture">
+                        <option value="Logement">
+                        <option value="Transport">
+                        <option value="Loisirs">
+                        <option value="Salaire">
+                        <option value="Freelance">
+                        <option value="Sante">
+                     </datalist>
+                </div>
+                 <div>
+                    <label for="date" class="block text-sm font-medium text-foreground">Date</label>
+                    <input type="date" name="date" id="date" required value="{{ "now"|date("Y-m-d") }}" class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label for="note" class="block text-sm font-medium text-foreground">Note (optionnel)</label>
+                <textarea name="note" id="note" rows="2" class="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-foreground shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <a href="{{ path('app_finances_index') }}" class="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary">Annuler</a>
+                <button type="submit" class="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
