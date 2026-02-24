@@ -1,7 +1,7 @@
 <aside class="flex h-screen flex-col border-r border-border bg-[hsl(220,20%,5%)] transition-all duration-300 w-[250px]" id="sidebar">
     <!-- Brand -->
     <div class="flex h-16 items-center gap-3 border-b border-border px-4">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3d1d66]">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[hsl(160,84%,39%)]">
             <i data-lucide="sparkles" class="h-5 w-5 text-[hsl(220,20%,7%)]"></i>
         </div>
         <div class="flex flex-col sidebar-text">
@@ -14,27 +14,10 @@
     <nav class="flex-1 overflow-y-auto px-3 py-4">
         {% set navSections = [
             {
-                'label': 'General',
+                'label': 'Admin',
                 'items': [
                     {'label': 'Dashboard', 'href': path('app_admin_dashboard'), 'icon': 'layout-dashboard'},
-                    {'label': 'Utilisateurs', 'href': path('app_admin_users'), 'icon': 'users'},
-                    {'label': 'Feedback', 'href': path('app_admin_feedback'), 'icon': 'message-square'}
-                ]
-            },
-            {
-                'label': 'Modules',
-                'items': [
-                    {'label': 'Sante', 'href': path('app_admin_sante'), 'icon': 'heart'},
-                    {'label': 'Finances', 'href': path('app_admin_finances'), 'icon': 'dollar-sign'},
-                    {'label': 'Temps', 'href': path('app_admin_temps'), 'icon': 'clock'},
-                    {'label': 'Taches', 'href': path('app_admin_taches'), 'icon': 'list-todo'},
-                    {'label': 'Objectifs', 'href': path('app_admin_objectifs'), 'icon': 'target'}
-                ]
-            },
-            {
-                'label': 'Retour',
-                'items': [
-                    {'label': 'Front Office', 'href': path('app_dashboard'), 'icon': 'external-link'}
+                    {'label': 'Utilisateurs', 'href': path('app_admin_users'), 'icon': 'users'}
                 ]
             }
         ] %}
@@ -49,8 +32,8 @@
                         {% set isActive = app.request.pathinfo == item.href %}
                         <li>
                             <a href="{{ item.href }}"
-                               class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {{ isActive ? 'bg-[#3d1d66]/10 text-[#3d1d66]' : 'text-[hsl(215,14%,55%)] hover:bg-[hsl(220,16%,12%)] hover:text-[hsl(210,20%,95%)]' }}">
-                                <i data-lucide="{{ item.icon }}" class="h-5 w-5 shrink-0 {{ isActive ? 'text-[#3d1d66]' : '' }}"></i>
+                               class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {{ isActive ? 'bg-[hsl(160,84%,39%)]/10 text-[hsl(160,84%,39%)]' : 'text-[hsl(215,14%,55%)] hover:bg-[hsl(220,16%,12%)] hover:text-[hsl(210,20%,95%)]' }}">
+                                <i data-lucide="{{ item.icon }}" class="h-5 w-5 shrink-0 {{ isActive ? 'text-[hsl(160,84%,39%)]' : '' }}"></i>
                                 <span class="sidebar-text">{{ item.label }}</span>
                             </a>
                         </li>
@@ -61,7 +44,15 @@
     </nav>
 
     <!-- Collapse toggle -->
-    <div class="border-t border-border p-3">
+    <div class="border-t border-border p-3 space-y-2">
+        <form action="{{ path('app_logout') }}" method="POST" class="w-full">
+            <input type="hidden" name="_token" value="{{ csrf_token('logout') }}">
+            <button type="submit"
+                    class="flex w-full items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-500/80 hover:bg-red-500/10 hover:text-red-500 transition-colors">
+                <i data-lucide="log-out" class="h-5 w-5"></i>
+                <span class="sidebar-text">Déconnexion</span>
+            </button>
+        </form>
         <button id="sidebar-toggle"
                 class="flex w-full items-center justify-center rounded-lg p-2 text-[hsl(215,14%,55%)] transition-colors hover:bg-[hsl(220,16%,12%)] hover:text-[hsl(210,20%,95%)]">
             <i data-lucide="chevron-left" class="h-5 w-5"></i>

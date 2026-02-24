@@ -19,34 +19,31 @@ class TaskSpace
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
+    #[ORM\Column(length: 255)]
+    private ?string $type = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $dateCreation = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $date_creation = null;
 
-    #[ORM\Column]
-    private ?int $sprintDuration = 14;
-
-    #[ORM\Column(length: 50)]
-    private ?string $status = 'Active'; // Active | Archived
-
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'taskSpaces')]
+    #[ORM\ManyToOne(inversedBy: 'taskSpaces')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Utilisateur $utilisateur = null; // Creator / Owner
+    private ?Utilisateur $utilisateur = null;
 
     #[ORM\OneToMany(mappedBy: 'taskSpace', targetEntity: Tache::class, orphanRemoval: true)]
     private Collection $taches;
 
-    #[ORM\ManyToMany(targetEntity: Utilisateur::class)]
-    #[ORM\JoinTable(name: 'task_space_members')]
-    private Collection $members; // Team Members
+    #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: 'integer')]
+    private int $Duration = 14;
+
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
 
     public function __construct()
     {
         $this->taches = new ArrayCollection();
-        $this->members = new ArrayCollection();
-        $this->dateCreation = new \DateTime();
     }
 
     public function getId(): ?int
@@ -62,50 +59,31 @@ class TaskSpace
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
+
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getType(): ?string
     {
-        return $this->description;
+        return $this->type;
     }
 
-    public function setDescription(?string $description): static
+    public function setType(string $type): static
     {
-        $this->description = $description;
+        $this->type = $type;
+
         return $this;
     }
 
     public function getDateCreation(): ?\DateTimeInterface
     {
-        return $this->dateCreation;
+        return $this->date_creation;
     }
 
-    public function setDateCreation(\DateTimeInterface $dateCreation): static
+    public function setDateCreation(\DateTimeInterface $date_creation): static
     {
-        $this->dateCreation = $dateCreation;
-        return $this;
-    }
+        $this->date_creation = $date_creation;
 
-    public function getSprintDuration(): ?int
-    {
-        return $this->sprintDuration;
-    }
-
-    public function setSprintDuration(int $sprintDuration): static
-    {
-        $this->sprintDuration = $sprintDuration;
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
         return $this;
     }
 
@@ -117,6 +95,7 @@ class TaskSpace
     public function setUtilisateur(?Utilisateur $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
+
         return $this;
     }
 
@@ -128,44 +107,61 @@ class TaskSpace
         return $this->taches;
     }
 
-    public function addTache(Tache $tache): static
+    public function addTach(Tache $tach): static
     {
-        if (!$this->taches->contains($tache)) {
-            $this->taches->add($tache);
-            $tache->setTaskSpace($this);
+        if (!$this->taches->contains($tach)) {
+            $this->taches->add($tach);
+            $tach->setTaskSpace($this);
         }
+
         return $this;
     }
 
-    public function removeTache(Tache $tache): static
+    public function removeTach(Tache $tach): static
     {
-        if ($this->taches->removeElement($tache)) {
-            if ($tache->getTaskSpace() === $this) {
-                $tache->setTaskSpace(null);
+        if ($this->taches->removeElement($tach)) {
+            // set the owning side to null (unless already changed)
+            if ($tach->getTaskSpace() === $this) {
+                $tach->setTaskSpace(null);
             }
         }
+
         return $this;
     }
 
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getMembers(): Collection
+    public function getDescription(): ?string
     {
-        return $this->members;
+        return $this->description;
     }
 
-    public function addMember(Utilisateur $member): static
+    public function setDescription(string $description): static
     {
-        if (!$this->members->contains($member)) {
-            $this->members->add($member);
-        }
+        $this->description = $description;
+
         return $this;
     }
 
-    public function removeMember(Utilisateur $member): static
+    public function getDuration(): ?string
     {
-        $this->members->removeElement($member);
+        return $this->Duration;
+    }
+
+    public function setDuration(string $Duration): static
+    {
+        $this->Duration = $Duration;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
         return $this;
     }
 }

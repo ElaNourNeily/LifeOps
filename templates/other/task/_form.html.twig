@@ -1,0 +1,69 @@
+{{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
+
+    {# Titre #}
+    <div>
+        {{ form_label(form.titre, 'Titre de la tâche', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+        {{ form_widget(form.titre, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        {{ form_errors(form.titre, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+    </div>
+
+    {# Priorité et Difficulté sur la même ligne #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% if form.priorite is defined %}
+        <div>
+            {{ form_label(form.priorite, 'Priorité', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+            {{ form_widget(form.priorite, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        </div>
+        {% endif %}
+        
+        {% if form.difficulte is defined %}
+        <div>
+            {{ form_label(form.difficulte, 'Difficulté (1 à 5)', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+            {{ form_widget(form.difficulte, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        </div>
+        {% endif %}
+    </div>
+
+    {# Statut et Projet (TaskSpace) sur la même ligne #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% if form.statut is defined %}
+        <div>
+            {{ form_label(form.statut, 'Statut de la tâche', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+            {{ form_widget(form.statut, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        </div>
+        {% endif %}
+
+        {% if form.taskSpace is defined %}
+        <div>
+            {{ form_label(form.taskSpace, 'Projet associé (Optionnel)', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+            {{ form_widget(form.taskSpace, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        </div>
+        {% endif %}
+    </div>
+
+    {# Deadline (Optionnelle) #}
+    {% if form.deadline is defined %}
+    <div>
+        {{ form_label(form.deadline, 'Date limite d\'échéance', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+        {{ form_widget(form.deadline, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+    </div>
+    {% endif %}
+
+    {# Description #}
+    <div>
+        {{ form_label(form.description, 'Description détaillée', {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': 'flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary'}}) }}
+        {{ form_errors(form.description, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+    </div>
+
+    {# Boutons d'action #}
+    <div class="flex justify-end gap-3 pt-4 border-t border-border">
+        <a href="{{ path('app_tasks_board') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+            Annuler
+        </a>
+        <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 shadow-sm">
+            {{ button_label|default('Enregistrer la tâche') }}
+        </button>
+    </div>
+
+{{ form_end(form) }}

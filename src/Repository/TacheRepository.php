@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\Tache;
+use App\Entity\TaskSpace;
+use App\Entity\Utilisateur;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,119 +22,99 @@ class TacheRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Tache::class);
     }
-
-    public function search(\App\Entity\Utilisateur $user, ?string $term, ?string $sortBy = null, ?string $sortDirection = 'ASC'): array
+    // ── SOLO: personal tasks with no TaskSpace ──
+    public function findSoloTasks(Utilisateur $user): array
     {
-        $qb = $this->createQueryBuilder('t')
-            ->andWhere('t.utilisateur = :user')
-            ->setParameter('user', $user);
-
-        if ($term) {
-            $prioriteVal = null;
-            $termLower = strtolower($term);
-            if (str_contains('haute', $termLower))
-                $prioriteVal = 3;
-            elseif (str_contains('moyenne', $termLower))
-                $prioriteVal = 2;
-            elseif (str_contains('basse', $termLower))
-                $prioriteVal = 1;
-
-            $qb->leftJoin('t.taskSpace', 'ts')
-                ->leftJoin('t.assignedTo', 'a');
-
-            $orX = $qb->expr()->orX(
-                't.titre LIKE :term',
-                't.description LIKE :term',
-                't.statut LIKE :term',
-                'ts.nom LIKE :term',
-                'a.nom LIKE :term',
-                'a.prenom LIKE :term',
-                'a.email LIKE :term'
-            );
-
-            if ($prioriteVal) {
-                $orX->add('t.priorite = :prio');
-                $qb->setParameter('prio', $prioriteVal);
-            }
-
-            $qb->andWhere($orX)
-                ->setParameter('term', '%' . $term . '%');
-        }
-
-        if ($sortBy) {
-            $direction = strtoupper($sortDirection) === 'DESC' ? 'DESC' : 'ASC';
-            if ($sortBy === 'priorite') {
-                $qb->orderBy('t.priorite', $direction);
-            }
-            elseif ($sortBy === 'statut') {
-                $qb->orderBy('t.statut', $direction);
-            }
-            else {
-                $qb->orderBy('t.deadline', 'ASC');
-            }
-        }
-        else {
-            $qb->orderBy('t.deadline', 'ASC');
-        }
-
-        return $qb->getQuery()->getResult();
+        return $this->createQueryBuilder('t')
+            ->where('t.utilisateur = :user')
+            ->andWhere('t.taskSpace IS NULL')
+            ->setParameter('user', $user)
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
-    public function getGlobalStats(): array
+    // ── LEADER: all tasks inside a TaskSpace (full view) ──
+    public function findAllInTaskSpace(TaskSpace $taskSpace): array
     {
-        $qb = $this->createQueryBuilder('t');
-        $total = (int) $qb->select('COUNT(t.id)')->getQuery()->getSingleScalarResult();
-        
-        $qb = $this->createQueryBuilder('t');
-        $completed = (int) $qb->select('COUNT(t.id)')
-            ->where('t.statut = :status')
-            ->setParameter('status', 'Done')
-            ->getQuery()->getSingleScalarResult();
-            
-        $qb = $this->createQueryBuilder('t');
-        $overdue = (int) $qb->select('COUNT(t.id)')
-            ->where('t.deadline < :now')
-            ->andWhere('t.statut != :status')
-            ->setParameter('now', new \DateTime())
-            ->setParameter('status', 'Done')
-            ->getQuery()->getSingleScalarResult();
+        return $this->createQueryBuilder('t')
+            ->where('t.taskSpace = :ts')
+            ->setParameter('ts', $taskSpace)
+            ->orderBy('t.priorite', 'DESC')
+            ->addOrderBy('t.deadline', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 
-        $qb = $this->createQueryBuilder('t');
-        $statusDist = $qb->select('t.statut, COUNT(t.id) as count')
+    // ── MEMBER: only tasks assigned to this user inside a TaskSpace ──
+    public function findAssignedToMember(Utilisateur $user, TaskSpace $taskSpace): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.utilisateur = :user')
+            ->andWhere('t.taskSpace = :ts')
+            ->setParameter('user', $user)
+            ->setParameter('ts', $taskSpace)
+            ->orderBy('t.deadline', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    // ── WORKLOAD: count tasks per member in a TaskSpace (for leader dashboard) ──
+    public function countPerMemberInTaskSpace(TaskSpace $taskSpace): array
+    {
+        $rows = $this->createQueryBuilder('t')
+            ->select('IDENTITY(t.utilisateur) as userId, COUNT(t.id) as total')
+            ->where('t.taskSpace = :ts')
+            ->setParameter('ts', $taskSpace)
+            ->groupBy('t.utilisateur')
+            ->getQuery()
+            ->getResult();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[$row['userId']] = (int) $row['total'];
+        }
+        return $result;
+    }
+
+    // ── STATS per statut for a TaskSpace ──
+    public function countByStatutInTaskSpace(TaskSpace $taskSpace): array
+    {
+        $rows = $this->createQueryBuilder('t')
+            ->select('t.statut, COUNT(t.id) as total')
+            ->where('t.taskSpace = :ts')
+            ->setParameter('ts', $taskSpace)
             ->groupBy('t.statut')
-            ->getQuery()->getResult();
+            ->getQuery()
+            ->getResult();
 
-        $qb = $this->createQueryBuilder('t');
-        $priorityDist = $qb->select('t.priorite, COUNT(t.id) as count')
-            ->groupBy('t.priorite')
-            ->getQuery()->getResult();
-
-        return [
-            'total' => $total,
-            'completed' => $completed,
-            'overdue' => $overdue,
-            'statusDistribution' => $statusDist,
-            'priorityDistribution' => $priorityDist,
-        ];
+        $base = ['todo' => 0, 'in-progress' => 0, 'review' => 0, 'done' => 0];
+        foreach ($rows as $row) {
+            $base[$row['statut']] = (int) $row['total'];
+        }
+        return $base;
     }
 
-    public function getActivityTrends(): array
+    // ── All tasks for a user (solo + group) ──
+    public function findAllForUser(Utilisateur $user): array
     {
-        $conn = $this->getEntityManager()->getConnection();
-        $sqlCreation = "SELECT DATE(created_at) as date, COUNT(id) as count 
-                        FROM tache 
-                        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-                        GROUP BY DATE(created_at)
-                        ORDER BY date ASC";
-        return $conn->fetchAllAssociative($sqlCreation);
+        return $this->createQueryBuilder('t')
+            ->where('t.utilisateur = :user')
+            ->setParameter('user', $user)
+            ->orderBy('t.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
-
-    public function getAverageDuration(): float
+    public function findRecentlyAssignedToUser(\App\Entity\Utilisateur $user, int $limit = 5): array
     {
-        $qb = $this->createQueryBuilder('t');
-        return (float) $qb->select('AVG(t.realTimeSpent)')
-            ->where('t.statut = :status')
-            ->setParameter('status', 'Done')
-            ->getQuery()->getSingleScalarResult();
+        return $this->createQueryBuilder('t')
+            ->join('t.taskSpace', 'ts')
+            ->where('t.utilisateur = :user')
+            ->andWhere('ts.utilisateur != :user') // Group tasks only, not solo/leader tasks
+            ->setParameter('user', $user)
+            ->orderBy('t.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

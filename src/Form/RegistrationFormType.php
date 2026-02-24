@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
@@ -28,6 +29,11 @@ class RegistrationFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'attr' => ['placeholder' => 'john.doe@example.com'],
                 'label' => 'Email'
+            ])
+            ->add('age', IntegerType::class, [
+                'required' => false,
+                'label' => 'Âge',
+                'attr' => ['placeholder' => 'ex: 30']
             ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,

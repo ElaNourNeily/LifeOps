@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Bilan - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Bilan de Santé</h1>
+            <p class="text-muted-foreground">Évaluez votre état général</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                
+                <div class="grid grid-cols-2 gap-4">
+                     <div>
+                        {{ form_label(form.dateDebut, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.dateDebut, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.dateFin, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.dateFin, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                     <div>
+                        {{ form_label(form.scoreForme, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.scoreForme, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                    <div>
+                        {{ form_label(form.niveauFatigue, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.niveauFatigue, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                     <div>
+                        {{ form_label(form.niveauStress, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                        {{ form_widget(form.niveauStress, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.recommandations, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
+                    {{ form_widget(form.recommandations, {'attr': {'class': 'flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <a href="{{ path('app_health_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        Enregistrer
+                    </button>
+                </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

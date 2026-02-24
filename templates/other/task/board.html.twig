@@ -1,0 +1,178 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mon Tableau Kanban - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-foreground">Mon Tableau Personnel</h1>
+            <p class="text-sm text-muted-foreground mt-1">Gérez et priorisez vos tâches en toute simplicité.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ path('app_taskspace_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 shadow-sm">
+                🏢 Mes Projets
+            </a>
+            <button id="aiBtn" class="inline-flex items-center justify-center rounded-md text-sm font-medium border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 shadow-sm">
+                ✨ Demander à l'IA
+            </button>
+            <a href="{{ path('app_tasks_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 shadow-sm">
+                📋 Vue Liste
+            </a>
+            <a href="{{ path('app_tasks_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 shadow-sm">
+                ➕ Nouvelle Tâche
+            </a>
+        </div>
+    </div>
+
+    <div id="aiOverloadAlert" class="hidden mb-6 p-4 rounded-lg border-l-4 border-destructive bg-destructive/10 text-destructive text-sm font-medium shadow-sm flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 mt-0.5"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        <div id="aiOverloadMessage"></div>
+    </div>
+
+    {% set colConfig = {
+        'todo':        {'label': 'À faire',      'dot': 'bg-secondary',             'count_class': 'bg-secondary text-secondary-foreground'},
+        'in-progress': {'label': 'En cours',     'dot': 'bg-[hsl(var(--warning))]', 'count_class': 'bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]'},
+        'review':      {'label': 'En révision',  'dot': 'bg-blue-500',              'count_class': 'bg-blue-500/20 text-blue-400'},
+        'done':        {'label': 'Terminé',      'dot': 'bg-[hsl(var(--success))]', 'count_class': 'bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]'}
+    } %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {% for colKey, tasks in columns %}
+            {% set cfg = colConfig[colKey] %}
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between px-2 py-1 bg-muted/50 rounded-lg border border-border">
+                    <div class="flex items-center gap-2">
+                        <div class="h-2.5 w-2.5 rounded-full {{ cfg.dot }}"></div>
+                        <span class="text-sm font-bold text-foreground">{{ cfg.label }}</span>
+                    </div>
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold {{ cfg.count_class }}">{{ tasks|length }}</span>
+                </div>
+
+                <div class="flex flex-col gap-3 min-h-[250px] p-1">
+                    {% for tache in tasks %}
+                        <div data-task-id="{{ tache.id }}" class="task-card relative rounded-xl border border-border bg-card text-card-foreground shadow-sm p-4 flex flex-col gap-3 hover:shadow-md hover:border-primary/50 transition-all duration-200">
+                            {% set prioLabel = {'low': 'Basse', 'medium': 'Moyenne', 'high': 'Haute', 'urgent': 'Urgente'} %}
+                            <div class="flex items-center justify-between">
+                                <div class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold
+                                    {% if tache.priorite == 'urgent' or tache.priorite == 'high' %}bg-destructive/10 text-destructive border border-destructive/20
+                                    {% elseif tache.priorite == 'medium' %}bg-[hsl(var(--warning))]/10 text-[hsl(var(--warning))] border border-[hsl(var(--warning))]/20
+                                    {% else %}bg-secondary text-secondary-foreground border border-border{% endif %}">
+                                    {{ prioLabel[tache.priorite] ?? tache.priorite }}
+                                </div>
+                                <div class="flex items-center gap-1" title="Difficulté : {{ tache.difficulte }}/5">
+                                    {% for i in 1..5 %}
+                                        <div class="h-1.5 w-1.5 rounded-full {{ i <= tache.difficulte ? 'bg-primary' : 'bg-muted' }}"></div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <a href="{{ path('app_tasks_show', {id: tache.id}) }}" class="text-base font-semibold text-foreground hover:text-primary transition-colors line-clamp-2">
+                                    {{ tache.titre }}
+                                </a>
+                                {% if tache.description %}
+                                    <p class="text-sm text-muted-foreground mt-1.5 line-clamp-2">{{ tache.description }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center justify-between pt-3 mt-auto border-t border-border">
+                                {% if tache.deadline %}
+                                    {% set overdue = tache.deadline < date() and tache.statut != 'done' %}
+                                    <span class="text-xs font-medium {{ overdue ? 'text-destructive' : 'text-muted-foreground' }} flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                        {{ tache.deadline|date('d/m/Y') }}{% if overdue %}<span class="text-destructive font-bold ml-1">Retard</span>{% endif %}
+                                    </span>
+                                {% else %}
+                                    <span class="text-xs text-muted-foreground italic">Pas de date</span>
+                                {% endif %}
+                                <div class="flex items-center gap-1">
+                                    <a href="{{ path('app_tasks_edit', {id: tache.id}) }}" class="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="rounded-xl border border-dashed border-border/60 bg-muted/20 p-6 flex flex-col items-center justify-center gap-2 text-center min-h-[120px]">
+                            <span class="text-sm text-muted-foreground font-medium">Aucune tâche</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="aiModal" class="fixed inset-0 bg-background/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-all duration-200">
+        <div class="bg-card border border-border rounded-xl shadow-2xl w-[500px] max-w-[90%] p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-border pb-3">
+                <h3 class="text-xl font-bold text-foreground flex items-center gap-2">
+                    <span class="text-primary">✨</span> Priorisation IA
+                </h3>
+                <button onclick="closeAiModal()" class="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full p-1 transition-colors">✕</button>
+            </div>
+            <div id="aiContent" class="text-base space-y-4 text-foreground">Chargement...</div>
+        </div>
+    </div>
+
+<script>
+const aiBtn = document.getElementById("aiBtn");
+const modal = document.getElementById("aiModal");
+const content = document.getElementById("aiContent");
+let aiOrder = [];
+
+aiBtn.addEventListener("click", async () => {
+    modal.classList.remove("hidden"); modal.classList.add("flex");
+    content.innerHTML = "Analyse en cours...";
+    try {
+        const response = await fetch("{{ path('app_tasks_ai_suggestions') }}");
+        const data = await response.json();
+        aiOrder = data.suggested_order || [];
+        if (aiOrder.length === 0) {
+            content.innerHTML = "<div class='text-center py-4'><p class='text-lg font-medium'>🎉 Tout est sous contrôle !</p></div>";
+            return;
+        }
+        highlightTasks();
+        content.innerHTML = `
+            <div class="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
+                <p class="text-sm font-medium text-foreground">✅ L'ordre a été appliqué visuellement.</p>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="clearHighlight(); closeAiModal()" class="px-4 py-2 rounded-md border text-sm">Annuler</button>
+                <button onclick="closeAiModal()" class="px-4 py-2 rounded-md bg-primary text-white text-sm">C'est compris</button>
+            </div>
+        `;
+    } catch (e) {
+        content.innerHTML = "Erreur IA.";
+    }
+});
+
+function highlightTasks() {
+    clearHighlight();
+    aiOrder.forEach((task, index) => {
+        const card = document.querySelector(`[data-task-id="${task.id}"]`);
+        if (!card) return;
+        card.classList.add("ring-2", "ring-primary", "shadow-lg");
+        const badge = document.createElement("div");
+        badge.innerText = "#" + (index + 1);
+        badge.className = "absolute -top-3 -right-3 text-sm font-bold bg-primary text-primary-foreground h-7 w-7 flex items-center justify-center rounded-full shadow-md z-10";
+        card.appendChild(badge);
+    });
+}
+function clearHighlight() {
+    document.querySelectorAll(".task-card").forEach(c => {
+        c.classList.remove("ring-2", "ring-primary", "shadow-lg");
+        const b = c.querySelector("div.absolute.-top-3"); if(b) b.remove();
+    });
+}
+function closeAiModal() { modal.classList.add("hidden"); modal.classList.remove("flex"); }
+
+window.addEventListener("load", async () => {
+    try {
+        const response = await fetch("{{ path('app_tasks_ai_overload') }}");
+        const data = await response.json();
+        if (!data.overloaded) return;
+        document.getElementById("aiOverloadMessage").innerHTML = 
+            "<strong class='block text-base mb-0.5'>Surcharge détectée</strong>L'IA a remarqué : " + data.reasons.join(", ") + ".";
+        document.getElementById("aiOverloadAlert").classList.remove("hidden");
+    } catch (e) {}
+});
+</script>
+{% endblock %}

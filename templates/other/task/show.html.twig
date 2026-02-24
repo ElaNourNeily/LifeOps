@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ tache.titre }} - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        {# Header #}
+        <div class="mb-8 flex items-center justify-between">
+            <div>
+                <a href="{{ path('app_tasks_index') }}"
+                   class="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Retour aux tâches
+                </a>
+                <h1 class="text-3xl font-bold tracking-tight text-foreground">{{ tache.titre }}</h1>
+            </div>
+            <div class="flex gap-2">
+                <a href="{{ path('app_tasks_edit', {id: tache.id}) }}"
+                   class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    Modifier
+                </a>
+                {{ include('other/task/_delete_form.html.twig') }}
+            </div>
+        </div>
+
+        {# Detail card #}
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6 space-y-6">
+
+            {# Badges row #}
+            <div class="flex flex-wrap gap-3">
+                {# Statut #}
+                {% set statutLabel = {'todo': 'À faire', 'in-progress': 'En cours', 'review': 'En révision', 'done': 'Terminé'} %}
+                <div class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold
+                    {% if tache.statut == 'done' %}border-transparent bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]
+                    {% elseif tache.statut == 'in-progress' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                    {% elseif tache.statut == 'review' %}border-transparent bg-blue-500/20 text-blue-400
+                    {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}">
+                    {{ statutLabel[tache.statut] ?? tache.statut }}
+                </div>
+
+                {# Priorité #}
+                {% set prioLabel = {'low': 'Basse', 'medium': 'Moyenne', 'high': 'Haute'} %}
+                <div class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold
+                    {% if tache.priorite == 'high' %}border-transparent bg-destructive/20 text-destructive
+                    {% elseif tache.priorite == 'medium' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
+                    {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}">
+                    Priorité : {{ prioLabel[tache.priorite] ?? tache.priorite }}
+                </div>
+
+                {# Difficulté #}
+                <div class="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
+                    Difficulté :
+                    {% for i in 1..5 %}
+                        <div class="h-1.5 w-3 rounded-full {{ i <= tache.difficulte ? 'bg-primary' : 'bg-muted' }}"></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {# Description #}
+            {% if tache.description %}
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground mb-1">Description</p>
+                    <p class="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{{ tache.description }}</p>
+                </div>
+            {% endif %}
+
+            {# Meta grid #}
+            <div class="grid grid-cols-2 gap-4 pt-2 border-t border-border">
+                <div>
+                    <p class="text-xs text-muted-foreground mb-0.5">Projet</p>
+                    {% if tache.taskSpace %}
+                        <a href="{{ path('app_taskspace_board', {id: tache.taskSpace.id}) }}"
+                           class="text-sm text-primary hover:underline">{{ tache.taskSpace.nom }}</a>
+                    {% else %}
+                        <span class="text-sm text-foreground">Solo</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-0.5">Date limite</p>
+                    <p class="text-sm text-foreground">{{ tache.deadline ? tache.deadline|date('d/m/Y à H:i') : '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-0.5">Créée le</p>
+                    <p class="text-sm text-foreground">{{ tache.createdAt ? tache.createdAt|date('d/m/Y') : '—' }}</p>
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-0.5">Dernière mise à jour</p>
+                    <p class="text-sm text-foreground">{{ tache.updatedAt ? tache.updatedAt|date('d/m/Y') : '—' }}</p>
+                </div>
+            </div>
+
+            {# Quick status change #}
+            <div class="pt-2 border-t border-border">
+                <p class="text-sm font-medium text-foreground mb-3">Changer le statut rapidement</p>
+                <div class="flex flex-wrap gap-2">
+                    {% for val, label in {'todo': 'À faire', 'in-progress': 'En cours', 'review': 'En révision', 'done': 'Terminé'} %}
+                        <form method="post" action="{{ path('app_tasks_status', {id: tache.id}) }}">
+                            <input type="hidden" name="statut" value="{{ val }}">
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors h-8 px-3
+                                    {% if tache.statut == val %}bg-primary text-primary-foreground{% else %}border border-input bg-background hover:bg-accent hover:text-accent-foreground{% endif %}">
+                                {{ label }}
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
