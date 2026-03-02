@@ -11,7 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AdminSanteDashboardController extends AbstractDashboardController
 {
@@ -29,7 +29,7 @@ class AdminSanteDashboardController extends AbstractDashboardController
         $this->suiviRepo = $suiviRepo;
     }
 
-    #[Route('/admin/sante', name: 'admin_sante_dashboard')]
+    #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
         // 1. Statistiques globales
@@ -48,7 +48,7 @@ class AdminSanteDashboardController extends AbstractDashboardController
             ->getSingleScalarResult() ?? 0;
             
         $avgSleep = $this->suiviRepo->createQueryBuilder('s')
-            ->select('AVG(s.heures_sommeil)')
+            ->select('AVG(s.heuresSommeil)')
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
 
@@ -70,7 +70,7 @@ class AdminSanteDashboardController extends AbstractDashboardController
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToRoute('Tableau de Bord Santé', 'fa fa-chart-line', 'admin_sante_dashboard');
+        yield MenuItem::linkToRoute('Tableau de Bord Santé', 'fa fa-chart-line', 'admin');
         yield MenuItem::linkToRoute('Retour au Site', 'fa fa-home', 'app_home');
     }
 }

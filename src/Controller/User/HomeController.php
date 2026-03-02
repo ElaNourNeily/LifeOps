@@ -16,7 +16,7 @@ final class HomeController extends AbstractController
         if ($user) {
             $roles = method_exists($user, 'getRoles') ? $user->getRoles() : [];
             if (in_array('ROLE_ADMIN', $roles, true)) {
-                return $this->redirectToRoute('app_admin_dashboard');
+                return $this->redirectToRoute('admin');
             }
 
             return $this->redirectToRoute('app_dashboard');

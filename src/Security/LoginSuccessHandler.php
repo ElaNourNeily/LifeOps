@@ -22,7 +22,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         // Check if user has ROLE_ADMIN
         if (in_array('ROLE_ADMIN', $user->getRoles())) {
             // Redirect admin to admin dashboard
-            return new RedirectResponse($this->router->generate('app_admin_dashboard'));
+            return new RedirectResponse($this->router->generate('admin'));
         }
 
         // Redirect regular users to user dashboard
