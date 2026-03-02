@@ -21,3 +21,7 @@ ai_engine/.env
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+.env
+ai_engine/.env
+/vendor/
+node_modules/
