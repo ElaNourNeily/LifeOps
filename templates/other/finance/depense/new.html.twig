@@ -1,0 +1,235 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Dépense - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Nouvelle Dépense</h1>
+            <p class="text-muted-foreground">Enregistrez une nouvelle dépense</p>
+        </div>
+
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate', 'id': 'depense-form'}}) }}
+
+            {# Receipt OCR Upload Section (Always at the top) #}
+            <div class="mb-8 p-4 bg-secondary/20 rounded-lg border border-secondary/30">
+                <label class="block text-sm font-semibold text-foreground mb-3">
+                    📸 Analyse intelligente par reçu
+                </label>
+                <div class="flex items-center gap-3">
+                    <input type="file" id="receipt-input" name="{{ form.receiptImage.vars.full_name }}" class="hidden" accept="image/*" onchange="handleReceiptChange(this)">
+                    <button type="button" id="receipt-upload-btn" onclick="document.getElementById('receipt-input').click();" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-secondary text-secondary-foreground hover:bg-secondary/90 h-10 px-4 py-2">
+                        Scanner mon reçu
+                    </button>
+                    <span id="receipt-status" class="text-sm text-muted-foreground italic">Prêt pour l'analyse...</span>
+                </div>
+                <div id="receipt-preview" class="mt-3"></div>
+                <p class="text-[10px] text-muted-foreground mt-2">
+                    L'IA extraira automatiquement le montant, la catégorie, la date et le type de paiement.
+                </p>
+            </div>
+
+            <hr class="my-6 border-border/50">
+
+            {% for field in form %}
+                {% if field.vars.name != '_token' and field.vars.name != 'receiptImage' %}
+                    <div>
+                        {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-1'}}) }}
+                        {{ form_widget(field, {'attr': {'class': 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'}}) }}
+                        {{ form_errors(field, {'attr': {'class': 'text-sm text-destructive mt-1'}}) }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div id="loading-indicator" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-800">
+                <div class="flex items-center gap-2">
+                    <div class="animate-spin h-5 w-5 border-2 border-blue-400 border-t-blue-800"></div>
+                    <div class="flex flex-col">
+                        <span class="font-bold">Traitement du reçu en cours...</span>
+                        <span id="loading-step" class="text-xs opacity-80">Initialisation de l'analyse OCR et IA...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error-alert" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-800"></div>
+
+            <div class="flex items-center gap-4 pt-4">
+                <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                    Ajouter la dépense
+                </button>
+                <a href="{{ path('app_finance_index') }}" class="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Annuler
+                </a>
+            </div>
+
+            {# Prevent receiptImage from being rendered again by form_end #}
+            {% do form.receiptImage.setRendered() %}
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <script>
+        console.log('Finance OCR script loaded');
+
+        async function handleReceiptChange(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            console.log('Receipt file selected:', file.name);
+
+            // Show loading
+            const loadingDiv = document.getElementById('loading-indicator');
+            const errorDiv = document.getElementById('error-alert');
+                const statusSpan = document.getElementById('receipt-status');
+                const loadingStep = document.getElementById('loading-step');
+                
+                loadingDiv.classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+                statusSpan.textContent = 'Traitement en cours...';
+                
+                if (loadingStep) loadingStep.textContent = 'Étape 1/3 : Analyse de l\'image...';
+
+                try {
+                // Create FormData and upload
+                const formData = new FormData();
+                // Ensure filename includes a valid image extension (some devices produce blobs without extension or HEIC names)
+                const allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'jfif', 'jif', 'heic', 'heif'];
+                let filename = file.name || '';
+                if (!filename.includes('.')) {
+                    filename = 'receipt.jpg';
+                }
+                // If the filename has an unsupported extension like .heic, force .jpg for the upload to satisfy server check
+                const ext = filename.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(ext)) {
+                    filename = filename.replace(/\.[^/.]+$/, '') + '.jpg';
+                }
+                formData.append('receipt', file, filename);
+
+                // Add a timeout controller (increased to 180s for heavy images or slow hardware)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => {
+                    controller.abort();
+                    if (loadingStep) loadingStep.textContent = 'Temps d\'attente dépassé (180s). Le serveur est particulièrement lent, veuillez réessayer.';
+                }, 180000);
+
+                if (loadingStep) {
+                    setTimeout(() => { if (!loadingDiv.classList.contains('hidden')) loadingStep.textContent = 'Étape 2/3 : Analyse du texte... (Ceci peut prendre 30-40s)'; }, 2000);
+                    setTimeout(() => { if (!loadingDiv.classList.contains('hidden')) loadingStep.textContent = 'Étape 3/3 : Finalisation par l\'IA...'; }, 15000);
+                }
+
+                const response = await fetch('{{ path('app_process_receipt') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                // Get response as text first to handle non-JSON data (errors like PHP timeouts)
+                const responseText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Invalid JSON response:', responseText);
+                    throw new Error('Le serveur a renvoyé une erreur (Timeout PHP possible). Veuillez réessayer avec une photo plus légère ou plus compressée.');
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Erreur serveur : ${response.status}`);
+                }
+
+                // Auto-fill form fields
+                console.log('Extracted Data:', data);
+                const form = document.getElementById('depense-form');
+                
+                // Helper function to find field by name or ID
+                const setFieldValue = (fieldName, value) => {
+                    if (!value) return;
+                    // Try name [depense[field]] and id [depense_field]
+                    const field = form.querySelector(`[name="depense[${fieldName}]"]`) || 
+                                  document.getElementById(`depense_${fieldName}`);
+                    if (field) {
+                        field.value = value;
+                        console.log(`Filled field ${fieldName} with ${value}`);
+                    } else {
+                        console.warn(`Could not find field for ${fieldName}`);
+                    }
+                };
+
+                setFieldValue('titre', data.titre);
+                setFieldValue('montant', data.montant);
+                setFieldValue('date', data.date);
+
+                // Auto-select budget based on date month (YYYY-MM)
+                if (data.date) {
+                    const month = data.date.substring(0, 7); // Get YYYY-MM (e.g., "2026-03")
+                    const budgetField = document.getElementById('depense_budget');
+                    if (budgetField) {
+                        for (let i = 0; i < budgetField.options.length; i++) {
+                            const optionText = budgetField.options[i].text.trim();
+                            if (optionText === month || optionText.includes(month)) {
+                                budgetField.selectedIndex = i;
+                                console.log(`Auto-selected budget month: ${month} (matched "${optionText}")`);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Set categorie with mapping
+                if (data.categorie) {
+                    const categoryMap = {
+                        'Alimentation': 'nourriture',
+                        'Transport': 'transport',
+                        'Loisirs': 'loisirs',
+                        'Santé': 'sante',
+                        'Logement': 'logement',
+                        'Education': 'education',
+                        'Autre': 'autre'
+                    };
+                    const mappedValue = categoryMap[data.categorie] || 'autre';
+                    setFieldValue('categorie', mappedValue);
+                }
+
+                // Set typePaiement with mapping
+                if (data.typePaiement) {
+                    const paymentMap = {
+                        'CB': 'carte',
+                        'Carte': 'carte',
+                        'Espèces': 'especes',
+                        'Virement': 'virement',
+                        'Chèque': 'autre',
+                    };
+                    const mappedValue = paymentMap[data.typePaiement] || 'carte';
+                    setFieldValue('typePaiement', mappedValue);
+                }
+
+                // Show preview
+                const preview = document.getElementById('receipt-preview');
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = '<img src="' + event.target.result + '" class="max-w-xs rounded-lg border border-input mt-2">';
+                };
+                reader.readAsDataURL(file);
+
+                loadingDiv.classList.add('hidden');
+                statusSpan.textContent = '✅ Reçu traité avec succès!';
+                statusSpan.classList.add('text-green-600');
+
+                } catch (error) {
+                console.error('Error:', error);
+                loadingDiv.classList.add('hidden');
+                errorDiv.classList.remove('hidden');
+                errorDiv.textContent = 'Erreur: ' + error.message;
+                statusSpan.textContent = '❌ Erreur lors du traitement';
+                statusSpan.classList.add('text-red-600');
+            }
+        }
+    </script>
+{% endblock %}

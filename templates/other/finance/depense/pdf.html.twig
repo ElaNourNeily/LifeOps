@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dépenses - PDF</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #333; }
+        h1 { font-size: 18px; margin-bottom: 5px; }
+        .subtitle { color: #888; font-size: 11px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background-color: #2d2d3f; color: #fff; padding: 8px 10px; text-align: left; font-size: 11px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e0e0e0; font-size: 11px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .amount { text-align: right; color: #e53e3e; font-weight: bold; }
+        .header-right { text-align: right; }
+        .category { background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        
+        /* Paginator Styles */
+        @page { margin: 100px 25px; }
+        footer {
+            position: fixed; bottom: -60px; left: 0px; right: 0px;
+            height: 50px; text-align: center; font-size: 10px; color: #999;
+        }
+        .pagenum:before { content: counter(page); }
+        .qr-code { text-align: center; margin-top: 30px; }
+        .qr-code img { width: 100px; height: 100px; }
+    </style>
+</head>
+<body>
+    <footer>
+        <p>Page <span class="pagenum"></span> - LifeOps Dépenses</p>
+    </footer>
+    <h1>Historique des Dépenses</h1>
+    <p class="subtitle">Exporté le {{ "now"|date('d/m/Y H:i') }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Titre</th>
+                <th>Catégorie</th>
+                <th class="header-right">Montant</th>
+                <th>Paiement</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for depense in depenses %}
+                <tr>
+                    <td>{{ depense.date|date('d/m/Y') }}</td>
+                    <td>{{ depense.titre }}</td>
+                    <td><span class="category">{{ depense.categorie|capitalize }}</span></td>
+                    <td class="amount">-{{ depense.montant|number_format(2, ',', ' ') }} €</td>
+                    <td>{{ depense.typePaiement|capitalize }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" style="text-align:center;">Aucune dépense.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="qr-code">
+        <p>Scannez pour plus de détails :</p>
+        <img src="{{ qrCode }}" alt="QR Code">
+    </div>
+</body>
+</html>

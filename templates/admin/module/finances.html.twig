@@ -1,0 +1,186 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Module Finances{% endblock %}
+
+{% block body %}
+<div class="flex flex-col gap-8">
+    <!-- Header -->
+    <div>
+        <h1 class="text-2xl font-bold text-card-foreground text-balance">Module Finances</h1>
+        <p class="text-sm text-muted-foreground">
+            Vue d'ensemble des dépenses et budgets de tous les utilisateurs.
+        </p>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid gap-6 md:grid-cols-2">
+        <!-- Expenses Chart -->
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <h3 class="font-semibold mb-4">Dépenses par Catégorie</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="expensesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
+            <h3 class="font-semibold mb-4">Revenus par Mois</h3>
+            <div class="relative h-64 w-full">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Expenses Data
+            const expensesData = {{ expensesByCategory|json_encode|raw }};
+            const expensesCtx = document.getElementById('expensesChart').getContext('2d');
+            new Chart(expensesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(expensesData),
+                    datasets: [{
+                        data: Object.values(expensesData),
+                        backgroundColor: [
+                            '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+
+            // Revenue Data
+            const revenueData = {{ revenueByMonth|json_encode|raw }};
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'bar', // Using Bar for time/value series as it's more appropriate than Pie
+                data: {
+                    labels: Object.keys(revenueData),
+                    datasets: [{
+                        label: 'Revenu Total',
+                        data: Object.values(revenueData),
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Expenses List -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border">
+            <h3 class="font-semibold">Historique des dépenses (Tout)</h3>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Utilisateur</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Date</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Titre</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Catégorie</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Montant</th>
+                        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for depense in depenses %}
+                        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <td class="p-4 align-middle">{{ depense.utilisateur.email }}</td>
+                            <td class="p-4 align-middle">{{ depense.date ? depense.date|date('d/m/Y') : '' }}</td>
+                            <td class="p-4 align-middle font-medium">{{ depense.titre }}</td>
+                            <td class="p-4 align-middle">
+                                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80">
+                                    {{ depense.categorie|capitalize }}
+                                </span>
+                            </td>
+                            <td class="p-4 align-middle text-right font-medium text-red-500">
+                                -{{ depense.montant|number_format(2, ',', ' ') }} €
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <form method="POST" action="{{ path('app_admin_depense_delete', {id: depense.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette dépense ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ depense.id) }}">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive/50 text-destructive hover:bg-destructive/10 h-8 px-3">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-muted-foreground">Aucune dépense enregistrée.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Budget List -->
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border">
+            <h3 class="font-semibold">Historique des budgets (Tout)</h3>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Utilisateur</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Mois</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Revenu</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Plafond</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Économies</th>
+                        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                    {% for budget in budgets %}
+                        <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                            <td class="p-4 align-middle">{{ budget.utilisateur.email }}</td>
+                            <td class="p-4 align-middle font-medium">{{ budget.mois }}</td>
+                            <td class="p-4 align-middle text-right font-medium text-green-600">
+                                +{{ budget.revenuMensuel|number_format(2, ',', ' ') }} €
+                            </td>
+                            <td class="p-4 align-middle text-right text-muted-foreground">
+                                {{ budget.plafond|number_format(2, ',', ' ') }} €
+                            </td>
+                            <td class="p-4 align-middle text-right font-medium text-blue-600">
+                                {{ budget.economies|number_format(2, ',', ' ') }} €
+                            </td>
+                            <td class="p-4 align-middle text-center">
+                                <form method="POST" action="{{ path('app_admin_budget_delete', {id: budget.id}) }}" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce budget ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ budget.id) }}">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-destructive/50 text-destructive hover:bg-destructive/10 h-8 px-3">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-muted-foreground">Aucun budget enregistré.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

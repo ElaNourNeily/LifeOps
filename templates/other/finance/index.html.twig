@@ -1,0 +1,254 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Finances - LifeOps{% endblock %}
+
+{% block body %}
+    {# ===== HEADER ===== #}
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-foreground">Gestion Financière</h1>
+            <p class="text-muted-foreground">Suivez vos budgets et dépenses</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ path('app_finance_charts') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border-2 border-primary bg-primary/10 text-primary hover:bg-primary/20 h-10 px-4 py-2 font-semibold">
+                📊 Tableaux de Bord
+            </a>
+            <a href="{{ path('app_budget_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                Nouveau Budget
+            </a>
+            <a href="{{ path('app_depense_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                Ajouter Dépense
+            </a>
+        </div>
+    </div>
+
+    {# ===== BUDGET EXCEEDED ALERT ===== #}
+    {% if exceededBudgets|length > 0 %}
+        <div id="budget-alert" class="mb-6 rounded-xl border-2 border-red-500 bg-red-500/10 backdrop-blur p-4 flex items-start gap-4 relative" style="background: linear-gradient(135deg, hsl(0 84% 60% / 0.15), hsl(0 84% 40% / 0.25));">
+            <div class="text-3xl">⚠️</div>
+            <div class="flex-1">
+                <h3 class="text-lg font-bold text-red-400">ALERTE BUDGET DÉPASSÉ!</h3>
+                <p class="text-red-300 text-sm">{{ exceededBudgets|length }} budget(s) dépassé(s)</p>
+                <ul class="mt-1 text-sm text-red-300">
+                    {% for stat in exceededBudgets %}
+                        <li>• {{ stat.budget.mois }}: {{ stat.percentage|number_format(1) }}% du plafond</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <button id="close-alert-btn" class="absolute top-3 right-4 text-red-300 hover:text-white font-bold text-sm px-3 py-1 rounded hover:bg-red-500/30 transition-colors">
+                ✕ FERMER
+            </button>
+        </div>
+        <script>
+            (function() {
+                var alertInterval = null;
+                var audioCtx = null;
+
+                function playBeep() {
+                    try {
+                        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                        var oscillator = audioCtx.createOscillator();
+                        var gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        oscillator.type = 'square';
+                        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                        oscillator.start(audioCtx.currentTime);
+                        oscillator.stop(audioCtx.currentTime + 0.5);
+                    } catch(e) {}
+                }
+
+                // Play immediately and then every 2 seconds
+                playBeep();
+                alertInterval = setInterval(playBeep, 2000);
+
+                document.getElementById('close-alert-btn').addEventListener('click', function() {
+                    clearInterval(alertInterval);
+                    document.getElementById('budget-alert').style.display = 'none';
+                });
+            })();
+        </script>
+    {% endif %}
+
+    {# ===== BUDGET CARDS CAROUSEL ===== #}
+    {% if budgetStats|length > 0 %}
+        <div class="mb-8 overflow-x-auto pb-2">
+            <div class="flex gap-4" style="min-width: max-content;">
+                {% for stat in budgetStats %}
+                    {% set b = stat.budget %}
+                    <div class="min-w-[300px] max-w-[340px] rounded-xl border border-border bg-card text-card-foreground shadow p-5 flex-shrink-0">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-bold text-foreground">Budget {{ b.mois }}</h3>
+                            <span class="text-xs text-muted-foreground">Revenu: {{ b.revenuMensuel|number_format(2, ',', ' ') }} €</span>
+                        </div>
+                        <div class="flex justify-between text-sm mb-2">
+                            <span class="{{ stat.percentage > 100 ? 'text-red-400 font-semibold' : 'text-muted-foreground' }}">Dépenses: {{ stat.totalDepenses|number_format(2, ',', ' ') }} €</span>
+                            <span class="text-muted-foreground">Plafond: {{ b.plafond|number_format(2, ',', ' ') }} €</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-secondary mb-2">
+                            <div class="h-full rounded-full transition-all duration-500 {{ stat.percentage > 100 ? 'bg-destructive' : (stat.percentage > 80 ? 'bg-[hsl(38,92%,50%)]' : 'bg-primary') }}" style="width: {{ min(stat.percentage, 100) }}%"></div>
+                        </div>
+                        <p class="text-xs text-right {{ stat.reste < 0 ? 'text-red-400 font-semibold' : 'text-muted-foreground' }}">Reste: {{ stat.reste|number_format(2, ',', ' ') }} €</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# ===== DÉPENSES TABLE ===== #}
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow mb-8">
+        <div class="p-6 border-b border-border flex items-center justify-between flex-wrap gap-3">
+            <h3 class="font-semibold text-lg">Historique des dépenses</h3>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ path('app_depense_pdf') }}" class="inline-flex items-center gap-1.5 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium transition-colors">
+                    ⬇ PDF
+                </a>
+                <form method="get" action="{{ path('app_finance_index') }}" class="flex items-center gap-2">
+                    {# Preserve budget search/sort params #}
+                    <input type="hidden" name="search_budget" value="{{ searchBudget }}">
+                    <input type="hidden" name="sort_budget" value="{{ sortBudget }}">
+                    <input type="hidden" name="dir_budget" value="{{ dirBudget }}">
+                    <input type="text" name="search_depense" value="{{ searchDepense }}" placeholder="Rechercher (Date, Titre, C..."
+                           class="h-9 rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring w-52">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-foreground text-background hover:bg-foreground/90 h-9 px-4 transition-colors">
+                        Chercher
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            <a href="{{ path('app_finance_index', {
+                                search_depense: searchDepense,
+                                sort_depense: 'date',
+                                dir_depense: (sortDepense == 'date' and dirDepense == 'desc') ? 'asc' : 'desc',
+                                search_budget: searchBudget,
+                                sort_budget: sortBudget,
+                                dir_budget: dirBudget
+                            }) }}" class="hover:text-foreground inline-flex items-center gap-1">
+                                Date ↕
+                            </a>
+                        </th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Titre</th>
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Catégorie</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Montant</th>
+                        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                {% for depense in depenses %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle">{{ depense.date|date('d/m/Y') }}</td>
+                        <td class="p-4 align-middle font-medium">{{ depense.titre }}</td>
+                        <td class="p-4 align-middle">
+                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
+                                {{ depense.categorie|capitalize }}
+                            </span>
+                        </td>
+                        <td class="p-4 align-middle text-right text-destructive font-medium">
+                            -{{ depense.montant|number_format(2, ',', ' ') }} €
+                        </td>
+                        <td class="p-4 align-middle text-center">
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{{ path('app_depense_edit', {id: depense.id}) }}" class="inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 transition-colors">
+                                    Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_depense_delete', {id: depense.id}) }}" onsubmit="return confirm('Supprimer cette dépense ?');" class="inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ depense.id) }}">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-8 px-3 transition-colors">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="p-4 text-center text-muted-foreground">Aucune dépense enregistrée.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ===== BUDGETS TABLE ===== #}
+    <div class="rounded-xl border border-border bg-card text-card-foreground shadow">
+        <div class="p-6 border-b border-border flex items-center justify-between flex-wrap gap-3">
+            <h3 class="font-semibold text-lg">Historique des budgets</h3>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="{{ path('app_budget_pdf') }}" class="inline-flex items-center gap-1.5 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 text-sm font-medium transition-colors">
+                    ⬇ PDF
+                </a>
+                <form method="get" action="{{ path('app_finance_index') }}" class="flex items-center gap-2">
+                    {# Preserve depense search/sort params #}
+                    <input type="hidden" name="search_depense" value="{{ searchDepense }}">
+                    <input type="hidden" name="sort_depense" value="{{ sortDepense }}">
+                    <input type="hidden" name="dir_depense" value="{{ dirDepense }}">
+                    <input type="text" name="search_budget" value="{{ searchBudget }}" placeholder="Rechercher (Mois, Revenu..."
+                           class="h-9 rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring w-52">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-foreground text-background hover:bg-foreground/90 h-9 px-4 transition-colors">
+                        Chercher
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="relative w-full overflow-auto">
+            <table class="w-full caption-bottom text-sm">
+                <thead class="[&_tr]:border-b">
+                    <tr class="border-b transition-colors">
+                        <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                            <a href="{{ path('app_finance_index', {
+                                search_budget: searchBudget,
+                                sort_budget: 'mois',
+                                dir_budget: (sortBudget == 'mois' and dirBudget == 'desc') ? 'asc' : 'desc',
+                                search_depense: searchDepense,
+                                sort_depense: sortDepense,
+                                dir_depense: dirDepense
+                            }) }}" class="hover:text-foreground inline-flex items-center gap-1">
+                                Mois ↕
+                            </a>
+                        </th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Revenu</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Plafond</th>
+                        <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Économies</th>
+                        <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="[&_tr:last-child]:border-0">
+                {% for stat in filteredBudgetStats %}
+                    {% set b = stat.budget %}
+                    <tr class="border-b transition-colors hover:bg-muted/50">
+                        <td class="p-4 align-middle font-medium">{{ b.mois }}</td>
+                        <td class="p-4 align-middle text-right">{{ b.revenuMensuel|number_format(2, ',', ' ') }} €</td>
+                        <td class="p-4 align-middle text-right">{{ b.plafond|number_format(2, ',', ' ') }} €</td>
+                        <td class="p-4 align-middle text-right text-green-400">{{ b.economies|number_format(2, ',', ' ') }} €</td>
+                        <td class="p-4 align-middle text-center">
+                            <div class="inline-flex items-center gap-2">
+                                <a href="{{ path('app_budget_edit', {id: b.id}) }}" class="inline-flex items-center justify-center rounded-md text-xs font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 px-3 transition-colors">
+                                    Modifier
+                                </a>
+                                <form method="post" action="{{ path('app_budget_delete', {id: b.id}) }}" onsubmit="return confirm('Supprimer ce budget ?');" class="inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ b.id) }}">
+                                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-xs font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 h-8 px-3 transition-colors">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="p-4 text-center text-muted-foreground">Aucun budget enregistré.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
