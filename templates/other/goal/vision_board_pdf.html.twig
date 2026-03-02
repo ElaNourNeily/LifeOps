@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Vision Board</title>
+    <style>
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #6366f1;
+            padding-bottom: 20px;
+        }
+        .header h1 {
+            color: #6366f1;
+            margin: 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .header p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .board {
+            width: 100%;
+        }
+        .goal-card {
+            width: 45%;
+            margin: 2%;
+            display: inline-block;
+            vertical-align: top;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background-color: #fcfcfc;
+            padding: 15px;
+            box-sizing: border-box;
+            page-break-inside: avoid;
+        }
+        .category {
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .cat-personal { background-color: #3b82f6; } /* Blue */
+        .cat-professional { background-color: #10b981; } /* Green */
+        .cat-health { background-color: #ef4444; } /* Red */
+        .cat-finance { background-color: #f59e0b; } /* Orange */
+        .cat-other { background-color: #6b7280; } /* Gray */
+        
+        .title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #111;
+        }
+        .description {
+            font-size: 12px;
+            color: #444;
+            line-height: 1.4;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 10px;
+            color: #aaa;
+        }
+        .progression-wrap {
+            margin-top: 10px;
+            height: 6px;
+            background-color: #eee;
+            border-radius: 3px;
+        }
+        .progression-bar {
+            height: 100%;
+            background-color: #6366f1;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Mon Vision Board</h1>
+        <p>Généré par LifeOps • {{ "now"|date("d/m/Y") }}</p>
+    </div>
+
+    <div class="board">
+        {% for objectif in objectifs %}
+            <div class="goal-card">
+                {% set cat_class = 'cat-other' %}
+                {% if objectif.categorie == 'personal' %}{% set cat_class = 'cat-personal' %}
+                {% elseif objectif.categorie == 'professional' %}{% set cat_class = 'cat-professional' %}
+                {% elseif objectif.categorie == 'health' %}{% set cat_class = 'cat-health' %}
+                {% elseif objectif.categorie == 'finance' %}{% set cat_class = 'cat-finance' %}
+                {% endif %}
+                
+                <span class="category {{ cat_class }}">{{ objectif.categorie|capitalize }}</span>
+                <div class="title">{{ objectif.titre }}</div>
+                <div class="description">{{ objectif.description|slice(0, 150) }}{{ objectif.description|length > 150 ? '...' : '' }}</div>
+                
+                <div class="progression-wrap">
+                    <div class="progression-bar" style="width: {{ objectif.progression }}%"></div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer">
+        "Le futur appartient à ceux qui croient à la beauté de leurs rêves."
+    </div>
+</body>
+</html>

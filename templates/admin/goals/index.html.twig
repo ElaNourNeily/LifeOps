@@ -1,0 +1,244 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Objectifs - Admin LifeOps{% endblock %}
+
+{% block body %}
+<div class="flex flex-col gap-8">
+
+    {# Header #}
+    <div>
+        <h1 class="text-2xl font-bold text-card-foreground">Gestion des Objectifs</h1>
+        <p class="text-sm text-muted-foreground mt-1">Vue d'ensemble de tous les objectifs des utilisateurs</p>
+    </div>
+
+    {# Flash messages #}
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="rounded-lg border px-4 py-3 text-sm font-medium
+                {{ type == 'success' ? 'bg-[hsl(160,84%,39%)]/10 border-[hsl(160,84%,39%)]/30 text-[hsl(160,84%,39%)]' : 'bg-red-500/10 border-red-500/30 text-red-400' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# Stats Cards — données calculées côté serveur par QueryBuilder #}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {# Total #}
+        <div class="rounded-lg border border-border bg-card p-5 shadow-sm">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">Total</p>
+            <p class="text-3xl font-bold text-card-foreground">{{ stats.total }}</p>
+            <p class="text-xs text-muted-foreground mt-1">objectifs créés</p>
+        </div>
+        {# Atteints #}
+        <div class="rounded-lg border border-[hsl(160,84%,39%)]/30 bg-[hsl(160,84%,39%)]/5 p-5 shadow-sm">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">Atteints</p>
+            <p class="text-3xl font-bold text-[hsl(160,84%,39%)]">{{ stats.achieved }}</p>
+            <p class="text-xs text-muted-foreground mt-1">
+                {% if stats.total > 0 %}{{ ((stats.achieved / stats.total) * 100)|round }}%{% else %}0%{% endif %} du total
+            </p>
+        </div>
+        {# En cours #}
+        <div class="rounded-lg border border-[hsl(38,92%,50%)]/30 bg-[hsl(38,92%,50%)]/5 p-5 shadow-sm">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">En cours</p>
+            <p class="text-3xl font-bold text-[hsl(38,92%,50%)]">{{ stats.in_progress }}</p>
+            <p class="text-xs text-muted-foreground mt-1">objectifs actifs</p>
+        </div>
+        {# Progression moyenne #}
+        <div class="rounded-lg border border-border bg-card p-5 shadow-sm">
+            <p class="text-xs text-muted-foreground uppercase tracking-wider mb-1">Progression moy.</p>
+            <p class="text-3xl font-bold text-card-foreground">{{ stats.avg_progression }}%</p>
+            <div class="mt-2 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
+                <div class="h-full rounded-full bg-primary transition-all" style="width: {{ stats.avg_progression }}%"></div>
+            </div>
+        </div>
+    </div>
+
+    {# Filtre par catégorie — badges cliquables #}
+    {% if stats.categories %}
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_admin_goals', {q: search, statut: current_statut, sort: sort, order: order}) }}"
+           class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors
+                  {{ current_category == 'all' ? 'bg-[hsl(160,84%,39%)]/15 border-[hsl(160,84%,39%)]/30 text-[hsl(160,84%,39%)]' : 'border-border text-muted-foreground hover:bg-secondary' }}">
+            Tous ({{ stats.total }})
+        </a>
+        {% for cat, nb in stats.categories %}
+            <a href="{{ path('app_admin_goals', {q: search, category: cat, statut: current_statut, sort: sort, order: order}) }}"
+               class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors
+                      {{ current_category == cat ? 'bg-[hsl(160,84%,39%)]/15 border-[hsl(160,84%,39%)]/30 text-[hsl(160,84%,39%)]' : 'border-border text-muted-foreground hover:bg-secondary' }}">
+                {{ cat|capitalize }} ({{ nb }})
+            </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Barre de filtres  #}
+    <div class="rounded-lg border border-border bg-card shadow-sm p-5">
+        <form method="GET" action="{{ path('app_admin_goals') }}" class="flex flex-wrap gap-3 items-end">
+            {# Recherche #}
+            <div class="flex-1 min-w-48">
+                <label class="block text-xs text-muted-foreground mb-1">Rechercher</label>
+                <input type="search" name="q" value="{{ search|default('') }}"
+                       placeholder="Titre, description, email…"
+                       class="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none focus:ring-1 focus:ring-[hsl(160,84%,39%)]" />
+            </div>
+            {# Statut #}
+            <div>
+                <label class="block text-xs text-muted-foreground mb-1">Statut</label>
+                <select name="statut" class="px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none">
+                    <option value="all"         {{ current_statut == 'all'         ? 'selected' }}>Tous les statuts</option>
+                    <option value="in_progress" {{ current_statut == 'in_progress' ? 'selected' }}>En cours</option>
+                    <option value="achieved"    {{ current_statut == 'achieved'    ? 'selected' }}>Atteint</option>
+                </select>
+            </div>
+            {# Tri #}
+            <div>
+                <label class="block text-xs text-muted-foreground mb-1">Trier par</label>
+                <select name="sort" class="px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none">
+                    <option value="date_fin" {{ sort == 'date_fin' ? 'selected' }}>Échéance</option>
+                    <option value="titre"    {{ sort == 'titre'    ? 'selected' }}>Titre</option>
+                    <option value="statut"   {{ sort == 'statut'   ? 'selected' }}>Statut</option>
+                </select>
+            </div>
+            {# Ordre #}
+            <div>
+                <label class="block text-xs text-muted-foreground mb-1">Ordre</label>
+                <select name="order" class="px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm focus:outline-none">
+                    <option value="asc"  {{ order == 'asc'  ? 'selected' }}>⬆ Croissant</option>
+                    <option value="desc" {{ order == 'desc' ? 'selected' }}>⬇ Décroissant</option>
+                </select>
+            </div>
+            {# Actions #}
+            <div class="flex gap-2 self-end">
+                <button type="submit"
+                        class="px-4 py-2 rounded-lg bg-[hsl(160,84%,39%)] text-[hsl(220,20%,7%)] font-semibold text-sm hover:opacity-90 transition-opacity">
+                    Filtrer
+                </button>
+                <a href="{{ path('app_admin_goals') }}"
+                   class="px-4 py-2 rounded-lg border border-border text-muted-foreground text-sm hover:bg-secondary transition-colors">
+                    Réinitialiser
+                </a>
+            </div>
+            {# Conserver la catégorie active en paramètre caché #}
+            {% if current_category != 'all' %}
+                <input type="hidden" name="category" value="{{ current_category }}">
+            {% endif %}
+        </form>
+    </div>
+
+    {# Table #}
+    <div class="rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+        {# Header table avec compteur #}
+        <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-card-foreground">
+                Résultats
+                <span class="ml-1 text-muted-foreground font-normal">({{ objectifs.getTotalItemCount }})</span>
+            </h2>
+            <span class="text-xs text-muted-foreground">Page {{ objectifs.currentPageNumber }} / {{ objectifs.pageCount ?: 1 }}</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-secondary/50 text-muted-foreground border-b border-border">
+                    <tr>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Titre / Description</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Utilisateur</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Catégorie</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Progression</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Statut</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs">Échéance</th>
+                        <th class="px-5 py-3 font-medium uppercase tracking-wider text-xs text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for objectif in objectifs %}
+                        <tr class="hover:bg-secondary/20 transition-colors">
+                            <td class="px-5 py-4 max-w-xs">
+                                <span class="font-medium text-card-foreground">{{ objectif.titre }}</span>
+                                {% if objectif.description %}
+                                    <p class="text-xs text-muted-foreground mt-0.5 truncate">{{ objectif.description }}</p>
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-4 text-xs text-muted-foreground whitespace-nowrap">
+                                {{ objectif.utilisateur ? objectif.utilisateur.email : '-' }}
+                            </td>
+                            <td class="px-5 py-4">
+                                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium bg-secondary text-muted-foreground border-border">
+                                    {{ objectif.categorie|capitalize }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="h-1.5 w-20 rounded-full bg-secondary overflow-hidden shrink-0">
+                                        <div class="h-full rounded-full
+                                            {% if objectif.progression >= 100 %}bg-[hsl(160,84%,39%)]
+                                            {% elseif objectif.progression >= 50 %}bg-[hsl(38,92%,50%)]
+                                            {% else %}bg-red-500{% endif %}"
+                                            style="width: {{ objectif.progression }}%">
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-semibold text-card-foreground">{{ objectif.progression }}%</span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-4">
+                                {% if objectif.statut == 'achieved' %}
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-[hsl(160,84%,39%)]/15 text-[hsl(160,84%,39%)] border border-[hsl(160,84%,39%)]/30">
+                                        ✓ Atteint
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-[hsl(38,92%,50%)]/15 text-[hsl(38,92%,50%)] border border-[hsl(38,92%,50%)]/30">
+                                        ⏳ En cours
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-5 py-4 text-xs whitespace-nowrap">
+                                {% if objectif.dateFin %}
+                                    {% set today = date() %}
+                                    {% set diff = (objectif.dateFin.timestamp - today.timestamp) // 86400 %}
+                                    <span class="{{ diff < 0 ? 'text-red-400' : (diff <= 3 ? 'text-[hsl(38,92%,50%)]' : 'text-muted-foreground') }}">
+                                        {{ objectif.dateFin|date('d/m/Y') }}
+                                        {% if diff < 0 %}<span class="block text-[10px]">(expiré)</span>
+                                        {% elseif diff == 0 %}<span class="block text-[10px]">(aujourd'hui)</span>
+                                        {% elseif diff == 1 %}<span class="block text-[10px]">(demain)</span>
+                                        {% elseif diff <= 3 %}<span class="block text-[10px]">(dans {{ diff }}j)</span>
+                                        {% endif %}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted-foreground">—</span>
+                                {% endif %}
+                            </td>
+                            {# 
+                                ACTION : Suppression via formulaire POST + token CSRF.
+                                Aucun JavaScript fetch — pure logique serveur Symfony.
+                            #}
+                            <td class="px-5 py-4 text-right">
+                                <form method="POST"
+                                      action="{{ path('app_admin_goal_delete', {id: objectif.id}) }}"
+                                      onsubmit="return confirm('Supprimer « {{ objectif.titre|e('js') }} » ? Cette action est irréversible.')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('admin_delete_goal_' ~ objectif.id) }}">
+                                    <button type="submit"
+                                            class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30 transition-colors">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center text-muted-foreground">
+                                Aucun objectif ne correspond à vos critères.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Pagination #}
+        {% if objectifs.pageCount > 1 %}
+            <div class="border-t border-border px-6 py-4 flex justify-center">
+                {{ knp_pagination_render(objectifs) }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
