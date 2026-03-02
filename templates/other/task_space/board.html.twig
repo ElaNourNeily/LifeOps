@@ -25,6 +25,7 @@
 
     {% if isLeader %}
     <div class="flex items-center gap-2">
+        
         <a href="{{ path('app_taskspace_assign', {id: taskSpace.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4">
             ➕ Assigner
         </a>
@@ -34,6 +35,11 @@
         <a href="{{ path('app_taskspace_edit', {id: taskSpace.id}) }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent h-9 px-4">
             ⚙️ Paramètres
         </a>
+        {% if isLeader %}
+        <button id="aiAssignBtn" class="inline-flex items-center justify-center rounded-md text-sm font-medium border border-primary bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground h-10 px-4 py-2 shadow-sm transition-all">
+            🤖 Auto-Assignation IA
+        </button>
+        {% endif %}
     </div>
     {% endif %}
 </div>
@@ -88,4 +94,91 @@
         </div>
     {% endfor %}
 </div>
+{# MODALE IA ASSIGNATION #}
+<div id="aiAssignModal" class="fixed inset-0 bg-background/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-all duration-200">
+    <div class="bg-card border border-border rounded-xl shadow-2xl w-[650px] max-w-[90%] p-6">
+        <div class="flex justify-between items-center mb-5 border-b border-border pb-3">
+            <h3 class="text-xl font-bold text-foreground flex items-center gap-2">
+                <span class="text-primary">✨</span> Répartition Intelligente Gemini
+            </h3>
+            <button onclick="closeAiAssignModal()" class="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full p-1">✕</button>
+        </div>
+        <div id="aiAssignContent" class="text-sm space-y-4 text-foreground max-h-[60vh] overflow-y-auto">
+            Chargement de l'analyse IA...
+        </div>
+        <div id="aiAssignFooter" class="flex justify-end gap-2 mt-6 pt-4 border-t border-border hidden">
+            <button onclick="closeAiAssignModal()" class="px-4 py-2 rounded-md border text-sm font-medium">Refuser</button>
+            <button onclick="applyAiAssignments()" class="px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90">
+                ✅ Accepter & Assigner
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const aiAssignBtn = document.getElementById("aiAssignBtn");
+    const assignModal = document.getElementById("aiAssignModal");
+    const assignContent = document.getElementById("aiAssignContent");
+    const assignFooter = document.getElementById("aiAssignFooter");
+    let pendingSuggestions = [];
+
+    if (aiAssignBtn) {
+        aiAssignBtn.addEventListener("click", async () => {
+            assignModal.classList.remove("hidden"); 
+            assignModal.classList.add("flex");
+            assignContent.innerHTML = "<div class='flex flex-col items-center justify-center p-8 gap-4'><div class='animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full'></div><p class='text-muted-foreground'>Gemini analyse les tâches et l'équipe...</p></div>";
+            assignFooter.classList.add("hidden");
+
+            try {
+                const response = await fetch("{{ path('app_taskspace_ai_assign', {id: taskSpace.id}) }}");
+                const data = await response.json();
+                pendingSuggestions = data.suggestions || [];
+
+                if (pendingSuggestions.length === 0) {
+                    assignContent.innerHTML = "<div class='text-center py-6'><p class='text-lg font-medium text-foreground'>Aucune tâche 'À faire' à assigner, ou erreur IA.</p></div>";
+                    return;
+                }
+
+                let html = "<p class='mb-4 text-muted-foreground'>Gemini a analysé le contexte et propose cette répartition pour équilibrer l'équipe :</p><ul class='space-y-3'>";
+                pendingSuggestions.forEach(sugg => {
+                    html += `
+                        <li class="p-4 bg-muted/20 border border-border rounded-lg shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-foreground text-base">${sugg.task_title}</span>
+                                <span class="flex items-center gap-2 text-primary font-bold bg-primary/10 px-3 py-1 rounded-full text-sm">
+                                    ➔ ${sugg.member_name}
+                                </span>
+                            </div>
+                            <p class="text-xs text-muted-foreground italic border-l-2 border-primary/50 pl-2 mt-2">
+                                🤖 " ${sugg.justification || 'Assignation automatique pour équilibrer la charge.'} "
+                            </p>
+                        </li>`;
+                });
+                html += "</ul>";
+                assignContent.innerHTML = html;
+                assignFooter.classList.remove("hidden");
+            } catch (e) {
+                assignContent.innerHTML = "<p class='text-destructive'>Erreur de connexion à l'IA Gemini.</p>";
+            }
+        });
+    }
+
+    async function applyAiAssignments() {
+        assignContent.innerHTML = "<div class='text-center py-6'><p class='font-bold text-primary'>Application des choix de l'IA en cours...</p></div>";
+        assignFooter.classList.add("hidden");
+        
+        await fetch("{{ path('app_taskspace_ai_assign_apply', {id: taskSpace.id}) }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ suggestions: pendingSuggestions })
+        });
+        
+        window.location.reload(); 
+    }
+
+    function closeAiAssignModal() { 
+        assignModal.classList.add("hidden"); 
+        assignModal.classList.remove("flex"); 
+    }
+</script>
 {% endblock %}

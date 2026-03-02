@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Security\TaskPermission; // <--- LA LIGNE À AJOUTER EST ICI
+use App\Service\AiClientService;
 #[Route('/taskspace')]
 #[IsGranted('ROLE_USER')]
 class TaskSpaceController extends AbstractController
@@ -88,8 +89,8 @@ class TaskSpaceController extends AbstractController
             'isLeader'  => $isLeader,
             'members'   => $members,
             'progress'  => $progress,
-            'total'     => $totalTasks, // <--- ON AJOUTE LE TOTAL ICI
-            'done'      => $doneTasks, // <--- ON ENVOIE LA VARIABLE ICI
+            'total'     => $totalTasks, 
+            'done'      => $doneTasks, 
         ]);
     }
 
@@ -127,7 +128,7 @@ class TaskSpaceController extends AbstractController
         }
 
         return $this->redirectToRoute('app_taskspace_board', ['id' => $taskSpace->getId()]);
-    }
+}
     // ══════════════════════════════════════════════════════════
     //  LEADER ACTIONS — New, Edit, Delete, Assign, Invite, Members
     // ══════════════════════════════════════════════════════════
@@ -209,9 +210,9 @@ class TaskSpaceController extends AbstractController
             // Création d'une "Tâche de bienvenue" pour l'intégrer au projet
             $tache = new Tache();
             $tache->setTitre('👋 Bienvenue dans le projet !');
-$currentUser = $this->getUser();
-$tache->setDescription('Vous avez été ajouté à ce projet collaboratif par ' . $currentUser->getPrenom() . '. Vous pouvez maintenant voir le tableau !');      
-      $tache->setPriorite('low');
+        $currentUser = $this->getUser();
+        $tache->setDescription('Vous avez été ajouté à ce projet collaboratif par ' . $currentUser->getPrenom() . '. Vous pouvez maintenant voir le tableau !');      
+            $tache->setPriorite('low');
             $tache->setDifficulte(1);
             $tache->setStatut('todo');
             $tache->setCreatedAt(new \DateTimeImmutable());
@@ -343,7 +344,70 @@ $tache->setDescription('Vous avez été ajouté à ce projet collaboratif par ' 
             'myCols'        => $myCols, // <--- On l'envoie aussi pour "mes tâches"
         ]);
     }
+   
+   #[Route('/{id}/ai-assign', name: 'app_taskspace_ai_assign', methods: ['GET'])]
+    public function aiAssign(TaskSpace $taskSpace, \App\Service\AiClientService $aiService, TacheRepository $tacheRepo, UtilisateurRepository $userRepo): JsonResponse
+    {
+        $this->requireLeader($taskSpace);
+        $todoTasks = $tacheRepo->findBy(['taskSpace' => $taskSpace, 'statut' => 'todo']);
+        if (empty($todoTasks)) return $this->json(['suggestions' => []]);
 
+        $allProjectTasks = $tacheRepo->findBy(['taskSpace' => $taskSpace]);
+        $membersLoad = [];
+        $usersMap = [];
+
+        $leader = $taskSpace->getUtilisateur();
+        $membersLoad[$leader->getId()] = 0;
+        $usersMap[$leader->getId()] = $leader;
+
+        foreach ($allProjectTasks as $t) {
+            $u = $t->getUtilisateur();
+            if ($u) {
+                $uid = $u->getId();
+                $usersMap[$uid] = $u;
+                if (!isset($membersLoad[$uid])) $membersLoad[$uid] = 0;
+                if ($t->getStatut() !== 'done') {
+                    $prioWeight = match(strtolower($t->getPriorite())) { 'urgent' => 4, 'high' => 3, 'medium' => 2, default => 1 };
+                    $membersLoad[$uid] += ($prioWeight * $t->getDifficulte());
+                }
+            }
+        }
+
+        $membersData = [];
+        foreach ($membersLoad as $uid => $load) {
+            $membersData[] = ['user' => $usersMap[$uid], 'load' => $load, 'name' => $usersMap[$uid]->getPrenom()];
+        }
+
+        $result = $aiService->suggestAssignments($todoTasks, $membersData);
+        $suggestions = $result['suggestions'] ?? [];
+        
+        foreach ($suggestions as &$sugg) {
+            $t = array_filter($todoTasks, fn($task) => $task->getId() === $sugg['task_id']);
+            $t = reset($t);
+            $sugg['task_title'] = $t ? $t->getTitre() : 'Inconnue';
+            $m = $usersMap[$sugg['assigned_to']] ?? null;
+            $sugg['member_name'] = $m ? ($m->getPrenom() . ' ' . $m->getNom()) : 'Inconnu';
+        }
+        
+        return $this->json(['suggestions' => $suggestions]);
+    }
+
+    #[Route('/{id}/ai-assign-apply', name: 'app_taskspace_ai_assign_apply', methods: ['POST'])]
+    public function aiAssignApply(Request $request, TaskSpace $taskSpace, EntityManagerInterface $em, TacheRepository $tacheRepo, UtilisateurRepository $userRepo): JsonResponse
+    {
+        $this->requireLeader($taskSpace);
+        $data = json_decode($request->getContent(), true);
+        
+        foreach ($data['suggestions'] ?? [] as $sugg) {
+            $task = $tacheRepo->find($sugg['task_id']);
+            $user = $userRepo->find($sugg['assigned_to']);
+            if ($task && $user && $task->getTaskSpace() === $taskSpace) {
+                $task->setUtilisateur($user);
+            }
+        }
+        $em->flush();
+        return $this->json(['success' => true]);
+    }
 
 
     #[Route('/{id}/remove-member/{memberId}', name: 'app_taskspace_remove_member', methods: ['POST'])]

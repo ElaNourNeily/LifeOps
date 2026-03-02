@@ -65,4 +65,36 @@ class AiClientService
 
         return $response->toArray();
     }
+    
+    public function suggestAssignments(array $tasks, array $members): array
+    {
+        $payload = ['tasks' => [], 'members' => []];
+
+        foreach ($tasks as $tache) {
+            $payload['tasks'][] = [
+                'id' => $tache->getId(),
+                'titre' => $tache->getTitre(),
+                'priority' => $tache->getPriorite(),
+                'difficulty' => $tache->getDifficulte(),
+                'deadline' => $tache->getDeadline()?->format('Y-m-d'),
+            ];
+        }
+
+        foreach ($members as $memberData) {
+            $payload['members'][] = [
+                'id' => $memberData['user']->getId(),
+                'name' => $memberData['name'] ?? $memberData['user']->getPrenom(),
+                'current_load' => $memberData['load'],
+            ];
+        }
+
+        $response = $this->client->request(
+            'POST',
+            'http://127.0.0.1:8001/ai/assign',
+            ['json' => $payload]
+        );
+
+        return $response->toArray();
+    }
+
 }
