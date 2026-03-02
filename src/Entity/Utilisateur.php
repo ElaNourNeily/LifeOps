@@ -55,7 +55,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     
     #[ORM\Column(type: Types::INTEGER, nullable: true)]
     #[Assert\NotBlank(message: "L'âge est obligatoire.")]
-    #[Assert\Range(min: 15, max: 100, notInRangeMessage: "L'âge doit être compris entre {{ min }} et {{ max }} ans.")]
+    #[Assert\Range(min: 0, max: 120, notInRangeMessage: "L'âge doit être compris entre {{ min }} et {{ max }} ans.")]
     private ?int $age = null;
 
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: Feedback::class, orphanRemoval: true)]

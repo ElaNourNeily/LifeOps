@@ -14,8 +14,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mailer\MailerInterface;
 use App\Repository\UtilisateurRepository;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
 
 class RegistrationController extends AbstractController
 {
@@ -38,7 +36,7 @@ class RegistrationController extends AbstractController
             if (in_array('ROLE_ADMIN', $roles, true)) {
                 return $this->redirectToRoute('app_admin_dashboard');
             }
-            return $this->redirectToRoute('app_dashboard');
+            return $this->redirectToRoute('app_time_index');
         }
         $user = new Utilisateur();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -84,13 +82,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/code', name: 'app_verify_code')]
-    public function verifyCode(
-        Request $request,
-        UtilisateurRepository $utilisateurRepository,
-        EntityManagerInterface $entityManager,
-        UserAuthenticatorInterface $userAuthenticator,
-        FormLoginAuthenticator $authenticator
-    ): Response
+    public function verifyCode(Request $request, UtilisateurRepository $utilisateurRepository, EntityManagerInterface $entityManager): Response
     {
         $email = $request->getSession()->get('pending_verification_email');
 
@@ -115,12 +107,7 @@ class RegistrationController extends AbstractController
                 $request->getSession()->remove('pending_verification_email');
                 $this->addFlash('success', 'Votre compte a été vérifié avec succès !');
 
-                // Auto-login: authenticate the user directly after verification
-                return $userAuthenticator->authenticateUser(
-                    $user,
-                    $authenticator,
-                    $request
-                );
+                return $this->redirectToRoute('app_login');
             }
 
             $this->addFlash('error', 'Code invalide ou expiré.');
@@ -131,4 +118,3 @@ class RegistrationController extends AbstractController
         ]);
     }
 }
-

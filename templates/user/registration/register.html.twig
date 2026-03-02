@@ -6,9 +6,6 @@
 <div class="flex items-center justify-center min-h-[calc(100vh-4rem)]">
     <div class="w-full max-w-md p-8 space-y-8 bg-card rounded-xl border border-border shadow-lg">
         <div class="text-center">
-            <div class="flex justify-center mb-4">
-                <img src="{{ asset('logo.jpeg') }}" alt="LifeOps Logo" style="width: 56px; height: 56px; object-fit: contain;">
-            </div>
             <h1 class="text-3xl font-bold text-foreground">Créer un compte</h1>
             <p class="mt-2 text-muted-foreground">Rejoignez LifeOps et prenez le contrôle</p>
         </div>
@@ -32,12 +29,6 @@
                 {{ form_label(registrationForm.age, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground'}}) }}
                 {{ form_widget(registrationForm.age, {'attr': {'class': 'mt-1 block w-28 px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent'}}) }}
                 {{ form_errors(registrationForm.age, {'attr': {'class': 'text-sm text-red-500 mt-1'}}) }}
-            </div>
-
-            <div>
-                {{ form_label(registrationForm.telephone, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground'}}) }}
-                {{ form_widget(registrationForm.telephone, {'attr': {'class': 'mt-1 block w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent', 'type': 'tel'}}) }}
-                {{ form_errors(registrationForm.telephone, {'attr': {'class': 'text-sm text-red-500 mt-1'}}) }}
             </div>
 
             <div>

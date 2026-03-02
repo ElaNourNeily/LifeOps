@@ -19,14 +19,10 @@ services:
     App\:
         resource: '../src/'
 
-    App\Service\ModerationService:
+    # AI Planner Service — inject the Gemini API key
+    App\Service\AIPlannerService:
         arguments:
             $apiKey: '%env(GEMINI_API_KEY)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
-    # Alias for FormLoginAuthenticator to allow autowiring in controllers (e.g. auto-login after registration)
-    Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator:
-        alias: security.authenticator.form_login.main
-        public: true

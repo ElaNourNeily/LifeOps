@@ -1,8 +1,8 @@
 <aside class="flex h-screen flex-col border-r border-border bg-[hsl(220,20%,5%)] transition-all duration-300 w-[250px]" id="sidebar">
     <!-- Brand -->
     <div class="flex h-16 items-center gap-3 border-b border-border px-4">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
-            <img src="{{ asset('logo.jpeg') }}" alt="LifeOps Logo" class="h-8 w-8 object-contain">
+        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[hsl(160,84%,39%)]">
+            <i data-lucide="sparkles" class="h-5 w-5 text-[hsl(220,20%,7%)]"></i>
         </div>
         <div class="flex flex-col sidebar-text">
             <span class="text-sm font-semibold text-[hsl(210,20%,95%)]">LifeOps</span>
@@ -17,7 +17,7 @@
                 'label': 'Admin',
                 'items': [
                     {'label': 'Dashboard', 'href': path('app_admin_dashboard'), 'icon': 'layout-dashboard'},
-                    {'label': 'Feedbacks', 'href': path('app_admin_feedback'), 'icon': 'message-square'}
+                    {'label': 'Utilisateurs', 'href': path('app_admin_users'), 'icon': 'users'}
                 ]
             }
         ] %}

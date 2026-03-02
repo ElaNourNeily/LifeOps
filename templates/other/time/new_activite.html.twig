@@ -1,54 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Nouvelle Activité - LifeOps{% endblock %}
+{% block title %}Ajouter une Activité - LifeOps{% endblock %}
 
 {% block body %}
-    <div class="max-w-xl mx-auto">
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-foreground">Ajouter une Activité</h1>
-            <p class="text-muted-foreground">Planifiez votre journée</p>
+    <div class="max-w-2xl mx-auto">
+        {# Header with back button #}
+        <div class="flex items-center gap-6 mb-10">
+            <a href="{{ path('app_time_index', {date: date|date('Y-m-d')}) }}" class="flex items-center justify-center w-12 h-12 rounded-xl border border-border bg-secondary/50 text-foreground hover:bg-secondary transition-all shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </a>
+            <div>
+                <h1 class="text-4xl font-black tracking-tight text-foreground">Ajouter une Activité</h1>
+                <p class="text-muted-foreground font-medium mt-1">Pour le {{ date|date('d/m/Y') }}</p>
+            </div>
         </div>
 
-        <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
-            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+        <div class="rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-card-foreground shadow-2xl overflow-hidden p-8 md:p-10 transition-all hover:bg-card/50">
+            {{ form_start(form, {'attr': {'class': 'space-y-8'}}) }}
                 
-                <div>
-                    {{ form_label(form.titre, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                    {{ form_widget(form.titre, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                {# Activity Title #}
+                <div class="space-y-3">
+                    {{ form_label(form.titre, null, {'label_attr': {'class': 'text-sm font-bold uppercase tracking-widest text-muted-foreground/80'}}) }}
+                    {{ form_widget(form.titre, {'attr': {
+                        'class': 'flex h-14 w-full rounded-xl border border-border bg-secondary/30 px-4 py-2 text-lg font-medium ring-offset-background placeholder:text-muted-foreground/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary transition-all shadow-inner',
+                        'placeholder': 'Réunion, Sport, Lecture...'
+                    }}) }}
+                    <div class="text-destructive text-sm font-medium mt-1">{{ form_errors(form.titre) }}</div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                     <div>
-                        {{ form_label(form.heureDebutEstimee, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                        {{ form_widget(form.heureDebutEstimee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                {# Times #}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="space-y-3">
+                        <label class="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Heure de début</label>
+                        <div class="relative">
+                            {{ form_widget(form.heure_debut_estimee, {'attr': {'class': 'flex h-14 w-full rounded-xl border border-border bg-secondary/30 px-4 py-2 text-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner'}}) }}
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                        <div class="text-destructive text-sm font-medium mt-1">{{ form_errors(form.heure_debut_estimee) }}</div>
                     </div>
-                     <div>
-                        {{ form_label(form.heureFinEstimee, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                        {{ form_widget(form.heureFinEstimee, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-4">
-                     <div>
-                        {{ form_label(form.priorite, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                        {{ form_widget(form.priorite, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
-                    </div>
-                     <div>
-                        {{ form_label(form.niveauUrgence, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                        {{ form_widget(form.niveauUrgence, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
-                    </div>
-                     <div>
-                        {{ form_label(form.etat, null, {'label_attr': {'class': 'block text-sm font-medium text-foreground mb-2'}}) }}
-                        {{ form_widget(form.etat, {'attr': {'class': 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'}}) }}
+                     <div class="space-y-3">
+                        <label class="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Heure de fin</label>
+                        <div class="relative">
+                            {{ form_widget(form.heure_fin_estimee, {'attr': {'class': 'flex h-14 w-full rounded-xl border border-border bg-secondary/30 px-4 py-2 text-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner'}}) }}
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                        <div class="text-destructive text-sm font-medium mt-1">{{ form_errors(form.heure_fin_estimee) }}</div>
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-2 pt-4">
-                    <a href="{{ path('app_time_index') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                {# Categorie #}
+                <div class="space-y-3">
+                    {{ form_label(form.categorie, null, {'label_attr': {'class': 'text-sm font-bold uppercase tracking-widest text-muted-foreground/80'}}) }}
+                    {{ form_widget(form.categorie, {'attr': {'class': 'flex h-14 w-full rounded-xl border border-border bg-secondary/30 px-4 py-2 text-lg font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all shadow-inner appearance-none cursor-pointer'}}) }}
+                </div>
+
+                {# Couleur #}
+                <div class="space-y-4">
+                    <label class="text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Couleur</label>
+                    <div class="flex flex-wrap gap-6 mt-2">
+                        {% for child in form.couleur %}
+                            <label class="relative flex items-center group cursor-pointer">
+                                {{ form_widget(child, {'attr': {'class': 'peer sr-only'}}) }}
+                                <div class="flex items-center gap-3 px-4 py-2 rounded-xl border-2 border-transparent hover:bg-secondary/50 peer-checked:bg-primary/10 peer-checked:border-primary transition-all">
+                                    <div class="w-8 h-8 rounded-full shadow-lg transition-transform group-hover:scale-110 peer-checked:scale-110" style="background-color: {{ child.vars.value }}"></div>
+                                    <span class="text-sm font-semibold text-muted-foreground group-hover:text-foreground peer-checked:text-foreground">{{ child.vars.label }}</span>
+                                </div>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Details Grid #}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                     <div class="space-y-3">
+                        {{ form_label(form.priorite, null, {'label_attr': {'class': 'text-xs font-bold uppercase tracking-widest text-muted-foreground/80'}}) }}
+                        {{ form_widget(form.priorite, {'attr': {'class': 'flex h-12 w-full rounded-xl border border-border bg-secondary/30 px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 appearance-none cursor-pointer text-center'}}) }}
+                    </div>
+                     <div class="space-y-3">
+                        {{ form_label(form.niveau_urgence, null, {'label_attr': {'class': 'text-xs font-bold uppercase tracking-widest text-muted-foreground/80'}}) }}
+                        {{ form_widget(form.niveau_urgence, {'attr': {'class': 'flex h-12 w-full rounded-xl border border-border bg-secondary/30 px-3 text-sm font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 appearance-none cursor-pointer text-center'}}) }}
+                    </div>
+                </div>
+
+                {# Actions #}
+                <div class="flex flex-col md:flex-row justify-end gap-4 pt-10 border-t border-border/50">
+                    <a href="{{ path('app_time_index', {date: date|date('Y-m-d')}) }}" class="flex h-14 items-center justify-center rounded-xl text-md font-bold text-muted-foreground hover:text-foreground hover:bg-secondary transition-all px-8 border border-transparent">
                         Annuler
                     </a>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                        Enregistrer
+                    <button type="submit" class="flex h-14 items-center justify-center rounded-xl text-md font-black bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] transition-all px-12 shadow-xl shadow-primary/20">
+                        Enregistrer l'activité
                     </button>
                 </div>
 

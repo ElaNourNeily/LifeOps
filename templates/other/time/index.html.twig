@@ -1,70 +1,471 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Planning - LifeOps{% endblock %}
+{% block title %}Calendrier - LifeOps{% endblock %}
 
 {% block body %}
-    <div class="flex items-center justify-between mb-8">
+<div class="flex flex-col gap-10">
+    {# Header with Controls #}
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-            <h1 class="text-3xl font-bold tracking-tight text-foreground">Planning du Jour</h1>
-            <p class="text-muted-foreground">{{ today|date('d/m/Y') }}</p>
+            <div class="flex items-center gap-3 mb-2">
+                <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">Tableau de bord</span>
+            </div>
+            <h1 class="text-4xl font-black tracking-tight text-foreground">{{ formattedDateTitle }}</h1>
+            <p class="text-muted-foreground font-medium mt-1">Gérez votre temps avec précision et élégance.</p>
         </div>
-        <a href="{{ path('app_activite_new') }}" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2 h-4 w-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter Activité
-        </a>
+        
+        <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center rounded-2xl border border-border bg-card/40 backdrop-blur-sm p-1.5 shadow-xl">
+                <a href="{{ path('app_time_index', {view: 'day', date: currentDate|date('Y-m-d')}) }}" 
+                   class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ view == 'day' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50' }}">
+                    Jour
+                </a>
+                <a href="{{ path('app_time_index', {view: 'week', date: currentDate|date('Y-m-d')}) }}" 
+                   class="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all {{ view == 'week' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50' }}">
+                    Semaine
+                </a>
+            </div>
+
+            <div class="flex items-center gap-2 p-1.5 rounded-2xl border border-border bg-card/40 backdrop-blur-sm shadow-xl">
+                <a href="{{ path('app_time_index', {view: view, date: currentDate|date_modify('-1 ' ~ (view == 'week' ? 'week' : 'day'))|date('Y-m-d')}) }}" 
+                   class="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary text-foreground transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </a>
+                <a href="{{ path('app_time_index', {view: view, date: 'now'|date('Y-m-d')}) }}" 
+                   class="px-4 py-2 rounded-xl bg-secondary/30 hover:bg-secondary/50 text-xs font-black uppercase tracking-widest transition-all">
+                    Aujourd'hui
+                </a>
+                <a href="{{ path('app_time_index', {view: view, date: currentDate|date_modify('+1 ' ~ (view == 'week' ? 'week' : 'day'))|date('Y-m-d')}) }}" 
+                   class="w-10 h-10 flex items-center justify-center rounded-xl bg-secondary/50 hover:bg-secondary text-foreground transition-all shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <button onclick="document.getElementById('aiModal').classList.remove('hidden')" 
+                        class="inline-flex items-center gap-2 px-6 h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 font-black text-sm transition-all shadow-2xl shadow-violet-500/30 hover:scale-[1.02] active:scale-[0.98] animate-pulse hover:animate-none">
+                    <span class="text-lg">🤖</span>
+                    Optimiser avec l'IA
+                </button>
+
+                <a href="{{ path('app_planning_new') }}" class="inline-flex items-center gap-2 px-6 h-14 rounded-2xl bg-primary text-white hover:bg-primary/90 font-black text-sm transition-all shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-[0.98]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    Nouveau Planning
+                </a>
+                
+                <a href="{{ path('app_time_export', {date: currentDate|date('Y-m-d')}) }}" class="w-14 h-14 flex items-center justify-center rounded-2xl border border-border bg-card/40 backdrop-blur-sm text-foreground hover:bg-secondary shadow-xl transition-all" title="Exporter en PDF">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </a>
+            </div>
+        </div>
     </div>
 
-    <div class="rounded-xl border border-border bg-card text-card-foreground shadow p-6">
-        {% if planning and planning.activites|length > 0 %}
-            <div class="space-y-4">
-                {% for activite in planning.activites %}
-                    <div class="flex items-center gap-4 rounded-lg bg-secondary/50 p-4 border border-border/50 transition-colors hover:bg-secondary/70">
-                         <div class="flex-shrink-0 w-24 text-center">
-                            <span class="block text-sm font-bold text-foreground">{{ activite.heureDebutEstimee|date('H:i') }}</span>
-                            <span class="block text-xs text-muted-foreground">{{ activite.heureFinEstimee|date('H:i') }}</span>
-                        </div>
-                        
-                        <div class="w-1 h-12 rounded-full self-stretch bg-primary"></div>
-                        
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-foreground">{{ activite.titre }}</h3>
-                             <div class="flex gap-2 mt-1">
-                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold
-                                    {% if activite.priorite == 'high' %}border-transparent bg-destructive/20 text-destructive
-                                    {% elseif activite.priorite == 'medium' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
-                                    {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
-                                ">
-                                    {{ activite.priorite|capitalize }}
-                                </span>
-                                 <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold border-transparent bg-secondary text-secondary-foreground">
-                                    Urgence: {{ activite.niveauUrgence }}/5
-                                </span>
-                            </div>
-                        </div>
-
-                         <div class="flex-shrink-0">
-                             <div class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold
-                                {% if activite.etat == 'done' %}border-transparent bg-[hsl(var(--success))]/20 text-[hsl(var(--success))]
-                                {% elseif activite.etat == 'in-progress' %}border-transparent bg-[hsl(var(--warning))]/20 text-[hsl(var(--warning))]
-                                {% else %}border-transparent bg-secondary text-secondary-foreground{% endif %}
-                            ">
-                                {{ activite.etat|capitalize }}
-                            </div>
-                        </div>
+    {# Calendar Grid Container #}
+    <div class="rounded-[2.5rem] border border-border bg-card/40 backdrop-blur-md shadow-2xl overflow-hidden overflow-x-auto transition-all hover:bg-card/50">
+        <div class="min-w-[1000px]">
+            {# Grid Header #}
+            <div class="grid {{ view == 'week' ? 'grid-cols-8' : 'grid-cols-2' }} border-b border-border/50 bg-secondary/10">
+                <div class="p-6 border-r border-border/50 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em] text-center flex items-center justify-center">
+                    Track
+                </div>
+                {% for day in weekDays %}
+                    <div class="p-6 {{ not loop.last ? 'border-r border-border/50' : '' }} text-center">
+                        <span class="block text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-1">{{ day|date('D') }}</span>
+                        <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl text-xl font-black {{ day|date('Y-m-d') == 'now'|date('Y-m-d') ? 'bg-primary text-white shadow-lg shadow-primary/20 scale-110' : 'text-foreground hover:bg-secondary/40 transition-all' }}">{{ day|date('d') }}</span>
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
-            <div class="text-center py-12">
-                <div class="p-4 rounded-full bg-secondary inline-block mb-4">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 text-muted-foreground"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+
+            {# Grid Body #}
+            <div class="relative">
+                {# Hour Rows #}
+                {% for hour in gridStart..gridEnd %}
+                    <div class="grid {{ view == 'week' ? 'grid-cols-8' : 'grid-cols-2' }} border-b border-border/30 min-h-[100px]">
+                        <div class="p-4 border-r border-border/30 text-[10px] font-black text-muted-foreground/30 text-center bg-muted/5 flex items-start justify-center pt-6">
+                            {{ "%02d"|format(hour) }}:00
+                        </div>
+                        {% for day in weekDays %}
+                            {% set dateKey = day|date('Y-m-d') %}
+                            <div class="relative p-1.5 {{ not loop.last ? 'border-r border-border/30' : '' }} group transition-all">
+                                {# Activities for this hour/day #}
+                                {% if activitiesByDay[dateKey] is defined %}
+                                    {% for activity in activitiesByDay[dateKey] %}
+                                        {# Show activity if it starts in this hour #}
+                                        {% if activity.heureDebutEstimee|date('H') == hour %}
+                                            {% set startMin = activity.heureDebutEstimee|date('i') %}
+                                            {% set durationMin = (activity.heureFinEstimee.timestamp - activity.heureDebutEstimee.timestamp) / 60 %}
+                                            {% set topOffset = (startMin / 60) * 100 %}
+                                            {% set height = (durationMin / 60) * 100 %} {# 100px is base hour height #}
+                                            
+                                            <div class="absolute inset-x-2 z-10 rounded-2xl p-4 shadow-xl border border-white/5 hover:border-white/20 transition-all cursor-pointer overflow-hidden group/item hover:scale-[1.01] hover:z-20 active:scale-[0.99]"
+                                                 style="top: {{ topOffset }}%; height: {{ height }}px; background-color: {{ activity.couleur|default('#4f46e5') }}; color: white;"
+                                                 title="{{ activity.titre }} ({{ activity.statutDynamique }})"
+                                                 onclick="window.location.href='{{ path('app_activite_edit', {id: activity.id}) }}'">
+                                                
+                                                {% if activity.suggestedByAi %}
+                                                    <div class="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-[8px] font-black uppercase tracking-widest border border-white/10">
+                                                        <span class="animate-pulse">🤖</span> IA
+                                                    </div>
+                                                {% endif %}
+
+                                                <div class="flex items-start justify-between gap-2 overflow-hidden mb-1">
+                                                    <span class="text-xs font-black uppercase tracking-tight truncate">{{ activity.titre }}</span>
+                                                    <span class="text-[10px] font-bold opacity-70 shrink-0 bg-black/20 px-1.5 py-0.5 rounded-lg">{{ activity.heureDebutEstimee|date('H:i') }}</span>
+                                                </div>
+                                                <div class="text-[9px] font-bold opacity-60 uppercase tracking-widest line-clamp-1">
+                                                    {{ activity.categorie }} • {{ activity.priorite|capitalize }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                
+                                {# Quick Add Link #}
+                                <a href="{{ path('app_activite_new', {date: dateKey, start: hour}) }}" 
+                                   class="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
+                                    <div class="p-2 rounded-xl bg-primary/20 text-primary scale-90 group-hover:scale-100 transition-all font-black text-[10px] uppercase tracking-widest">
+                                        + Planifier
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# Bottom Insights Section #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+        <div class="p-8 rounded-[2.5rem] border border-border/50 bg-card/30 backdrop-blur-sm shadow-xl transition-all hover:bg-card/40">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2.5 rounded-xl bg-primary/10 text-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="m3 3 3 8 2 2 8-8 3 3-5 5-2 2-3-3"/><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/></svg>
                 </div>
-                <h3 class="text-lg font-medium text-foreground">Rien de prévu</h3>
-                <p class="text-muted-foreground mt-1">Votre planning pour aujourd'hui est vide.</p>
-                <div class="mt-6">
-                     <a href="{{ path('app_activite_new') }}" class="text-primary hover:underline">Commencer à planifier</a>
+                <h3 class="font-black text-xs uppercase tracking-[0.2em] text-foreground">Objectifs</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                    <span>Progression</span>
+                    <span class="text-primary font-black">78%</span>
+                </div>
+                <div class="h-1.5 w-full bg-secondary/50 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 78%"></div>
+                </div>
+                <p class="text-[11px] font-medium text-muted-foreground leading-relaxed">
+                    Vous êtes en avance sur votre planning hebdomadaire. Continuez ainsi !
+                </p>
+            </div>
+        </div>
+
+        <div class="col-span-1 md:col-span-2 p-8 rounded-[2.5rem] border border-border/50 bg-card/30 backdrop-blur-sm shadow-xl transition-all hover:bg-card/40">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 rounded-xl bg-primary/10 text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M7 16V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v12"/><path d="M5 20h14"/><path d="M7 16H5a2 2 0 0 0-2 2v2"/><path d="M17 16h2a2 2 0 0 1 2 2v2"/></svg>
+                    </div>
+                    <h3 class="font-black text-xs uppercase tracking-[0.2em] text-foreground">Indicateurs de Performance</h3>
+                </div>
+                <a href="{{ path('app_planning_index') }}" class="text-[10px] font-black text-primary uppercase tracking-widest hover:underline p-2 rounded-lg hover:bg-primary/5">Tout voir</a>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="p-5 rounded-2xl bg-secondary/10 border border-border/30 transition-all hover:border-primary/20">
+                    <p class="text-[9px] text-muted-foreground uppercase font-black tracking-[0.2em] mb-2">Activités</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-foreground">{% set total = 0 %}{% for activities in activitiesByDay %}{% set total = total + activities|length %}{% endfor %}{{ total }}</span>
+                        <span class="text-[10px] font-bold text-emerald-500">+12%</span>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-secondary/10 border border-border/30 transition-all hover:border-primary/20">
+                    <p class="text-[9px] text-muted-foreground uppercase font-black tracking-[0.2em] mb-2">Moyenne</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-foreground">{{ (total / weekDays|length)|number_format(1) }}</span>
+                        <span class="text-[10px] font-bold text-muted-foreground/40">/jour</span>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-secondary/10 border border-border/30 transition-all hover:border-primary/20">
+                    <p class="text-[9px] text-muted-foreground uppercase font-black tracking-[0.2em] mb-2">Focus Time</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-foreground">18h</span>
+                        <span class="text-[10px] font-bold text-emerald-500">+4h</span>
+                    </div>
+                </div>
+                <div class="p-5 rounded-2xl bg-secondary/10 border border-border/30 transition-all hover:border-primary/20">
+                    <p class="text-[9px] text-muted-foreground uppercase font-black tracking-[0.2em] mb-2">Dispo</p>
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-3xl font-black text-foreground">42%</span>
+                        <span class="text-[10px] font-bold text-pink-500">-5%</span>
+                    </div>
                 </div>
             </div>
-        {% endif %}
+        </div>
     </div>
+</div>
+
+{# ============================== AI MODAL ============================== #}
+<div id="aiModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+    {# Backdrop #}
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById('aiModal').classList.add('hidden')"></div>
+    
+    {# Modal Content #}
+    <div class="relative w-full max-w-2xl max-h-[85vh] rounded-3xl border border-border bg-card shadow-2xl flex flex-col overflow-hidden">
+        {# Modal Header #}
+        <div class="flex items-center justify-between p-6 border-b border-border/50 bg-gradient-to-r from-violet-600/10 to-indigo-600/10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white text-lg shadow-lg shadow-violet-500/20">🤖</div>
+                <div>
+                    <h2 class="text-lg font-black text-foreground">Assistant IA — Optimisation</h2>
+                </div>
+            </div>
+            <button onclick="document.getElementById('aiModal').classList.add('hidden')" class="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center hover:bg-destructive/20 hover:text-destructive transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+
+        {# Modal Body (scrollable) #}
+        <div class="flex-1 overflow-y-auto p-6 space-y-6" id="aiModalBody">
+            {# Input Section #}
+            <div id="aiInputSection">
+                <label class="block text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-3">Votre demande</label>
+                <textarea id="aiRequest" rows="3" 
+                    class="w-full rounded-2xl bg-secondary/30 border border-border/50 p-4 text-sm font-medium text-foreground placeholder-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500/50 resize-none transition-all"
+                    placeholder="Ex: Optimise ma semaine en priorisant les tâches urgentes, ajoute des pauses régulières...">Optimise ma semaine en fonction de mes priorités</textarea>
+                
+                <button id="aiAnalyzeBtn" onclick="aiOptimize()" 
+                    class="mt-4 w-full inline-flex items-center justify-center gap-3 h-14 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-black text-sm hover:from-violet-500 hover:to-indigo-500 transition-all shadow-xl shadow-violet-500/20 hover:scale-[1.01] active:scale-[0.99]">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
+                    Analyser & Optimiser
+                </button>
+            </div>
+
+            {# Loading State #}
+            <div id="aiLoading" class="hidden">
+                <div class="flex flex-col items-center justify-center py-16 gap-6">
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-full border-4 border-violet-500/20 border-t-violet-500 animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center text-2xl">🧠</div>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-black text-foreground">L'IA analyse votre planning...</p>
+                        <p class="text-xs text-muted-foreground font-medium mt-1">Cela peut prendre quelques secondes</p>
+                    </div>
+                </div>
+            </div>
+
+            {# Results Section #}
+            <div id="aiResults" class="hidden space-y-6"></div>
+
+            {# Error State #}
+            <div id="aiError" class="hidden">
+                <div class="rounded-2xl bg-destructive/10 border border-destructive/20 p-6 text-center">
+                    <span class="text-3xl block mb-3">⚠️</span>
+                    <p class="text-sm font-bold text-destructive" id="aiErrorMsg">Une erreur est survenue.</p>
+                    <button onclick="aiReset()" class="mt-4 px-6 py-2.5 rounded-xl bg-secondary/50 text-sm font-bold hover:bg-secondary transition-all">Réessayer</button>
+                </div>
+            </div>
+        </div>
+
+        {# Modal Footer (confirm button, hidden until results) #}
+        <div id="aiFooter" class="hidden border-t border-border/50 p-6 bg-card">
+            <div class="flex items-center gap-3">
+                <button onclick="aiReset()" class="flex-1 h-12 rounded-2xl border border-border bg-secondary/30 font-bold text-sm hover:bg-secondary/50 transition-all">
+                    Nouvelle analyse
+                </button>
+                <button id="aiConfirmBtn" onclick="aiConfirm()" class="flex-[2] h-12 rounded-2xl bg-emerald-600 text-white font-black text-sm hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99]">
+                    ✅ Confirmer & Appliquer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    .line-clamp-1 {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+
+<script>
+let aiSuggestionsData = null;
+
+function aiOptimize() {
+    const request = document.getElementById('aiRequest').value.trim();
+    if (!request) return;
+
+    // Show loading
+    document.getElementById('aiInputSection').classList.add('hidden');
+    document.getElementById('aiLoading').classList.remove('hidden');
+    document.getElementById('aiResults').classList.add('hidden');
+    document.getElementById('aiError').classList.add('hidden');
+    document.getElementById('aiFooter').classList.add('hidden');
+
+    const formData = new FormData();
+    formData.append('request', request);
+
+    fetch('{{ path("app_ai_optimize") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('aiLoading').classList.add('hidden');
+
+        if (data.error) {
+            document.getElementById('aiErrorMsg').textContent = data.error;
+            document.getElementById('aiError').classList.remove('hidden');
+            return;
+        }
+
+        aiSuggestionsData = data.suggestions || [];
+        renderAiResults(data);
+    })
+    .catch(err => {
+        document.getElementById('aiLoading').classList.add('hidden');
+        document.getElementById('aiErrorMsg').textContent = 'Erreur réseau : ' + err.message;
+        document.getElementById('aiError').classList.remove('hidden');
+    });
+}
+
+function renderAiResults(data) {
+    const container = document.getElementById('aiResults');
+    container.innerHTML = '';
+
+    // Summary card
+    if (data.summary) {
+        container.innerHTML += `
+            <div class="rounded-2xl bg-violet-500/10 border border-violet-500/20 p-5">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-lg">💡</span>
+                    <span class="text-xs font-black uppercase tracking-[0.2em] text-violet-400">Résumé de l'analyse</span>
+                </div>
+                <p class="text-sm font-medium text-foreground leading-relaxed">${data.summary}</p>
+            </div>`;
+    }
+
+    // Suggestions by day
+    const suggestions = data.suggestions || [];
+    if (suggestions.length === 0) {
+        container.innerHTML += `<p class="text-center text-muted-foreground text-sm py-8">Aucune suggestion générée.</p>`;
+        container.classList.remove('hidden');
+        return;
+    }
+
+    suggestions.forEach(day => {
+        let dayHtml = `<div class="rounded-2xl border border-border/50 bg-secondary/10 overflow-hidden">`;
+        dayHtml += `<div class="px-5 py-3 bg-secondary/20 border-b border-border/30 flex items-center gap-2">
+            <span class="text-sm">📅</span>
+            <span class="text-xs font-black uppercase tracking-[0.15em] text-foreground">${day.date || 'Date inconnue'}</span>
+        </div>`;
+        dayHtml += `<div class="p-5 space-y-4">`;
+
+        // New activities
+        const newActs = day.new_activities || day.newActivities || [];
+        if (newActs.length > 0) {
+            dayHtml += `<div><p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-2">🆕 Nouvelles activités</p>`;
+            newActs.forEach(act => {
+                dayHtml += `<div class="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/10 mb-2">
+                    <div class="w-3 h-3 rounded-full shrink-0" style="background:${act.color || '#4f46e5'}"></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-foreground truncate">${act.title || act.titre}</p>
+                        <p class="text-[10px] text-muted-foreground font-medium">${act.start} - ${act.end} • ${act.category || act.categorie || ''}</p>
+                    </div>
+                    ${act.reason ? `<p class="text-[10px] text-muted-foreground/60 italic max-w-[150px] truncate" title="${act.reason}">${act.reason}</p>` : ''}
+                </div>`;
+            });
+            dayHtml += `</div>`;
+        }
+
+        // Modifications
+        const mods = day.modifications || [];
+        if (mods.length > 0) {
+            dayHtml += `<div><p class="text-[10px] font-black uppercase tracking-[0.2em] text-amber-400 mb-2">✏️ Modifications</p>`;
+            mods.forEach(mod => {
+                dayHtml += `<div class="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/10 mb-2">
+                    <div class="flex-1">
+                        <p class="text-sm font-bold text-foreground">${mod.original_title || mod.originalTitle}</p>
+                        <p class="text-[10px] text-muted-foreground font-medium">Nouveau : ${mod.new_start || mod.newStart} - ${mod.new_end || mod.newEnd}</p>
+                    </div>
+                    ${mod.reason ? `<p class="text-[10px] text-muted-foreground/60 italic max-w-[150px] truncate" title="${mod.reason}">${mod.reason}</p>` : ''}
+                </div>`;
+            });
+            dayHtml += `</div>`;
+        }
+
+        // Free slots
+        const slots = day.free_slots || day.freeSlots || [];
+        if (slots.length > 0) {
+            dayHtml += `<div><p class="text-[10px] font-black uppercase tracking-[0.2em] text-sky-400 mb-2">🕐 Créneaux libres</p>`;
+            slots.forEach(slot => {
+                dayHtml += `<div class="flex items-center gap-3 p-3 rounded-xl bg-sky-500/10 border border-sky-500/10 mb-2">
+                    <p class="text-sm font-bold text-foreground">${slot.start} - ${slot.end}</p>
+                    <p class="text-xs text-muted-foreground">${slot.recommendation || slot.reccomendation || slot.title || ''}</p>
+                </div>`;
+            });
+            dayHtml += `</div>`;
+        }
+
+        dayHtml += `</div></div>`;
+        container.innerHTML += dayHtml;
+    });
+
+    container.classList.remove('hidden');
+    document.getElementById('aiFooter').classList.remove('hidden');
+}
+
+function aiConfirm() {
+    if (!aiSuggestionsData || aiSuggestionsData.length === 0) return;
+
+    const btn = document.getElementById('aiConfirmBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Enregistrement...';
+
+    fetch('{{ path("app_ai_confirm") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ suggestions: aiSuggestionsData })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            btn.textContent = '✅ Appliqué !';
+            btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+            btn.classList.add('bg-emerald-700');
+            setTimeout(() => window.location.reload(), 1200);
+        } else {
+            btn.disabled = false;
+            btn.textContent = '✅ Confirmer & Appliquer';
+            document.getElementById('aiErrorMsg').textContent = data.error || 'Erreur inconnue';
+            document.getElementById('aiError').classList.remove('hidden');
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.textContent = '✅ Confirmer & Appliquer';
+        document.getElementById('aiErrorMsg').textContent = 'Erreur réseau : ' + err.message;
+        document.getElementById('aiError').classList.remove('hidden');
+    });
+}
+
+function aiReset() {
+    aiSuggestionsData = null;
+    document.getElementById('aiInputSection').classList.remove('hidden');
+    document.getElementById('aiLoading').classList.add('hidden');
+    document.getElementById('aiResults').classList.add('hidden');
+    document.getElementById('aiResults').innerHTML = '';
+    document.getElementById('aiError').classList.add('hidden');
+    document.getElementById('aiFooter').classList.add('hidden');
+    const btn = document.getElementById('aiConfirmBtn');
+    btn.disabled = false;
+    btn.textContent = '✅ Confirmer & Appliquer';
+    btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+    btn.classList.remove('bg-emerald-700');
+}
+</script>
 {% endblock %}

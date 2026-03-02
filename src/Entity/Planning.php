@@ -7,10 +7,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PlanningRepository::class)]
 class Planning
 {
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context, $payload): void
+    {
+        if ($this->heure_debut_journee && $this->heure_fin_journee) {
+            if ($this->heure_fin_journee <= $this->heure_debut_journee) {
+                $context->buildViolation("L'heure de fin doit être après l'heure de début.")
+                    ->atPath('heure_fin_journee')
+                    ->addViolation();
+            }
+        }
+    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -23,16 +36,18 @@ class Planning
     private ?bool $disponibilite = true;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotNull(message: "L'heure de début est obligatoire.")]
     private ?\DateTimeInterface $heure_debut_journee = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotNull(message: "L'heure de fin est obligatoire.")]
     private ?\DateTimeInterface $heure_fin_journee = null;
 
     #[ORM\ManyToOne(inversedBy: 'plannings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateur = null;
 
-    #[ORM\OneToMany(mappedBy: 'planning', targetEntity: Activite::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'planning', targetEntity: Activite::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $activites;
 
     public function __construct()
@@ -50,7 +65,7 @@ class Planning
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): static
+    public function setDate(?\DateTimeInterface $date): static
     {
         $this->date = $date;
 
@@ -74,7 +89,7 @@ class Planning
         return $this->heure_debut_journee;
     }
 
-    public function setHeureDebutJournee(\DateTimeInterface $heure_debut_journee): static
+    public function setHeureDebutJournee(?\DateTimeInterface $heure_debut_journee): static
     {
         $this->heure_debut_journee = $heure_debut_journee;
 
@@ -86,7 +101,7 @@ class Planning
         return $this->heure_fin_journee;
     }
 
-    public function setHeureFinJournee(\DateTimeInterface $heure_fin_journee): static
+    public function setHeureFinJournee(?\DateTimeInterface $heure_fin_journee): static
     {
         $this->heure_fin_journee = $heure_fin_journee;
 
@@ -135,3 +150,4 @@ class Planning
         return $this;
     }
 }
+

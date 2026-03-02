@@ -9,10 +9,10 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @extends ServiceEntityRepository<Objectif>
  *
- * @method Objectif|null find($id, $lockMode = null, $lockVersion = null)
- * @method Objectif|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Objectif|null find(mixed $id, mixed $lockMode = null, mixed $lockVersion = null)
+ * @method Objectif|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method Objectif[]    findAll()
- * @method Objectif[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Objectif[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, int|null $limit = null, int|null $offset = null)
  */
 class ObjectifRepository extends ServiceEntityRepository
 {

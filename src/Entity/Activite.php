@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ActiviteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActiviteRepository::class)]
 class Activite
@@ -15,25 +16,43 @@ class Activite
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(min: 3, max: 255, minMessage: "Le titre doit faire au moins {{ limit }} caractères.")]
     private ?string $titre = null;
 
     #[ORM\Column]
+    #[Assert\Positive(message: "La durée doit être positive.")]
     private ?int $duree = null; // in minutes presumably
 
     #[ORM\Column]
     private ?int $priorite = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $etat = null;
+    private ?string $etat = 'en_attente';
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank(message: "L'heure de début est obligatoire.")]
     private ?\DateTimeInterface $heure_debut_estimee = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
+    #[Assert\NotBlank(message: "L'heure de fin est obligatoire.")]
+    #[Assert\GreaterThan(propertyPath: "heure_debut_estimee", message: "L'heure de fin doit être après l'heure de début.")]
     private ?\DateTimeInterface $heure_fin_estimee = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $niveau_urgence = null;
+    private ?string $niveau_urgence = 'moyen';
+
+    #[ORM\Column(length: 50, nullable: true)]
+    #[Assert\NotBlank(message: "La catégorie est obligatoire.")]
+    private ?string $categorie = null;
+
+    #[ORM\Column(length: 7, nullable: true)] // Hex color code e.g. #FFFFFF
+    #[Assert\NotBlank(message: "La couleur est obligatoire.")]
+    private ?string $couleur = null;
+
+    // New field to indicate if activity was suggested by AI
+    #[ORM\Column(type: "boolean", options: ["default" => false])]
+    private bool $suggestedByAi = false;
 
     #[ORM\ManyToOne(inversedBy: 'activites')]
     #[ORM\JoinColumn(nullable: false)]
@@ -49,7 +68,7 @@ class Activite
         return $this->titre;
     }
 
-    public function setTitre(string $titre): static
+    public function setTitre(?string $titre): static
     {
         $this->titre = $titre;
 
@@ -61,7 +80,7 @@ class Activite
         return $this->duree;
     }
 
-    public function setDuree(int $duree): static
+    public function setDuree(?int $duree): static
     {
         $this->duree = $duree;
 
@@ -73,7 +92,7 @@ class Activite
         return $this->priorite;
     }
 
-    public function setPriorite(int $priorite): static
+    public function setPriorite(?int $priorite): static
     {
         $this->priorite = $priorite;
 
@@ -85,7 +104,7 @@ class Activite
         return $this->etat;
     }
 
-    public function setEtat(string $etat): static
+    public function setEtat(?string $etat): static
     {
         $this->etat = $etat;
 
@@ -97,7 +116,7 @@ class Activite
         return $this->heure_debut_estimee;
     }
 
-    public function setHeureDebutEstimee(\DateTimeInterface $heure_debut_estimee): static
+    public function setHeureDebutEstimee(?\DateTimeInterface $heure_debut_estimee): static
     {
         $this->heure_debut_estimee = $heure_debut_estimee;
 
@@ -109,7 +128,7 @@ class Activite
         return $this->heure_fin_estimee;
     }
 
-    public function setHeureFinEstimee(\DateTimeInterface $heure_fin_estimee): static
+    public function setHeureFinEstimee(?\DateTimeInterface $heure_fin_estimee): static
     {
         $this->heure_fin_estimee = $heure_fin_estimee;
 
@@ -121,7 +140,7 @@ class Activite
         return $this->niveau_urgence;
     }
 
-    public function setNiveauUrgence(string $niveau_urgence): static
+    public function setNiveauUrgence(?string $niveau_urgence): static
     {
         $this->niveau_urgence = $niveau_urgence;
 
@@ -138,5 +157,68 @@ class Activite
         $this->planning = $planning;
 
         return $this;
+    }
+
+    public function getCategorie(): ?string
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?string $categorie): static
+    {
+        $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getCouleur(): ?string
+    {
+        return $this->couleur;
+    }
+
+    public function setCouleur(?string $couleur): static
+    {
+        $this->couleur = $couleur;
+
+        return $this;
+    }
+
+    // Getter for suggestedByAi
+    public function isSuggestedByAi(): bool
+    {
+        return $this->suggestedByAi;
+    }
+
+    // Setter for suggestedByAi
+    public function setSuggestedByAi(bool $suggestedByAi): static
+    {
+        $this->suggestedByAi = $suggestedByAi;
+        return $this;
+    }
+
+    public function getStatutDynamique(): string
+    {
+        $now = new \DateTime();
+        $date = $this->planning?->getDate();
+        
+        if (!$date || !$this->heure_debut_estimee || !$this->heure_fin_estimee) {
+            return 'En attente';
+        }
+
+        $start = clone $this->heure_debut_estimee;
+        $end = clone $this->heure_fin_estimee;
+        
+        $start->setDate((int)$date->format('Y'), (int)$date->format('m'), (int)$date->format('d'));
+        $end->setDate((int)$date->format('Y'), (int)$date->format('m'), (int)$date->format('d'));
+
+        if ($now < $start) {
+            return 'En attente';
+        }
+
+        if ($now > $end) {
+            return 'Terminé';
+        }
+
+        return 'En cours';
     }
 }

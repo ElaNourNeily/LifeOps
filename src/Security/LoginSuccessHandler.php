@@ -26,6 +26,6 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         }
 
         // Redirect regular users to user dashboard
-        return new RedirectResponse($this->router->generate('app_dashboard'));
+        return new RedirectResponse($this->router->generate('app_time_index'));
     }
 }

@@ -1,0 +1,197 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Plannings - LifeOps{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col gap-10">
+        {# Header Section #}
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.2em]">Flux de travail</span>
+                </div>
+                <h1 class="text-4xl font-black tracking-tight text-foreground">Gestion du Temps</h1>
+                <div class="flex items-center gap-6 mt-4">
+                    <a href="{{ path('app_time_index') }}" class="group flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-all">
+                        <span class="p-1.5 rounded-lg bg-secondary/50 group-hover:bg-primary/20 group-hover:text-primary transition-all">📅</span>
+                        Calendrier
+                    </a>
+                    <a href="{{ path('app_planning_index') }}" class="flex items-center gap-2 text-sm font-black text-primary transition-all underline decoration-2 underline-offset-8">
+                        <span class="p-1.5 rounded-lg bg-primary/10 transition-all">⚙️</span>
+                        Liste des Plannings
+                    </a>
+                </div>
+            </div>
+            
+            <a href="{{ path('app_planning_new') }}" class="inline-flex items-center justify-center rounded-2xl bg-primary text-white hover:bg-primary/90 font-black text-sm h-14 px-8 gap-3 shadow-2xl shadow-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                Créer un Planning
+            </a>
+        </div>
+
+        {# Table Section #}
+        <div class="rounded-3xl border border-border bg-card/40 backdrop-blur-md shadow-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-border/50 bg-secondary/10">
+                            <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Journée</th>
+                            <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Amplitude Horaire</th>
+                            <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Aperçu Activités</th>
+                            <th class="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Statut</th>
+                            <th class="px-8 py-6 text-right text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/30">
+                        {% for weekKey, week in groupedPlannings %}
+                            {# Week Header Row #}
+                            <tr class="bg-primary/5">
+                                <td colspan="5" class="px-8 py-4">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-4">
+                                             <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black shadow-sm">
+                                                W{{ week.week_number }}
+                                            </div>
+                                            <div>
+                                                <h3 class="font-black text-foreground uppercase tracking-tight">Semaine du {{ week.start|date('d F Y') }}</h3>
+                                                <p class="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">{{ week.plannings|length }} jours configurés</p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ path('app_time_index', {date: week.start|date('Y-m-d'), view: 'week'}) }}" class="text-xs font-black text-primary hover:underline transition-all flex items-center gap-1.5 p-2 rounded-lg hover:bg-primary/5">
+                                            Vue hebdomadaire
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {# Day Rows #}
+                            {% for p in week.plannings %}
+                                <tr class="group hover:bg-secondary/10 transition-all border-l-4 border-transparent hover:border-primary">
+                                    <td class="px-8 py-6">
+                                        <div class="flex flex-col gap-0.5">
+                                            <span class="text-lg font-black text-foreground">{{ p.date|date('d/m/Y') }}</span>
+                                            <span class="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-[0.2em]">{{ p.date|date('l') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="p-1.5 rounded-lg bg-secondary/50 text-muted-foreground">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                            </div>
+                                            <span class="font-bold text-foreground">{{ p.heureDebutJournee|date('H:i') }} <span class="text-muted-foreground/40 font-medium mx-1">—</span> {{ p.heureFinJournee|date('H:i') }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <div class="flex flex-wrap gap-1.5">
+                                            {% for activity in p.activites|slice(0, 3) %}
+                                                <div class="h-1.5 w-6 rounded-full" style="background-color: {{ activity.couleur|default('#eee') }}" title="{{ activity.titre }} ({{ activity.statutDynamique }})"></div>
+                                            {% endfor %}
+                                            {% if p.activites|length > 3 %}
+                                                <span class="text-[10px] font-black text-muted-foreground/40 self-center">+{{ p.activites|length - 3 }}</span>
+                                            {% endif %}
+                                            {% if p.activites|length == 0 %}
+                                                <span class="text-[10px] font-bold text-muted-foreground/30 italic">Aucune activité</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        {% if p.disponibilite %}
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
+                                                <span class="h-1 w-1 rounded-full bg-emerald-500"></span>
+                                                Disponible
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/10 text-pink-500 text-[10px] font-black uppercase tracking-widest">
+                                                <span class="h-1 w-1 rounded-full bg-pink-500"></span>
+                                                Indisponible
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-8 py-6">
+                                        <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <a href="{{ path('app_time_index', {'date': p.date|date('Y-m-d'), 'view': 'day'}) }}" class="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all shadow-sm" title="Calendrier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                            </a>
+                                            <a href="{{ path('app_planning_edit', {'date': p.date|date('Y-m-d')}) }}" class="w-10 h-10 rounded-xl bg-secondary/50 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all shadow-sm" title="Modifier">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                            </a>
+                                            <form method="post" action="{{ path('app_planning_delete', {'id': p.id}) }}" class="inline" onsubmit="return confirm('Archiver ce planning ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ p.id) }}">
+                                                <button class="w-10 h-10 rounded-xl bg-destructive/5 flex items-center justify-center hover:bg-destructive/20 text-destructive transition-all shadow-sm" title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="py-32 text-center">
+                                    <div class="flex flex-col items-center gap-6 max-w-xs mx-auto">
+                                        <div class="w-24 h-24 rounded-full bg-secondary/20 flex items-center justify-center text-5xl">
+                                            📅
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xl font-black text-foreground mb-2">Aucun planning</h3>
+                                            <p class="text-sm text-muted-foreground font-medium">Commencez par organiser votre première journée pour voir vos statistiques apparaître ici.</p>
+                                        </div>
+                                        <a href="{{ path('app_planning_new') }}" class="text-sm font-black text-primary hover:underline">Créer maintenant</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        {# Statistiques Section #}
+        <div class="flex flex-col gap-6 mb-10">
+            <h2 class="text-2xl font-black tracking-tight text-foreground uppercase tracking-widest flex items-center gap-3">
+                <span class="p-2 rounded-xl bg-primary/10 text-primary">📊</span>
+                Statistiques d'Analyse
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {# Temps travaillé par semaine #}
+                <div class="rounded-3xl border border-border bg-card/40 backdrop-blur-md p-8 shadow-xl">
+                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6">Temps travaillé par semaine</h3>
+                    <div class="h-[300px]">
+                        {{ render_chart(weeklyChart) }}
+                    </div>
+                </div>
+
+                {# Répartition par priorité #}
+                <div class="rounded-3xl border border-border bg-card/40 backdrop-blur-md p-8 shadow-xl">
+                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-6">Répartition par priorité</h3>
+                    <div class="h-[300px] flex items-center justify-center">
+                        <div class="w-full max-w-[250px]">
+                            {{ render_chart(priorityChart) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Taux de complétion Card #}
+            <div class="rounded-3xl border border-border bg-primary/5 p-8 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
+                        🎯
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-1">Efficacité Globale</h4>
+                        <p class="text-sm font-bold text-muted-foreground">Votre taux de complétion moyen sur l'ensemble de vos activités.</p>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end">
+                    <span class="text-5xl font-black text-primary">{{ completionRate|number_format(1) }}%</span>
+                    <div class="h-2 w-48 bg-secondary/50 rounded-full mt-3 overflow-hidden">
+                        <div class="h-full bg-primary rounded-full" style="width: {{ completionRate }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

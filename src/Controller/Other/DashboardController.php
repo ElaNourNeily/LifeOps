@@ -2,86 +2,96 @@
 
 namespace App\Controller\Other;
 
-use App\Repository\BilanSanteRepository;
+use App\Repository\TacheRepository;
 use App\Repository\BudgetRepository;
 use App\Repository\DepenseRepository;
+use App\Repository\BilanSanteRepository;
 use App\Repository\ObjectifRepository;
 use App\Repository\PlanningRepository;
-use App\Repository\TacheRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(
-        TacheRepository $tacheRepository,
-        DepenseRepository $depenseRepository,
-        BudgetRepository $budgetRepository,
-        BilanSanteRepository $bilanSanteRepository,
-        ObjectifRepository $objectifRepository,
-        PlanningRepository $planningRepository
-    ): Response
-    {
+        TacheRepository $tacheRepo,
+        BudgetRepository $budgetRepo,
+        DepenseRepository $depenseRepo,
+        BilanSanteRepository $bilanRepo,
+        ObjectifRepository $objectifRepo,
+        PlanningRepository $planningRepo
+    ): Response {
         $user = $this->getUser();
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
+        $currentMonth = (new \DateTime())->format('Y-m');
+
+        // Task Stats
+        $allTasks = $tacheRepo->findBy(['utilisateur' => $user]);
+        $stats = [
+            'inProgressTasks' => count(array_filter($allTasks, fn($t) => $t->getStatut() === 'in-progress')),
+            'todoTasks'       => count(array_filter($allTasks, fn($t) => $t->getStatut() === 'todo')),
+            'doneTasks'       => count(array_filter($allTasks, fn($t) => $t->getStatut() === 'done')),
+        ];
+
+        // Finance Stats
+        $budgets = $budgetRepo->findBy(['utilisateur' => $user], ['mois' => 'DESC']);
+        $currentBudget = null;
+        foreach ($budgets as $b) {
+            if ($b->getMois() === $currentMonth) {
+                $currentBudget = $b;
+                break;
+            }
         }
 
-        // Fetch data for the current user
-        $taches = $tacheRepository->findBy(['utilisateur' => $user], ['deadline' => 'ASC']);
-        $depenses = $depenseRepository->findBy(['utilisateur' => $user], ['date' => 'DESC']);
-        $budgets = $budgetRepository->findBy(['utilisateur' => $user]);
-        $bilanSantes = $bilanSanteRepository->findBy(['utilisateur' => $user], ['date_fin' => 'DESC']);
-        $objectifs = $objectifRepository->findBy(['utilisateur' => $user], ['date_fin' => 'ASC']);
-        
-        $today = new \DateTime('today');
-        $planning = $planningRepository->findOneBy(['utilisateur' => $user, 'date' => $today]);
-
-        // Calculate stats
-        $todoTasks = count(array_filter($taches, fn($t) => $t->getStatut() === 'todo'));
-        $inProgressTasks = count(array_filter($taches, fn($t) => $t->getStatut() === 'in-progress'));
-        $doneTasks = count(array_filter($taches, fn($t) => $t->getStatut() === 'done'));
-
-        // Finance stats
-        $currentMonth = (new \DateTime())->format('Y-m');
+        $allDepenses = $depenseRepo->findBy(['utilisateur' => $user]);
         $totalDepensesMonth = 0;
-        foreach ($depenses as $depense) {
+        foreach ($allDepenses as $depense) {
             if ($depense->getDate()->format('Y-m') === $currentMonth) {
                 $totalDepensesMonth += $depense->getMontant();
             }
         }
-        
-        // Find current month budget
-        $currentBudget = null;
-        // In a real app we'd match the 'mois' string field more carefully or use dates
-        // For now let's just take the first budget found or 0
-        $budgetAmount = $budgets[0] ?? null ? $budgets[0]->getRevenuMensuel() : 0; 
-        $balance = $budgetAmount - $totalDepensesMonth;
 
-        $latestBilan = $bilanSantes[0] ?? null;
+        $stats['budget'] = $currentBudget ? $currentBudget->getMontant() : 0;
+        $stats['totalDepenses'] = $totalDepensesMonth;
+        $stats['balance'] = $stats['budget'] - $totalDepensesMonth;
+
+        // Health Stats
+        $bilans = $bilanRepo->findBy(['utilisateur' => $user], ['date_fin' => 'DESC'], 1);
+        $latestBilan = !empty($bilans) ? $bilans[0] : null;
+
+        // Goals Stats
+        $activeObjectifs = $objectifRepo->count(['utilisateur' => $user]); // Simplified: all for now or filter by status if exists
+        $stats['activeObjectifs'] = $activeObjectifs;
+
+        // Recent Tasks
+        $recentTaches = $tacheRepo->findBy(['utilisateur' => $user], ['id' => 'DESC'], 5);
+
+        // Planning du jour
+        $today = new \DateTime();
+        $planning = $planningRepo->findOneBy([
+            'utilisateur' => $user,
+            'date' => $today
+        ]);
         
-        $activeObjectifs = count(array_filter($objectifs, fn($o) => $o->getStatut() === 'in-progress'));
+        // If not found by exact date object, try by formatted string if Repository supports it or search broad
+        if (!$planning) {
+            $plannings = $planningRepo->findBy(['utilisateur' => $user]);
+            foreach ($plannings as $p) {
+                if ($p->getDate()->format('Y-m-d') === $today->format('Y-m-d')) {
+                    $planning = $p;
+                    break;
+                }
+            }
+        }
 
         return $this->render('other/dashboard/index.html.twig', [
-            'taches' => $taches,
-            'recentTaches' => array_slice($taches, 0, 5),
-            'planning' => $planning,
-            'objectifs' => $objectifs,
-            'recentObjectifs' => array_slice($objectifs, 0, 3),
-            'depenses' => $depenses,
-            'recentDepenses' => array_slice($depenses, 0, 5),
+            'stats' => $stats,
             'latestBilan' => $latestBilan,
-            'stats' => [
-                'todoTasks' => $todoTasks,
-                'inProgressTasks' => $inProgressTasks,
-                'doneTasks' => $doneTasks,
-                'totalDepenses' => $totalDepensesMonth,
-                'budget' => $budgetAmount,
-                'balance' => $balance,
-                'activeObjectifs' => $activeObjectifs,
-            ]
+            'recentTaches' => $recentTaches,
+            'planning' => $planning,
         ]);
     }
 }

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Planning du {{ startOfWeek|date('d/m/Y') }} au {{ endOfWeek|date('d/m/Y') }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 10pt; color: #333; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #4f46e5; padding-bottom: 10px; }
+        .title { font-size: 18pt; font-bold; color: #4f46e5; margin-bottom: 5px; }
+        .subtitle { font-size: 12pt; color: #666; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: fixed; }
+        th { background-color: #f3f4f6; padding: 10px; border: 1px solid #e5e7eb; text-align: left; font-size: 9pt; }
+        td { padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: 100px; }
+        .day-header { font-weight: bold; background-color: #f9fafb; }
+        .activity { margin-bottom: 5px; padding: 4px; border-radius: 4px; background-color: #eef2ff; border-left: 3px solid #4f46e5; font-size: 8pt; box-decoration-break: clone; }
+        .activity-time { font-weight: bold; color: #4338ca; display: block; }
+        .activity-title { display: block; margin-top: 2px; }
+        .footer { position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 8pt; color: #999; padding-top: 10px; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">LifeOps - Planning Hebdomadaire</div>
+        <div class="subtitle">Période du {{ startOfWeek|date('d/m/Y') }} au {{ endOfWeek|date('d/m/Y') }}</div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                {% for dateKey, activities in activitiesByDay %}
+                    <th>
+                        {{ dateKey|date('l')|capitalize }}<br>
+                        {{ dateKey|date('d/m') }}
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for dateKey, activities in activitiesByDay %}
+                    <td>
+                        {% for activity in activities %}
+                            <div class="activity" style="border-left-color: {{ activity.couleur|default('#4f46e5') }}">
+                                <span class="activity-time">{{ activity.heureDebutEstimee|date('H:i') }} - {{ activity.heureFinEstimee|date('H:i') }}</span>
+                                <span class="activity-title">{{ activity.titre }}</span>
+                                <div style="font-size: 7pt; margin-top: 2px; opacity: 0.8;">
+                                    {{ activity.categorie }} • {{ activity.priorite|capitalize }}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div style="color: #ccc; font-style: italic; text-align: center; margin-top: 40px;">-</div>
+                        {% endfor %}
+                    </td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Généré le {{ "now"|date('d/m/Y H:i') }} par LifeOps - Votre assistant de productivité personnelle.
+    </div>
+</body>
+</html>
